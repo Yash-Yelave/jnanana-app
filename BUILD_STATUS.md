@@ -2,7 +2,7 @@
 
 ## Current phase
 
-`Phase 3 — landing page complete; authenticated shell implementation next`
+`Blocked after Phase 3 — landing page complete; authenticated shell context unavailable`
 
 ## Repository
 
@@ -38,6 +38,7 @@
 ## Known visual mismatches
 
 - Landing rendering still needs the real-browser width matrix because no browser backend is connected in this session.
+- Remaining production screens cannot be implemented faithfully until Figma MCP access resumes; the connected Starter plan has reached its tool-call limit.
 
 ## Missing/unavailable assets or fonts
 
@@ -64,4 +65,4 @@
 
 ## Next action
 
-Inspect the exact Figma application-shell nodes and implement the shared student/mentor shell.
+Restore/upgrade Figma MCP access, then retrieve `741:6834`, `741:6263` and `741:6129` and implement the shared student/mentor shell without guessing.
