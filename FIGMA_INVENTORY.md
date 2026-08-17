@@ -15,10 +15,10 @@ Responsive variants use one route per experience. Duplicate desktop frames in th
 | # | Figma screen / canonical node | Route | Variants | Major sections / interactions | Build | Visual QA |
 |---|---|---|---|---|---|---|
 | 1 | Landing page `2280:14926` | `/` | 1728, 1024 `2280:27801`, 390 `2280:20928` | Marketing hero, outcomes, process, mentors, features, CTA, footer | Complete | Figma references inspected; rendered browser pass pending |
-| 2 | Log in `818:6163` | `/login` | Desktop; responsive auth family | Credentials, recovery/social entry | Not started | Not started |
-| 3 | Student onboarding phases `501:12379`, `501:12396`, `501:12452` | `/onboarding/student` | 1728, 1024 `986:18125`/`986:17987`/`986:18042`, 390 `986:18142`/`986:21019`/`986:21081` | Role, interests, account details, access code | Not started | Not started |
-| 4 | Mentor onboarding `501:62670`, `501:62805`, `501:62726` | `/onboarding/mentor` | 1728, 1024 `501:62875`/`501:62928`/`501:63004` | Mentor profile setup flow | Not started | Not started |
-| 5 | Waiting screens `501:12521`, `501:12783` | `/waiting` | 1728, responsive feedback variants | Loading/feedback state | Not started | Not started |
+| 2 | Log in `818:6163` | `/login` | Desktop; responsive auth family | Credentials, recovery/social entry | Complete | Exported auth-family references inspected; browser pass pending |
+| 3 | Student onboarding phases `501:12379`, `501:12396`, `501:12452` | `/onboarding/student` | 1728, 1024 `986:18125`/`986:17987`/`986:18042`, 390 `986:18142`/`986:21019`/`986:21081` | Role, interests, account details, access code | Complete | Desktop/mobile export references inspected; browser pass pending |
+| 4 | Mentor onboarding `501:62670`, `501:62805`, `501:62726` | `/onboarding/mentor` | 1728, 1024 `501:62875`/`501:62928`/`501:63004` | Mentor profile setup flow | Complete | Desktop export references inspected; browser pass pending |
+| 5 | Waiting screens `501:12521`, `501:12783` | `/waiting` | 1728, responsive feedback variants | Loading/feedback state | Complete | Both exported states inspected; browser pass pending |
 | 6 | Student home `741:6118` | `/dashboard/home` | 1728, 1024 `986:16101`, 390 `986:16710` | Personalized home, mentors, learning content | Complete | Exported desktop/mobile references inspected; browser pass pending |
 | 7 | Mentor directory `501:18532` | `/mentors` | 1728, responsive card/list variants | Browse/filter mentors | Not started | Not started |
 | 8 | Mentor detail states `741:8362`, `741:8598`, `741:8829` | `/mentors/[id]` | 1728, 1024/390 variants in Responsive UI | Profile, professional/verified states, follow/book | Not started | Not started |
@@ -53,7 +53,7 @@ Responsive variants use one route per experience. Duplicate desktop frames in th
 | Buttons / CTAs | Components `827:6165` and repeated frames | Primary, secondary, outline, icon | Global | Landing variants complete |
 | Mentor cards | Landing and mentor frames | Default, followed, professional, verified | Landing/mentors | Landing variants complete |
 | Lesson cards | Student and mentor flow boards | Requested, bid, counter-bid, accepted | Lesson routes | Not started |
-| Form controls | Onboarding/profile/settings | Text, phone, password, access code, select | Forms | Not started |
+| Form controls | Onboarding/profile/settings | Text, phone, password, access code, select | Forms | Auth/onboarding variants complete |
 | Profile tabs | Student and mentor profile frames | Profile, lessons, feedback | Profile routes | Not started |
 | Footer | Landing `2280:20806` | Desktop/tablet/mobile | Public pages | Complete |
 
