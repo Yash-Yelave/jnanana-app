@@ -2,7 +2,7 @@
 
 ## Current phase
 
-`Phase 4 — exported Figma boards available; auth and onboarding milestone complete`
+`Phase 5 — all student routes implemented; mentor routes in progress`
 
 ## Repository
 
@@ -23,9 +23,9 @@
 
 ## Routes
 
-- Completed: `/`, `/login`, `/onboarding/student`, `/onboarding/mentor`, `/waiting`, `/dashboard/home`
+- Completed: 22 routes — all public, auth, onboarding and student application routes
 - In progress: None
-- Not started: 22 routes (see `FIGMA_INVENTORY.md`)
+- Not started: 6 mentor routes (see `FIGMA_INVENTORY.md`)
 
 ## Shared components
 
@@ -37,6 +37,7 @@
 - Responsive authenticated sidebar, top bar and mobile navigation
 - Shared course, mentor, schedule and content-panel patterns
 - Responsive login, onboarding form, skill selector, role selector and waiting-state patterns
+- Mentor cards/directory, profile tabs, calendar/booking, settings, statistics, payment tables, chat and meeting layouts
 
 ## Known visual mismatches
 
@@ -69,4 +70,4 @@
 
 ## Next action
 
-Implement the mentor directory, mentor detail and lesson booking routes from the extracted full-resolution references.
+Implement the six mentor routes from the mentor flow board, then perform site-wide QA.
