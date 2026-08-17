@@ -1,0 +1,149 @@
+@import "tailwindcss";
+
+:root {
+  --lime: #a3d95d;
+  --lime-soft: #c3f089;
+  --ink: #0f0f0f;
+  --ink-soft: #171717;
+  --paper: #ffffff;
+  --muted: #959595;
+  --line: #303030;
+  --surface: #1b1b1b;
+  --container: 1538px;
+  --radius-card: 34px;
+  --radius-panel: 61px;
+}
+
+@theme inline {
+  --color-lime: var(--lime);
+  --color-lime-soft: var(--lime-soft);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-paper: var(--paper);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-surface: var(--surface);
+  --font-heading: var(--font-manrope);
+  --font-sans: var(--font-public-sans);
+  --font-handwritten: var(--font-handwritten);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-width: 320px;
+  margin: 0;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--font-public-sans), Arial, sans-serif;
+  text-rendering: optimizeLegibility;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+img {
+  max-width: 100%;
+}
+
+::selection {
+  background: var(--lime);
+  color: var(--ink);
+}
+
+:focus-visible {
+  outline: 3px solid var(--lime);
+  outline-offset: 4px;
+}
+
+.site-container {
+  width: min(calc(100% - 48px), var(--container));
+  margin-inline: auto;
+}
+
+.eyebrow {
+  display: inline-flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  padding: 0 40px;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.button {
+  display: inline-flex;
+  min-height: 64px;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: 0 36px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  transition: transform 160ms ease, background 160ms ease, color 160ms ease;
+}
+
+.button:hover {
+  transform: translateY(-2px);
+}
+
+.button-primary {
+  background: var(--lime);
+  color: var(--ink);
+}
+
+.button-secondary {
+  border-color: var(--ink);
+  background: var(--paper);
+  color: var(--ink);
+}
+
+@media (max-width: 767px) {
+  .site-container {
+    width: min(calc(100% - 32px), var(--container));
+  }
+
+  .eyebrow {
+    min-height: 34px;
+    padding-inline: 22px;
+    font-size: 11px;
+  }
+
+  .button {
+    min-height: 50px;
+    padding-inline: 24px;
+    font-size: 14px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
