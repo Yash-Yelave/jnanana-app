@@ -30,7 +30,6 @@ function Fields({ mentor = false }: { mentor?: boolean }) {
 export function OnboardingFlow({ role }: { role: "student" | "mentor" }) {
   const router = useRouter();
   const [step, setStep] = useState(0);
-  const [selectedRole, setSelectedRole] = useState<"student" | "mentor">("student");
   const [skill, setSkill] = useState("Design");
   const total = role === "student" ? 3 : 3;
 
@@ -38,7 +37,7 @@ export function OnboardingFlow({ role }: { role: "student" | "mentor" }) {
     <StepHeader step={1} total={3} />
     <h1>Choose Your Side</h1>
     <div className={styles.roles}>
-      {(["student", "mentor"] as const).map((value) => <article className={selectedRole === value ? styles.selected : ""} key={value} onClick={() => setSelectedRole(value)}>
+      {(["student", "mentor"] as const).map((value) => <article className={value === "student" ? styles.selected : ""} key={value}>
         <Image src={`/assets/onboarding/${value === "student" ? "learner" : "tutor"}-choice.png`} alt="" width={280} height={210} />
         <h2>{value === "student" ? "Learner" : "Tutor"}</h2>
         <ul><li>Learn from skilled mentors</li><li>Book sessions at your pace</li><li>Grow with practical guidance</li></ul>

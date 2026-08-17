@@ -2,7 +2,7 @@
 
 ## Current phase
 
-`Phase 6 — all 28 routes implemented; final QA in progress`
+`Implementation complete — all 28 routes built and statically validated`
 
 ## Repository
 
@@ -62,6 +62,7 @@
 ## Quality gates
 
 - Browser console: Pending; browser backend unavailable
+- HTTP route smoke test: Pass — all 28 routes returned HTTP 200 from the production server
 - Accessibility pass: Semantic/keyboard code review complete; rendered pass pending
 - Responsive pass: CSS implemented at 1440, 1280, 1024, 768, 390 and 360 anchors; rendered pass pending
 - Lint: Pass
@@ -71,4 +72,4 @@
 
 ## Next action
 
-Complete final static/runtime smoke QA and record the production handoff.
+Connect a browser backend for rendered pixel/console QA at the documented viewport matrix; implementation and static/runtime validation are complete.
