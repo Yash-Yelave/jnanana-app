@@ -19,7 +19,7 @@ Responsive variants use one route per experience. Duplicate desktop frames in th
 | 3 | Student onboarding phases `501:12379`, `501:12396`, `501:12452` | `/onboarding/student` | 1728, 1024 `986:18125`/`986:17987`/`986:18042`, 390 `986:18142`/`986:21019`/`986:21081` | Role, interests, account details, access code | Not started | Not started |
 | 4 | Mentor onboarding `501:62670`, `501:62805`, `501:62726` | `/onboarding/mentor` | 1728, 1024 `501:62875`/`501:62928`/`501:63004` | Mentor profile setup flow | Not started | Not started |
 | 5 | Waiting screens `501:12521`, `501:12783` | `/waiting` | 1728, responsive feedback variants | Loading/feedback state | Not started | Not started |
-| 6 | Student home `741:6118` | `/dashboard/home` | 1728, 1024 `986:16101`, 390 `986:16710` | Personalized home, mentors, learning content | Not started | Not started |
+| 6 | Student home `741:6118` | `/dashboard/home` | 1728, 1024 `986:16101`, 390 `986:16710` | Personalized home, mentors, learning content | Complete | Exported desktop/mobile references inspected; browser pass pending |
 | 7 | Mentor directory `501:18532` | `/mentors` | 1728, responsive card/list variants | Browse/filter mentors | Not started | Not started |
 | 8 | Mentor detail states `741:8362`, `741:8598`, `741:8829` | `/mentors/[id]` | 1728, 1024/390 variants in Responsive UI | Profile, professional/verified states, follow/book | Not started | Not started |
 | 9 | Lesson booking `741:9058` | `/lessons/book` | 1728, 1024 `986:27379`, 390 `986:27993` | Select lesson and booking details | Not started | Not started |
@@ -49,7 +49,7 @@ Responsive variants use one route per experience. Duplicate desktop frames in th
 |---|---|---|---|---|
 | Brand mark / wordmark | Repeated `Group 427318202` | Large, compact, sidebar | Global | Complete |
 | Public navigation | Landing header in `2280:14926` | Desktop/mobile | Public pages | Complete |
-| Application sidebar/header | Responsive UI and flow boards | Student/mentor, desktop/mobile drawer | Authenticated routes | Not started |
+| Application sidebar/header | Responsive UI and flow boards | Student/mentor, desktop/mobile drawer | Authenticated routes | Complete |
 | Buttons / CTAs | Components `827:6165` and repeated frames | Primary, secondary, outline, icon | Global | Landing variants complete |
 | Mentor cards | Landing and mentor frames | Default, followed, professional, verified | Landing/mentors | Landing variants complete |
 | Lesson cards | Student and mentor flow boards | Requested, bid, counter-bid, accepted | Lesson routes | Not started |

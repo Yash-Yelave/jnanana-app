@@ -2,7 +2,7 @@
 
 ## Current phase
 
-`Blocked after Phase 3 — landing page complete; authenticated shell context unavailable`
+`Phase 4 — exported Figma boards available; authenticated shell and student home complete`
 
 ## Repository
 
@@ -23,9 +23,9 @@
 
 ## Routes
 
-- Completed: `/`
+- Completed: `/`, `/dashboard/home`
 - In progress: None
-- Not started: 27 routes (see `FIGMA_INVENTORY.md`)
+- Not started: 26 routes (see `FIGMA_INVENTORY.md`)
 
 ## Shared components
 
@@ -34,16 +34,19 @@
 - Brand primitive and shared button/focus treatments
 - Responsive public header and native mobile navigation
 - Public footer, outcomes, category and mentor-card sections
+- Responsive authenticated sidebar, top bar and mobile navigation
+- Shared course, mentor, schedule and content-panel patterns
 
 ## Known visual mismatches
 
 - Landing rendering still needs the real-browser width matrix because no browser backend is connected in this session.
-- Remaining production screens cannot be implemented faithfully until Figma MCP access resumes; the connected Starter plan has reached its tool-call limit.
+- Real-browser visual/console inspection remains unavailable in this session; exported references are being used for implementation and static comparison.
 
 ## Missing/unavailable assets or fonts
 
 - Landing assets are complete and stored locally; no temporary Figma URLs are used.
 - Exact Figma fonts are configured through Next.js font loading.
+- Remaining application assets will be extracted from the user-provided full-resolution board exports as each route is implemented.
 
 ## Deferred external integrations
 
@@ -65,4 +68,4 @@
 
 ## Next action
 
-Restore/upgrade Figma MCP access, then retrieve `741:6834`, `741:6263` and `741:6129` and implement the shared student/mentor shell without guessing.
+Implement login, student onboarding, mentor onboarding and waiting routes from the extracted full-resolution references.
