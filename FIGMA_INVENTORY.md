@@ -14,7 +14,7 @@ Responsive variants use one route per experience. Duplicate desktop frames in th
 
 | # | Figma screen / canonical node | Route | Variants | Major sections / interactions | Build | Visual QA |
 |---|---|---|---|---|---|---|
-| 1 | Landing page `2280:14926` | `/` | 1728, 1024 `2280:27801`, 390 `2280:20928` | Marketing hero, outcomes, process, mentors, features, CTA, footer | Not started | Not started |
+| 1 | Landing page `2280:14926` | `/` | 1728, 1024 `2280:27801`, 390 `2280:20928` | Marketing hero, outcomes, process, mentors, features, CTA, footer | Complete | Figma references inspected; rendered browser pass pending |
 | 2 | Log in `818:6163` | `/login` | Desktop; responsive auth family | Credentials, recovery/social entry | Not started | Not started |
 | 3 | Student onboarding phases `501:12379`, `501:12396`, `501:12452` | `/onboarding/student` | 1728, 1024 `986:18125`/`986:17987`/`986:18042`, 390 `986:18142`/`986:21019`/`986:21081` | Role, interests, account details, access code | Not started | Not started |
 | 4 | Mentor onboarding `501:62670`, `501:62805`, `501:62726` | `/onboarding/mentor` | 1728, 1024 `501:62875`/`501:62928`/`501:63004` | Mentor profile setup flow | Not started | Not started |
@@ -47,15 +47,15 @@ Responsive variants use one route per experience. Duplicate desktop frames in th
 
 | Component family | Figma source | Variants/states | Used on | Implementation |
 |---|---|---|---|---|
-| Brand mark / wordmark | Repeated `Group 427318202` | Large, compact, sidebar | Global | Not started |
-| Public navigation | Landing header in `2280:14926` | Desktop/mobile | Public pages | Not started |
+| Brand mark / wordmark | Repeated `Group 427318202` | Large, compact, sidebar | Global | Complete |
+| Public navigation | Landing header in `2280:14926` | Desktop/mobile | Public pages | Complete |
 | Application sidebar/header | Responsive UI and flow boards | Student/mentor, desktop/mobile drawer | Authenticated routes | Not started |
-| Buttons / CTAs | Components `827:6165` and repeated frames | Primary, secondary, outline, icon | Global | Not started |
-| Mentor cards | Landing and mentor frames | Default, followed, professional, verified | Landing/mentors | Not started |
+| Buttons / CTAs | Components `827:6165` and repeated frames | Primary, secondary, outline, icon | Global | Landing variants complete |
+| Mentor cards | Landing and mentor frames | Default, followed, professional, verified | Landing/mentors | Landing variants complete |
 | Lesson cards | Student and mentor flow boards | Requested, bid, counter-bid, accepted | Lesson routes | Not started |
 | Form controls | Onboarding/profile/settings | Text, phone, password, access code, select | Forms | Not started |
 | Profile tabs | Student and mentor profile frames | Profile, lessons, feedback | Profile routes | Not started |
-| Footer | Landing `2280:20806` | Desktop/tablet/mobile | Public pages | Not started |
+| Footer | Landing `2280:20806` | Desktop/tablet/mobile | Public pages | Complete |
 
 ## Overlays / UI states
 

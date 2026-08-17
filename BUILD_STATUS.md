@@ -2,7 +2,7 @@
 
 ## Current phase
 
-`Phase 2 — project foundation complete; landing-page implementation in progress`
+`Phase 3 — landing page complete; authenticated shell implementation next`
 
 ## Repository
 
@@ -23,21 +23,25 @@
 
 ## Routes
 
-See `FIGMA_INVENTORY.md`. All routes are currently not started.
+- Completed: `/`
+- In progress: None
+- Not started: 27 routes (see `FIGMA_INVENTORY.md`)
 
 ## Shared components
 
 - Global Figma tokens and responsive container
 - Exact Manrope, Public Sans and Sue Ellen Francisco font configuration
 - Brand primitive and shared button/focus treatments
+- Responsive public header and native mobile navigation
+- Public footer, outcomes, category and mentor-card sections
 
 ## Known visual mismatches
 
-- None recorded yet; implementation has not started.
+- Landing rendering still needs the real-browser width matrix because no browser backend is connected in this session.
 
 ## Missing/unavailable assets or fonts
 
-- Landing image extraction is in progress; 14 exact image/composite assets are local.
+- Landing assets are complete and stored locally; no temporary Figma URLs are used.
 - Exact Figma fonts are configured through Next.js font loading.
 
 ## Deferred external integrations
@@ -50,14 +54,14 @@ See `FIGMA_INVENTORY.md`. All routes are currently not started.
 
 ## Quality gates
 
-- Browser console: Not checked
-- Accessibility pass: Not started
-- Responsive pass: Not started
-- Lint: Not run
-- Typecheck: Not run
+- Browser console: Pending; browser backend unavailable
+- Accessibility pass: Semantic/keyboard code review complete; rendered pass pending
+- Responsive pass: CSS implemented at 1440, 1280, 1024, 768, 390 and 360 anchors; rendered pass pending
+- Lint: Pass
+- Typecheck: Pass
 - Tests: Not run / not present
-- Production build: Not run
+- Production build: Pass
 
 ## Next action
 
-Implement and visually validate the responsive public landing page.
+Inspect the exact Figma application-shell nodes and implement the shared student/mentor shell.

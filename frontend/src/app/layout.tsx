@@ -25,13 +25,13 @@ const handwritten = Sue_Ellen_Francisco({
 export const metadata: Metadata = {
   metadataBase: new URL("https://upskillink.example"),
   title: {
-    default: "Upskillink — Learn with top mentors",
+    default: "Upskillink | Learn with top mentors",
     template: "%s | Upskillink",
   },
   description:
     "Connect, learn and grow with personalized mentoring and practical lessons from experienced professionals.",
   openGraph: {
-    title: "Upskillink — Learn with top mentors",
+    title: "Upskillink | Learn with top mentors",
     description:
       "Connect, learn and grow with personalized mentoring and practical lessons.",
     type: "website",
