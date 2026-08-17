@@ -2,7 +2,7 @@
 
 ## Current phase
 
-`Phase 5 — all student routes implemented; mentor routes in progress`
+`Phase 6 — all 28 routes implemented; final QA in progress`
 
 ## Repository
 
@@ -23,9 +23,9 @@
 
 ## Routes
 
-- Completed: 22 routes — all public, auth, onboarding and student application routes
+- Completed: All 28 production routes
 - In progress: None
-- Not started: 6 mentor routes (see `FIGMA_INVENTORY.md`)
+- Not started: None
 
 ## Shared components
 
@@ -38,6 +38,7 @@
 - Shared course, mentor, schedule and content-panel patterns
 - Responsive login, onboarding form, skill selector, role selector and waiting-state patterns
 - Mentor cards/directory, profile tabs, calendar/booking, settings, statistics, payment tables, chat and meeting layouts
+- Mentor marketing, home, lesson booking/counter-bid, lesson management, profile and dashboard layouts
 
 ## Known visual mismatches
 
@@ -70,4 +71,4 @@
 
 ## Next action
 
-Implement the six mentor routes from the mentor flow board, then perform site-wide QA.
+Complete final static/runtime smoke QA and record the production handoff.

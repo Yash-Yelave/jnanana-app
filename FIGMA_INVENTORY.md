@@ -36,12 +36,12 @@ Responsive variants use one route per experience. Duplicate desktop frames in th
 | 20 | Settings `501:23372` | `/settings` | 1728 | Settings navigation, logout overlay | Complete | Exported settings and overlay states inspected; browser pass pending |
 | 21 | Payment `501:24035` | `/payment` | 1728 | Payment UI; provider integration deferred | Complete | Exported payment reference inspected; browser pass pending |
 | 22 | Student referrals `501:24448` | `/referrals` | 1728 | Referral code and sharing | Complete | Exported referral reference inspected; browser pass pending |
-| 23 | Mentor marketing `501:44889` | `/mentor` | 1706, 1024 `501:56027`, 390 `501:51531` | Mentor-specific landing content | Not started | Not started |
-| 24 | Mentor home `741:15901` | `/mentor/home` | 1728, 1024/390 responsive board | Opportunities and lesson requests | Not started | Not started |
-| 25 | Mentor bookings states `741:18880`, `741:19187`, `741:17908`, `741:17417` | `/mentor/bookings` | 1728 | Bid, counter-bid, accept and meeting states | Not started | Not started |
-| 26 | Mentor profile `741:14433` | `/mentor/profile` | 1728 | Mentor profile summary | Not started | Not started |
-| 27 | Mentor lessons `741:14619`, `741:14964`, `985:12310`, `985:12640` | `/mentor/lessons` | 1728 | Upcoming/completed lesson states | Not started | Not started |
-| 28 | Mentor dashboard `501:68381` | `/mentor/dashboard` | 1728 | Mentor analytics and earnings | Not started | Not started |
+| 23 | Mentor marketing `501:44889` | `/mentor` | 1706, 1024 `501:56027`, 390 `501:51531` | Mentor-specific landing content | Complete | Exported desktop/responsive references inspected; browser pass pending |
+| 24 | Mentor home `741:15901` | `/mentor/home` | 1728, 1024/390 responsive board | Opportunities and lesson requests | Complete | Exported flow references inspected; browser pass pending |
+| 25 | Mentor bookings states `741:18880`, `741:19187`, `741:17908`, `741:17417` | `/mentor/bookings` | 1728 | Bid, counter-bid, accept and meeting states | Complete | All exported booking states inspected; browser pass pending |
+| 26 | Mentor profile `741:14433` | `/mentor/profile` | 1728 | Mentor profile summary | Complete | Exported profile reference inspected; browser pass pending |
+| 27 | Mentor lessons `741:14619`, `741:14964`, `985:12310`, `985:12640` | `/mentor/lessons` | 1728 | Upcoming/completed lesson states | Complete | Exported lesson references inspected; browser pass pending |
+| 28 | Mentor dashboard `501:68381` | `/mentor/dashboard` | 1728 | Mentor analytics and earnings | Complete | Exported dashboard reference inspected; browser pass pending |
 
 ## Shared components discovered
 
@@ -52,9 +52,9 @@ Responsive variants use one route per experience. Duplicate desktop frames in th
 | Application sidebar/header | Responsive UI and flow boards | Student/mentor, desktop/mobile drawer | Authenticated routes | Complete |
 | Buttons / CTAs | Components `827:6165` and repeated frames | Primary, secondary, outline, icon | Global | Landing variants complete |
 | Mentor cards | Landing and mentor frames | Default, followed, professional, verified | Landing/mentors | Landing variants complete |
-| Lesson cards | Student and mentor flow boards | Requested, bid, counter-bid, accepted | Lesson routes | Student variants complete |
+| Lesson cards | Student and mentor flow boards | Requested, bid, counter-bid, accepted | Lesson routes | Complete |
 | Form controls | Onboarding/profile/settings | Text, phone, password, access code, select | Forms | Auth/onboarding variants complete |
-| Profile tabs | Student and mentor profile frames | Profile, lessons, feedback | Profile routes | Student variants complete |
+| Profile tabs | Student and mentor profile frames | Profile, lessons, feedback | Profile routes | Complete |
 | Footer | Landing `2280:20806` | Desktop/tablet/mobile | Public pages | Complete |
 
 ## Overlays / UI states
@@ -62,9 +62,9 @@ Responsive variants use one route per experience. Duplicate desktop frames in th
 | Name | Figma node | Belongs to | Trigger | Implementation |
 |---|---|---|---|---|
 | Logout confirmation | `501:23697` | Settings | Log out | Complete |
-| Lesson bid/counter-bid states | `741:17908`, `741:19187`, `741:17417` | Mentor bookings | Booking actions | Not started |
-| Mentor professional/verified states | Responsive variants around `989:29757` | Mentor detail | Profile state | Not started |
-| Mobile navigation drawer | `2280:33758` and responsive boards | Shared shell | Menu button | Not started |
+| Lesson bid/counter-bid states | `741:17908`, `741:19187`, `741:17417` | Mentor bookings | Booking actions | Complete |
+| Mentor professional/verified states | Responsive variants around `989:29757` | Mentor detail | Profile state | Complete |
+| Mobile navigation drawer | `2280:33758` and responsive boards | Shared shell | Menu button | Complete |
 
 ## Design-system areas
 
