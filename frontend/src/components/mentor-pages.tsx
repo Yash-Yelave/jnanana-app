@@ -282,11 +282,11 @@ export function MentorBookingsPage() {
           )}
         </div>
 
-        {loading && <p className="data-state">Loading lesson requests…</p>}
+        {loading && !data && <p className="data-state">Loading lesson requests…</p>}
         {message && <p className="data-state" style={{ color: "#5e9d26", fontWeight: "800", fontSize: "16px", marginBottom: "16px" }}>✓ {message}</p>}
         {error && <p className="data-state" role="alert" style={{ color: "#b42318", fontWeight: "800", fontSize: "16px", marginBottom: "16px" }}>⚠ {error}</p>}
 
-        {!loading && (showCreateForm ? (
+        {(data || !loading) && (showCreateForm ? (
           <section className={styles.panel} style={{ maxWidth: "720px", margin: "0 auto 40px", padding: "36px" }}>
             <h2 style={{ fontSize: "24px", marginBottom: "12px" }}>Create New Lesson Request</h2>
             <p style={{ color: "#666", marginBottom: "24px" }}>Fill in the details below to publish a new lesson request onto the platform.</p>

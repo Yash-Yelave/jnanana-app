@@ -73,13 +73,8 @@ export function PageTitle({ children, backHref }: { children: React.ReactNode; b
 
 export function MentorDirectory() {
   const { data, error, loading } = useApi<{ items: Mentor[] }>("/mentors");
-  const mentors = (data?.items ?? []).map((mentor, index) => [
-    `${mentor.first_name} ${mentor.last_name}`,
-    `mentor-${(index % 4) + 1}.png`,
-    mentor.companies.join(" · ") || mentor.headline || "Independent mentor",
-    (mentor.hourly_rate_minor / 100).toLocaleString(),
-    mentor.id,
-  ] as const);
+  const mentors = data?.items ?? [];
+
   const filters = (
     <div className={styles.filters}>
       <h2>Category</h2>
@@ -121,50 +116,64 @@ export function MentorDirectory() {
           {loading && <p className="data-state">Loading mentors…</p>}
           {error && <p className="data-state" role="alert">{error}</p>}
           {!loading && !error && mentors.length === 0 && <p className="data-state">No approved mentors are available yet.</p>}
-          {mentors.map(([name, image, companies, price, id]) => (
-            <article className={styles.mentorCard} key={id}>
-              <div className={styles.mentorBio}>
-                <Image src={`/assets/app/${image}`} alt="" width={76} height={76} />
-                <div>
-                  <h2>
-                    {name} <StarRating rating={5} />
-                  </h2>
-                  <strong className={styles.verifiedTag}>
-                    <GraduationCap size={15} /> Professional <CheckCircle2 size={15} /> Verified
-                  </strong>
+          {mentors.map((mentor, index) => {
+            const name = `${mentor.first_name} ${mentor.last_name}`;
+            const avatar = publicAsset("avatars", mentor.avatar_path) ?? `/assets/app/mentor-${(index % 4) + 1}.png`;
+            const price = (mentor.hourly_rate_minor / 100).toLocaleString();
+            const languages = mentor.languages.length > 0 ? mentor.languages : ["English"];
+            const professions = mentor.professions.length > 0 ? mentor.professions : [mentor.headline || "Mentorship"];
+            const companies = mentor.companies.length > 0 ? mentor.companies.join(", ") : "Independent";
+            const bio = mentor.bio || "Experienced mentor ready to guide you in live 1:1 sessions.";
+
+            return (
+              <article className={styles.mentorCard} key={mentor.id}>
+                <div className={styles.mentorBio}>
+                  <Image src={avatar} alt={name} width={76} height={76} style={{ borderRadius: "50%", objectFit: "cover" }} />
+                  <div>
+                    <h2>
+                      {name} <StarRating rating={5} />
+                    </h2>
+                    <strong className={styles.verifiedTag}>
+                      <GraduationCap size={15} /> Professional <CheckCircle2 size={15} /> Verified
+                    </strong>
+                  </div>
                 </div>
-              </div>
-              <dl>
-                <dt>Language:</dt>
-                <dd>
-                  <i>English</i> <i>Telugu</i>
-                </dd>
-                <dt>Profession</dt>
-                <dd>
-                  <i>SDE 3</i> <i>.net Developer</i> <i>Full Stack</i>
-                </dd>
-                <dt>Experience</dt>
-                <dd>
-                  <i>{companies}</i>
-                </dd>
-              </dl>
-              <p>I have a Master degree in Art Education. Book a fully prepared lesson from someone with years of practical teaching experience.</p>
-              <Link href={`/mentors/${id}`}>
-                Show details <ArrowUpRight size={14} />
-              </Link>
-              <aside>
-                <b>Instant lessons</b>
-                <b>Mentorship</b>
-                <b>Tutorials</b>
-                <span>
-                  Starting from<strong>₹{price}</strong>per lesson
-                </span>
-                <Link className={styles.button} href={`/lessons/book?mentor=${id}`}>
-                  Book a lesson <ArrowUpRight size={16} />
+                <dl>
+                  <dt>Language:</dt>
+                  <dd>
+                    {languages.map((lang) => (
+                      <i key={lang}>{lang}</i>
+                    ))}
+                  </dd>
+                  <dt>Profession</dt>
+                  <dd>
+                    {professions.map((prof) => (
+                      <i key={prof}>{prof}</i>
+                    ))}
+                  </dd>
+                  <dt>Experience</dt>
+                  <dd>
+                    <i>{companies}</i>
+                  </dd>
+                </dl>
+                <p>{bio}</p>
+                <Link href={`/mentors/${mentor.id}`}>
+                  Show details <ArrowUpRight size={14} />
                 </Link>
-              </aside>
-            </article>
-          ))}
+                <aside>
+                  <b>Instant lessons</b>
+                  <b>Mentorship</b>
+                  <b>Tutorials</b>
+                  <span>
+                    Starting from<strong>₹{price}</strong>per lesson
+                  </span>
+                  <Link className={styles.button} href={`/lessons/book?mentor=${mentor.id}`}>
+                    Book a lesson <ArrowUpRight size={16} />
+                  </Link>
+                </aside>
+              </article>
+            );
+          })}
         </div>
       </main>
     </AppShell>
@@ -195,9 +204,9 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
         <div className={styles.titleRow}>
           <PageTitle>{mentorDetail ? "Mentorship" : "Profile"}</PageTitle>
         </div>
-        {loading && <p className="data-state">Loading profile details…</p>}
-        {error && <p className="data-state" role="alert">{error}</p>}
-        {!loading && data && (
+        {loading && !data && <p className="data-state">Loading profile details…</p>}
+        {error && !data && <p className="data-state" role="alert">{error}</p>}
+        {(data || !loading) && (
           <>
             <section className={styles.profileName}>
               <Image src={avatar} alt={formattedName || "Profile Avatar"} width={100} height={100} />
