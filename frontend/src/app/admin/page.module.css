@@ -1,0 +1,9 @@
+.page { min-height: 100vh; padding: clamp(24px, 5vw, 72px); background: #f0f0f0; color: #111; }
+.page > header { display: flex; margin-bottom: 40px; align-items: center; justify-content: space-between; }
+.page h1 { font-size: clamp(32px, 5vw, 64px); }
+.page section { max-width: 1100px; margin: 24px auto; padding: 24px; border-radius: 20px; background: #fff; }
+.page article { display: flex; padding: 14px 0; gap: 12px; align-items: center; border-bottom: 1px solid #e5e5e5; }
+.page article span { display: grid; flex: 1; gap: 4px; }
+.page small { color: #666; }
+.page button { padding: 10px 16px; border: 0; border-radius: 999px; background: #a3d95d; font-weight: 800; cursor: pointer; }
+@media (max-width: 640px) { .page article { align-items: stretch; flex-direction: column; } }

@@ -69,3 +69,11 @@ Invalid transitions return `409`. A client cannot set a booking to `confirmed`; 
 | `409` | Duplicate operation or invalid lifecycle transition |
 | `422` | Request validation or referenced-input failure |
 | `503` | Database or external provider is not configured/available |
+# Connected workflow additions
+
+- `GET /me` returns the persisted profile, skills, and mentor approval details.
+- `GET|PATCH /mentor/profile` reads and updates the current mentor profile.
+- `GET /offers` and `POST /offers/{id}/status` support offer inbox/withdraw/reject flows.
+- `GET /reviews` and `GET /mentors/{id}/reviews` provide private and mentor feedback lists.
+- `GET /wallet/entries`, `GET /invoices`, and `POST /notifications/{id}/read` support account history.
+- `GET /admin/users`, `POST /admin/users/{id}/role`, and mentor decision endpoints require trusted admin app metadata and write audit events.

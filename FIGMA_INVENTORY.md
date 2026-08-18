@@ -12,6 +12,8 @@
 
 Responsive variants use one route per experience. Duplicate desktop frames in the flow boards are interaction states, not separate routes.
 
+Supporting production routes not represented as standalone Figma screens: `/auth/confirm`, `/forgot-password`, `/reset-password`, and protected `/admin`. These implement required authentication recovery and administration workflows without counting as additional Figma production screens.
+
 | # | Figma screen / canonical node | Route | Variants | Major sections / interactions | Build | Visual QA |
 |---|---|---|---|---|---|---|
 | 1 | Landing page `2280:14926` | `/` | 1728, 1024 `2280:27801`, 390 `2280:20928` | Marketing hero, outcomes, process, mentors, features, CTA, footer | Complete | Figma references inspected; rendered browser pass pending |

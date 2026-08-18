@@ -19,15 +19,11 @@ import {
   Banknote,
 } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
-import { createClient } from "@/lib/supabase/client";
+import { apiFetch } from "@/lib/api";
+import { createClient, publicAsset } from "@/lib/supabase/client";
+import type { Booking, Mentor, MentorProfile, Profile, Review } from "@/lib/types";
+import { useApi } from "@/lib/use-api";
 import styles from "./student-pages.module.css";
-
-const mentors = [
-  ["Kristin Watson", "mentor-1.png", "Google · Amazon", "200"],
-  ["Jacob M.", "mentor-2.png", "Netflix · IBM", "300"],
-  ["Michael T.", "mentor-3.png", "IITM · Goldman Sachs", "450"],
-  ["Emily R.", "mentor-4.png", "Freelance", "100"],
-] as const;
 
 export function StarRating({ rating = 5 }: { rating?: number }) {
   return (
@@ -68,6 +64,14 @@ export function PageTitle({ children, backHref }: { children: React.ReactNode; b
 }
 
 export function MentorDirectory() {
+  const { data, error, loading } = useApi<{ items: Mentor[] }>("/mentors");
+  const mentors = (data?.items ?? []).map((mentor, index) => [
+    `${mentor.first_name} ${mentor.last_name}`,
+    `mentor-${(index % 4) + 1}.png`,
+    mentor.companies.join(" · ") || mentor.headline || "Independent mentor",
+    (mentor.hourly_rate_minor / 100).toLocaleString(),
+    mentor.id,
+  ] as const);
   const filters = (
     <div className={styles.filters}>
       <h2>Category</h2>
@@ -106,8 +110,11 @@ export function MentorDirectory() {
         <PageTitle>Mentorship</PageTitle>
         <input className={styles.fullSearch} type="search" placeholder="Search mentors or topics" aria-label="Search mentors" />
         <div className={styles.mentorList}>
-          {mentors.map(([name, image, companies, price]) => (
-            <article className={styles.mentorCard} key={name}>
+          {loading && <p className="data-state">Loading mentors…</p>}
+          {error && <p className="data-state" role="alert">{error}</p>}
+          {!loading && !error && mentors.length === 0 && <p className="data-state">No approved mentors are available yet.</p>}
+          {mentors.map(([name, image, companies, price, id]) => (
+            <article className={styles.mentorCard} key={id}>
               <div className={styles.mentorBio}>
                 <Image src={`/assets/app/${image}`} alt="" width={76} height={76} />
                 <div>
@@ -134,7 +141,7 @@ export function MentorDirectory() {
                 </dd>
               </dl>
               <p>I have a Master degree in Art Education. Book a fully prepared lesson from someone with years of practical teaching experience.</p>
-              <Link href={`/mentors/${name.toLowerCase().replaceAll(" ", "-")}`}>
+              <Link href={`/mentors/${id}`}>
                 Show details <ArrowUpRight size={14} />
               </Link>
               <aside>
@@ -144,7 +151,7 @@ export function MentorDirectory() {
                 <span>
                   Starting from<strong>₹{price}</strong>per lesson
                 </span>
-                <Link className={styles.button} href="/lessons/book">
+                <Link className={styles.button} href={`/lessons/book?mentor=${id}`}>
                   Book a lesson <ArrowUpRight size={16} />
                 </Link>
               </aside>
@@ -164,8 +171,12 @@ const tabs = [
   ["Community", "/community"],
 ] as const;
 
-export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = false }: { mode?: "about" | "lessons" | "feedback"; mentorDetail?: boolean; mentorApp?: boolean }) {
+export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = false, mentorId }: { mode?: "about" | "lessons" | "feedback"; mentorDetail?: boolean; mentorApp?: boolean; mentorId?: string }) {
   const active = mentorDetail ? "/mentors" : mentorApp ? "/mentor/home" : "/dashboard/home";
+  const { data, error, loading } = useApi<Profile | Mentor>(mentorDetail && mentorId ? `/mentors/${mentorId}` : "/me");
+  const name = data ? `${data.first_name} ${data.last_name}` : "Profile";
+  const avatar = publicAsset("avatars", data?.avatar_path) ?? "/assets/app/mentor-1.png";
+  const mentor = data && "headline" in data ? data : data?.mentor;
   return (
     <AppShell active={active} mentor={mentorApp}>
       <main className={styles.main}>
@@ -177,17 +188,19 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
             </Link>
           )}
         </div>
+        {loading && <p className="data-state">Loading profile…</p>}
+        {error && <p className="data-state" role="alert">{error}</p>}
         <section className={styles.profileHero}>
           <Image src="/assets/app/profile-hero.png" alt="Kristin Watson at her desk" fill priority sizes="(max-width: 767px) 100vw, 75vw" />
         </section>
         <section className={styles.profileName}>
-          <Image src="/assets/app/mentor-1.png" alt="" width={112} height={112} />
+          <Image src={avatar} alt={name} width={112} height={112} />
           <div>
             <h2>
-              Kristin Watson <CheckCircle2 size={20} className={styles.checkIcon} />
+              {name} <CheckCircle2 size={20} className={styles.checkIcon} />
             </h2>
             <p>
-              <Crown size={16} /> <b>Top Tutor</b> UI/UX Designer
+              <Crown size={16} /> <b>{mentor ? "Verified mentor" : "Learner"}</b> {mentor?.headline}
             </p>
           </div>
           {mentorDetail && <Link className={styles.button} href="/chat">Message</Link>}
@@ -203,79 +216,82 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
             </Link>
           ))}
         </nav>
-        {mode === "about" ? <About /> : mode === "lessons" ? <Lessons /> : <Feedback />}
+        {mode === "about" ? <About profile={data} mentor={mentor} /> : mode === "lessons" ? <Lessons mentorId={mentorId} /> : <Feedback mentorId={mentorId} />}
       </main>
     </AppShell>
   );
 }
 
-function About() {
+function About({ profile, mentor }: { profile?: Profile | Mentor; mentor?: MentorProfile | Mentor | null }) {
   return (
     <section className={styles.profileGrid}>
       <article className={styles.whitePanel}>
         <dl className={styles.about}>
           <dt>Location & Local Time</dt>
           <dd>
-            <i>● Berlin, Germany, GMT+2</i>
+            <i>{profile && "location" in profile ? profile.location ?? "Not provided" : "Available online"}</i>
           </dd>
           <dt>Experience</dt>
-          <dd>8+ years</dd>
+          <dd>Not provided</dd>
           <dt>Skills</dt>
           <dd>
-            <i>UI/UX</i> <i>Graphic Design</i> <i>Front-End</i>
+            {(mentor?.professions ?? (profile && "skills" in profile ? profile.skills.map((skill) => skill.name) : [])).map((skill) => <i key={skill}>{skill}</i>)}
           </dd>
           <dt>About</dt>
-          <dd>I have Master degree in Art Education. If you book a lesson with me, you can expect a fully prepared lesson from someone who has decades of experience teaching art to all skill levels.</dd>
+          <dd>{mentor?.bio ?? (profile && "bio" in profile ? profile.bio : null) ?? "No biography has been added yet."}</dd>
           <dt>Speaks</dt>
           <dd>
-            <i>English</i> <i>Hindi</i>
+            {(mentor?.languages ?? []).map((language) => <i key={language}>{language}</i>)}
           </dd>
           <dt>Educational Institutes</dt>
-          <dd>Parul University</dd>
+          <dd>Not provided</dd>
           <dt>My teaching materials</dt>
-          <dd>
-            <i>PDF file</i> <i>Presentation slides/PPT</i> <i>Audio File</i> <i>Video File</i>
-          </dd>
+          <dd>Not provided</dd>
         </dl>
       </article>
       <aside className={styles.whitePanel}>
         <h3>Very reliable</h3>
-        <b>100% attendance rate</b>
+        <b>Verified platform profile</b>
         <hr />
         <p>
-          Completed lectures <strong>43</strong>
+          Completed lectures <strong>—</strong>
         </p>
         <p>
-          Tutoring Since <strong>Mar, 2020</strong>
+          Tutoring Since <strong>Not available</strong>
         </p>
         <p>
-          On Upskillink since <strong>Apr, 2018</strong>
+          On Upskillink since <strong>Not available</strong>
         </p>
       </aside>
     </section>
   );
 }
 
-function Lessons() {
+function Lessons({ mentorId }: { mentorId?: string }) {
+  const { data, error, loading, reload } = useApi<{ items: Booking[] }>("/bookings");
+  const bookings = (data?.items ?? []).filter((booking) => !mentorId || booking.mentor_id === mentorId);
+  async function review(booking: Booking) {
+    const rating = Number(window.prompt("Rating from 1 to 5"));
+    if (!Number.isInteger(rating) || rating < 1 || rating > 5) return;
+    const comment = window.prompt("Feedback (optional)");
+    try {
+      await apiFetch(`/bookings/${booking.id}/reviews`, { method: "POST", body: JSON.stringify({ rating, comment }) });
+      await reload();
+    } catch (reason) {
+      window.alert(reason instanceof Error ? reason.message : "Unable to save review");
+    }
+  }
   return (
     <section className={styles.profileGrid}>
       <article className={styles.whitePanel}>
-        <p className={styles.green}>Skill Level: Beginner</p>
-        <h2>Master the basics of Figma and Auto layout</h2>
-        <p>Subject <b>UI/UX</b></p>
-        <p>Category <b>Design</b></p>
-        <p>Dive into the world of advanced UI/UX design with our comprehensive guide on mastering Figma and its powerful Auto Layout feature.</p>
-        <h3>What you&apos;ll learn</h3>
-        <p>Build flexible, responsive designs that adapt seamlessly to any screen size.</p>
-        <footer>
-          <Clock size={16} /> 45 mins Language: English <Link href="/lessons/book">Book</Link>
-        </footer>
+        {loading && <p className="data-state">Loading lessons…</p>}
+        {error && <p className="data-state" role="alert">{error}</p>}
+        {!loading && !error && bookings.length === 0 && <p className="data-state">No lessons yet.</p>}
+        {bookings.map((booking) => <div className={styles.review} key={booking.id}><Clock size={20} /><p><b>Mentoring session</b><br />{new Date(booking.starts_at).toLocaleString()} · {booking.status.replaceAll("_", " ")}</p>{booking.status === "completed" && !mentorId && <button type="button" onClick={() => void review(booking)}>Leave review</button>}</div>)}
       </article>
       <aside className={styles.whitePanel}>
         <h2>Start learning now</h2>
-        <p>🚀 Instant tutoring available</p>
-        <p>⚗ Trial lesson available</p>
-        <p>₹ 100% Money Back Guarantee</p>
+        <p>Choose an approved mentor and request a time that works for you.</p>
         <Link className={styles.primary} href="/lessons/book">
           Book a lesson <ArrowUpRight size={16} />
         </Link>
@@ -284,25 +300,31 @@ function Lessons() {
   );
 }
 
-function Feedback() {
+function Feedback({ mentorId }: { mentorId?: string }) {
+  const { data, error, loading } = useApi<{ items: Review[] }>(mentorId ? `/mentors/${mentorId}/reviews` : "/reviews");
+  const reviews = data?.items ?? [];
+  const average = reviews.length ? reviews.reduce((total, review) => total + review.rating, 0) / reviews.length : 0;
   return (
     <section className={styles.profileGrid}>
       <article className={styles.whitePanel}>
-        {mentors.concat(mentors.slice(0, 2)).map(([name, image], i) => (
-          <div className={styles.review} key={`${name}${i}`}>
-            <Image src={`/assets/app/${image}`} alt="" width={52} height={52} />
+        {loading && <p className="data-state">Loading reviews…</p>}
+        {error && <p className="data-state" role="alert">{error}</p>}
+        {!loading && !error && reviews.length === 0 && <p className="data-state">No reviews yet.</p>}
+        {reviews.map((review, i) => (
+          <div className={styles.review} key={review.id}>
+            <Image src={`/assets/app/mentor-${(i % 4) + 1}.png`} alt="" width={52} height={52} />
             <p>
-              <b>{name}</b>
-              <StarRating rating={5} />
+              <b>Learner review</b>
+              <StarRating rating={review.rating} />
               <br />
-              This course took my design skills to the next level! The hands-on approach made my workflow smoother and more efficient.
+              {review.comment ?? "No written feedback."}
             </p>
           </div>
         ))}
       </article>
       <aside className={styles.whitePanel}>
         <h2>
-          32 Reviews <b>4.7</b>
+          {reviews.length} Reviews <b>{average.toFixed(1)}</b>
         </h2>
         <p className={styles.stars}><StarRating rating={5} /></p>
         <p>5 Stars ━━━━</p>
@@ -314,38 +336,34 @@ function Feedback() {
 }
 
 export function DashboardPage() {
-  const leaders = ["Charlie Rawal", "Ariana Agarwal", "Bhubnesh Maharana", "Kiran", "Jacob M."];
+  const { data: dashboard } = useApi<{ completed_bookings: number; active_courses: number }>("/dashboard/student");
+  const { data: wallet } = useApi<{ currency: string; balance_minor: number }>("/wallet");
   return (
     <AppShell active="/dashboard">
       <main className={styles.main}>
         <PageTitle>Statistics</PageTitle>
         <section className={styles.stats}>
           <div>
-            <Banknote size={24} color="var(--lime)" /> <b>₹ 10,000</b>
-            <span>Total Earning</span>
+            <Banknote size={24} color="var(--lime)" /> <b>{wallet?.currency ?? "INR"} {((wallet?.balance_minor ?? 0) / 100).toLocaleString()}</b>
+            <span>Wallet balance</span>
           </div>
           <div>
-            <Clock size={24} color="var(--lime)" /> <b>240 hrs</b>
-            <span>Total Teaching</span>
+            <Clock size={24} color="var(--lime)" /> <b>{dashboard?.active_courses ?? 0}</b>
+            <span>Active courses</span>
           </div>
           <div>
-            <BookOpen size={24} color="var(--lime)" /> <b>12</b>
-            <span>Total lessons</span>
+            <BookOpen size={24} color="var(--lime)" /> <b>{dashboard?.completed_bookings ?? 0}</b>
+            <span>Completed lessons</span>
           </div>
         </section>
         <section className={styles.dashboardGrid}>
           <article className={styles.whitePanel}>
             <h2>Hours Spent</h2>
-            <div className={styles.chart}>
-              {[65, 40, 72, 50, 25, 76, 70].map((height, i) => (
-                <i style={{ height: `${height}%` }} key={i}></i>
-              ))}
-            </div>
-            <div className={styles.months}>Jan Feb Mar Apr May Jun Jul</div>
+            <p className="data-state">Detailed activity analytics appear as lessons are completed.</p>
           </article>
           <aside className={styles.credit}>
             <h2>Available Credit</h2>
-            <strong>₹2,350</strong>
+            <strong>{wallet?.currency ?? "INR"} {((wallet?.balance_minor ?? 0) / 100).toLocaleString()}</strong>
             <p>Your current balance</p>
             <Link href="/payment">
               Add Credits <ArrowUpRight size={16} />
@@ -353,20 +371,12 @@ export function DashboardPage() {
           </aside>
           <article className={styles.whitePanel}>
             <h2>Leader Board</h2>
-            <ol>
-              {leaders.map((name, i) => (
-                <li key={name}>
-                  <span>{i + 1}</span>
-                  {name}
-                  <b>{(13.45 - i).toFixed(3)}</b>
-                </li>
-              ))}
-            </ol>
+            <p className="data-state">Leaderboard data is not available yet.</p>
           </article>
           <aside className={styles.score}>
             <h2>Credit score</h2>
-            <strong>821</strong>
-            <p>Your Reputation Points</p>
+            <strong>0</strong>
+            <p>Reputation points</p>
           </aside>
         </section>
       </main>
@@ -376,6 +386,15 @@ export function DashboardPage() {
 
 export function SettingsPage() {
   const router = useRouter();
+  type Settings = { notify_activity: boolean; weekly_digest: boolean; notify_collaborations: boolean; theme: "light" | "dark" | "system" };
+  const { data: settings, error, reload } = useApi<Settings>("/me/settings");
+  const { data: profile } = useApi<Profile>("/me");
+
+  async function save(values: Partial<Settings>) {
+    const current = settings ?? { notify_activity: true, weekly_digest: true, notify_collaborations: true, theme: "system" as const };
+    await apiFetch("/me/settings", { method: "PUT", body: JSON.stringify({ ...current, ...values }) });
+    await reload();
+  }
 
   async function logout() {
     await createClient().auth.signOut();
@@ -384,21 +403,22 @@ export function SettingsPage() {
   }
 
   return (
-    <AppShell active="/settings">
+    <AppShell active="/settings" mentor={profile?.role === "mentor"}>
       <main className={styles.main}>
         <PageTitle>Setting</PageTitle>
+        {error && <p className="data-state" role="alert">{error}</p>}
         <section className={styles.settings}>
           {[
-            ["Notify on updates and activity", "you’ll be notified when anyone accepts your request"],
-            ["Send weekly digest", "a weekly update on changes and more"],
-            ["Collaborations", "Receive notifications about what’s happening"],
-          ].map(([title, copy]) => (
+            ["Notify on updates and activity", "you’ll be notified when anyone accepts your request", "notify_activity"],
+            ["Send weekly digest", "a weekly update on changes and more", "weekly_digest"],
+            ["Collaborations", "Receive notifications about what’s happening", "notify_collaborations"],
+          ].map(([title, copy, key]) => (
             <label key={title}>
               <span>
                 <b>{title}</b>
                 <small>{copy}</small>
               </span>
-              <input type="checkbox" defaultChecked />
+              <input type="checkbox" checked={settings?.[key as keyof Pick<Settings, "notify_activity" | "weekly_digest" | "notify_collaborations">] ?? true} onChange={(event) => void save({ [key]: event.target.checked })} />
             </label>
           ))}
           <Link href="/referrals">
@@ -427,13 +447,13 @@ export function SettingsPage() {
           <h2>Theme</h2>
           <p>Colour Mode</p>
           <div className={styles.theme}>
-            <button type="button">
+            <button type="button" onClick={() => void save({ theme: "light" })} aria-pressed={settings?.theme === "light"}>
               <Sun size={16} /> Light mode
             </button>
-            <button type="button">
+            <button type="button" onClick={() => void save({ theme: "dark" })} aria-pressed={settings?.theme === "dark"}>
               <Moon size={16} /> Dark mode
             </button>
-            <button type="button">
+            <button type="button" onClick={() => void save({ theme: "system" })} aria-pressed={settings?.theme === "system"}>
               <Monitor size={16} /> System
             </button>
           </div>

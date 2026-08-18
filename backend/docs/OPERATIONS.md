@@ -20,6 +20,12 @@ npm run dev
 
 Set Supabase Auth Site URL to the frontend origin and add `http://localhost:3000/auth/confirm` as a development redirect URL. Use a custom SMTP provider before relying on production verification email delivery.
 
+The frontend also requires `NEXT_PUBLIC_SITE_URL`. Supabase redirect allowlists must contain the exact `/auth/confirm` URL for each environment. Password recovery, signup confirmation, and email resend use Supabase Auth; configure production SMTP in **Supabase Dashboard → Authentication → SMTP Settings**.
+
+## First administrator
+
+Application users cannot grant themselves admin access. Bootstrap the first administrator by setting trusted Auth `app_metadata.role` to `admin` with the Supabase Dashboard or an authenticated server-side Admin API call. Never put `admin` in user metadata and never expose a secret/service-role key to the frontend. The administrator can then use `/admin` to approve mentors and change persisted student/mentor roles; admin elevation remains an infrastructure operation.
+
 ## Environment separation
 
 - Use separate Supabase projects for development, automated integration testing, staging, and production.
@@ -77,6 +83,8 @@ Hosted validation additionally requires applying the migration, running test que
 - Deploy the Next.js application with matching public environment values.
 - Gate traffic on `/health/ready`; use `/health/live` for process restarts.
 - Keep database connection counts within the selected Supabase plan limits.
+
+Provider-neutral Dockerfiles are included in `frontend/` and `backend/`. Public Next.js variables are build-time arguments and must be supplied during the frontend image build. Backend secrets are runtime-only environment variables. The frontend image uses Next.js standalone output; the backend image uses the pinned `uv.lock` environment and exposes `/health/live` and `/health/ready`.
 
 ## Backup and recovery
 

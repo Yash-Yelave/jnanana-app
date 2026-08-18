@@ -24,6 +24,8 @@ cd frontend
 npm install
 ```
 
+Copy `.env.example` to `.env.local` and set the Supabase project URL, publishable key, FastAPI URL, and site URL. Only the publishable key belongs in the frontend; never use the Supabase secret/service-role key here.
+
 ### 3. Run Development Server
 Start the Next.js local development server:
 ```bash
@@ -76,3 +78,11 @@ Once the dev server is running (`npm run dev`), you can test any of the 28 route
 - **Mentor Portal Home**: `http://localhost:3000/mentor/home`
 - **Mentor Bookings**: `http://localhost:3000/mentor/bookings`
 - **Mentor Dashboard**: `http://localhost:3000/mentor/dashboard`
+- **Password recovery**: `http://localhost:3000/forgot-password`
+- **Administration**: `http://localhost:3000/admin` (trusted admin app metadata required)
+
+Authenticated pages call FastAPI with the Supabase access token. Student, mentor, pending-approval, and administrator routes are separated by the persisted profile role and trusted Auth app metadata. Payments and video meetings remain visibly unavailable until secure providers are configured.
+
+## Containers
+
+Both applications include provider-neutral Dockerfiles. The frontend `NEXT_PUBLIC_*` values are frozen at build time; pass them as build arguments. Supply backend database/Auth/CORS settings only at runtime. Deploy FastAPI near the Supabase database region and route public HTTPS traffic to the two services.

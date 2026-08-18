@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import {
   ArrowUpRight,
   ArrowRight,
@@ -15,9 +15,10 @@ import {
 import { AppShell } from "@/components/app-shell";
 import { Brand } from "@/components/brand";
 import { PageTitle, ProfileView, StarRating } from "@/components/student-pages";
+import { apiFetch } from "@/lib/api";
+import type { Booking, LessonRequest, Mentor } from "@/lib/types";
+import { useApi } from "@/lib/use-api";
 import styles from "./mentor-pages.module.css";
-
-const lessons = ["Front End with React : Basics", "Node.js for backend", "Basics Of JavaScript", "UI Design Systems"];
 
 export function MentorMarketingPage() {
   return (
@@ -95,6 +96,9 @@ export function MentorMarketingPage() {
 }
 
 export function MentorHomePage() {
+  const { data: requestData, error } = useApi<{ items: LessonRequest[] }>("/lesson-requests");
+  const { data: mentorData } = useApi<{ items: Mentor[] }>("/mentors?limit=4");
+  const { data: bookingData } = useApi<{ items: Booking[] }>("/bookings");
   return (
     <AppShell active="/mentor/home" mentor>
       <main className={styles.main}>
@@ -112,42 +116,34 @@ export function MentorHomePage() {
         <section className={styles.homeGrid}>
           <article className={styles.panel}>
             <h2>Lesson Requests</h2>
-            {lessons.concat(lessons.slice(0, 2)).map((name, i) => (
-              <Link href="/mentor/bookings" key={`${name}${i}`}>
+            {error && <p className="data-state" role="alert">{error}</p>}
+            {requestData?.items.length === 0 && <p className="data-state">No open lesson requests.</p>}
+            {requestData?.items.slice(0, 6).map((request) => (
+              <Link href="/mentor/bookings" key={request.id}>
                 <span className={styles.timeDot}><Clock size={16} /></span>
                 <b>
-                  {name}
-                  <small>{["08:00 - 10:00", "12:00 - 14:00", "18:00 - 19:00"][i % 3]}</small>
+                  {request.title}
+                  <small>{new Date(request.requested_start).toLocaleString()}</small>
                 </b>
-                <strong>₹ {i % 2 ? "75" : "300"}</strong>
+                <strong>{request.currency} {(request.proposed_amount_minor / 100).toLocaleString()}</strong>
               </Link>
             ))}
           </article>
           <aside className={styles.panel}>
             <h2>Schedule</h2>
-            <p>
-              Mon Tue Wed <b>Thu</b> Fri
-            </p>
-            <article>
-              <b>Basics Of JavaScript</b>
-              <small>March 24 at 4:00 PM</small>
-              <Link href="/meeting">View</Link>
-            </article>
-            <article>
-              <b>Backend With Django</b>
-              <small>March 25 at 4:00 PM</small>
-            </article>
+            {bookingData?.items.slice(0, 3).map((booking) => <article key={booking.id}><b>Mentoring session</b><small>{new Date(booking.starts_at).toLocaleString()}</small>{booking.status === "confirmed" && <Link href="/meeting">View</Link>}</article>)}
+            {bookingData?.items.length === 0 && <p className="data-state">No scheduled lessons.</p>}
           </aside>
         </section>
 
         <section className={styles.panel}>
           <h2>Top Mentors</h2>
           <div className={styles.people}>
-            {[1, 2, 3, 4].map((i) => (
-              <span key={i}>
-                <Image src={`/assets/app/mentor-${i}.png`} alt="" width={55} height={55} />
+            {mentorData?.items.map((mentor, index) => (
+              <span key={mentor.id}>
+                <Image src={`/assets/app/mentor-${(index % 4) + 1}.png`} alt={`${mentor.first_name} ${mentor.last_name}`} width={55} height={55} />
                 <b>
-                  Kristin Watson<small>Top Tutor</small>
+                  {mentor.first_name} {mentor.last_name}<small>{mentor.headline ?? "Verified mentor"}</small>
                 </b>
               </span>
             ))}
@@ -160,34 +156,50 @@ export function MentorHomePage() {
 
 export function MentorBookingsPage() {
   const [bid, setBid] = useState(false);
+  const [error, setError] = useState("");
+  const { data, reload } = useApi<{ items: LessonRequest[] }>("/lesson-requests");
+  const request = data?.items[0];
+
+  async function makeOffer(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!request) return;
+    const form = new FormData(event.currentTarget);
+    try {
+      await apiFetch(`/lesson-requests/${request.id}/offers`, { method: "POST", body: JSON.stringify({ amount_minor: Number(form.get("amount")) * 100, currency: request.currency, note: form.get("note") }) });
+      setBid(false);
+      await reload();
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "Unable to create offer");
+    }
+  }
   return (
     <AppShell active="/mentor/bookings" mentor>
       <main className={styles.main}>
         <PageTitle>Accept Lesson</PageTitle>
+        {!request && data && <p className="data-state">No open lesson requests.</p>}
+        {error && <p className="data-state" role="alert">{error}</p>}
         <section className={styles.booking}>
           <article className={styles.panel}>
-            <h2>Node.js For Backend</h2>
+            <h2>{request?.title ?? "Lesson request"}</h2>
             <p className={styles.metaRow}>
-              <Calendar size={16} /> 9 April 2020 &nbsp;&nbsp;&nbsp;&nbsp;
-              <Clock size={16} /> 12.00 - 14.00
+              <Calendar size={16} /> {request ? new Date(request.requested_start).toLocaleDateString() : "—"} &nbsp;&nbsp;&nbsp;&nbsp;
+              <Clock size={16} /> {request ? new Date(request.requested_start).toLocaleTimeString() : "—"}
             </p>
             <div>
               <h3>Description</h3>
-              <p>I want to learn the fundamentals of JavaScript for web development. I’m interested in variables, data types, control structures, functions and loops.</p>
+              <p>{request?.description ?? "Select an open request to see its description."}</p>
             </div>
             <div>
               <h3>Tags</h3>
               <p>
-                {["JS", "Coding", "Loops", "Programming", "Variables", "Functions", "Basics", "Interactive", "DataTypes", "Web"].map((x) => (
-                  <b key={x}>{x}</b>
-                ))}
+                <b>{request?.status ?? "open"}</b>
               </p>
             </div>
             <h2>Resources</h2>
             <label className={styles.upload}>
               <UploadCloud size={32} />
-              <input type="file" />
-              Click to upload or drag and drop
+              <input type="file" disabled />
+              Resources become available after a booking is confirmed
               <br />
               SVG, PNG, JPG or GIF
             </label>
@@ -196,41 +208,30 @@ export function MentorBookingsPage() {
           <aside className={styles.panel}>
             <h2>Bill</h2>
             <p>
-              Live Lesson <b>₹300</b>
+              Live Lesson <b>{request?.currency ?? "INR"} {((request?.proposed_amount_minor ?? 0) / 100).toLocaleString()}</b>
             </p>
             <p>
-              Platform Fees <b>-₹20</b>
+              Platform Fees <b>Calculated after payment setup</b>
             </p>
             <hr />
-            <strong>Total ₹400</strong>
-            <textarea placeholder="Feedback" />
+            <strong>Total {request?.currency ?? "INR"} {((request?.proposed_amount_minor ?? 0) / 100).toLocaleString()}</strong>
             <div>
-              <button className="button button-secondary" type="button" onClick={() => setBid(true)}>
-                Counter Bid
-              </button>
-              <Link className="button button-primary" href="/meeting">
-                Accept <ArrowRight size={16} />
-              </Link>
+              <button className="button button-primary" type="button" disabled={!request} onClick={() => setBid(true)}>Make offer <ArrowRight size={16} /></button>
             </div>
           </aside>
         </section>
 
         {bid && (
           <div className={styles.modal} role="dialog" aria-modal="true" aria-labelledby="bid-title">
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                setBid(false);
-              }}
-            >
+            <form onSubmit={makeOffer}>
               <h2 id="bid-title">Make a counter offer</h2>
               <label>
                 New Bid
-                <input type="number" defaultValue="400" min="1" />
+                <input name="amount" type="number" defaultValue={(request?.proposed_amount_minor ?? 0) / 100} min="0" required />
               </label>
               <label>
                 Feedback
-                <textarea defaultValue="The topic requires additional time and preparation." />
+                <textarea name="note" defaultValue="The topic requires additional time and preparation." />
               </label>
               <button className="button button-primary">Offer</button>
               <button className="button button-secondary" type="button" onClick={() => setBid(false)}>
@@ -245,6 +246,14 @@ export function MentorBookingsPage() {
 }
 
 export function MentorLessonsPage() {
+  const { data, error, reload } = useApi<{ items: Booking[] }>("/bookings");
+  const lessonItems = data?.items ?? [];
+  async function updateStatus(booking: Booking, status: "in_progress" | "completed") {
+    try {
+      await apiFetch(`/bookings/${booking.id}/status`, { method: "POST", body: JSON.stringify({ status }) });
+      await reload();
+    } catch (reason) { window.alert(reason instanceof Error ? reason.message : "Unable to update lesson"); }
+  }
   return (
     <AppShell active="/mentor/lessons" mentor>
       <main className={styles.main}>
@@ -255,20 +264,24 @@ export function MentorLessonsPage() {
           <span>Drafts</span>
         </nav>
         <section className={styles.lessonList}>
-          {lessons.map((name, i) => (
-            <article className={styles.panel} key={name}>
+          {error && <p className="data-state" role="alert">{error}</p>}
+          {lessonItems.length === 0 && data && <p className="data-state">No booked lessons yet.</p>}
+          {lessonItems.map((booking, i) => (
+            <article className={styles.panel} key={booking.id}>
               <Image src={`/assets/app/course-${["design", "css", "data", "design"][i]}.png`} alt="" width={220} height={160} />
               <div>
-                <small>{i < 2 ? "UPCOMING" : "COMPLETED"}</small>
-                <h2>{name}</h2>
+                <small>{booking.status.replaceAll("_", " ")}</small>
+                <h2>Mentoring session</h2>
                 <p>
-                  12 Lessons &nbsp;&nbsp; <Clock size={15} /> 1h 14m
+                  <Clock size={15} /> {new Date(booking.starts_at).toLocaleString()}
                 </p>
                 <p>Student: Bhubnesh Maharana</p>
               </div>
-              <Link className="button button-primary" href={i < 2 ? "/meeting" : "/mentor/bookings"}>
-                {i < 2 ? "Start class" : "View details"} <ArrowRight size={16} />
+              <Link className="button button-primary" href={booking.status === "confirmed" ? "/meeting" : "/mentor/bookings"}>
+                {booking.status === "confirmed" ? "Start class" : "View details"} <ArrowRight size={16} />
               </Link>
+              {booking.status === "confirmed" && <button className="button button-secondary" type="button" onClick={() => void updateStatus(booking, "in_progress")}>Mark started</button>}
+              {booking.status === "in_progress" && <button className="button button-primary" type="button" onClick={() => void updateStatus(booking, "completed")}>Mark completed</button>}
             </article>
           ))}
         </section>
@@ -282,35 +295,31 @@ export function MentorProfilePage() {
 }
 
 export function MentorDashboardPage() {
-  const leaders = ["Charlie Rawal", "Ariana Agarwal", "Bhubnesh Maharana", "Kiran"];
+  const { data: dashboard } = useApi<{ completed_bookings: number; earnings_minor: number }>("/dashboard/mentor");
+  const { data: wallet } = useApi<{ currency: string; balance_minor: number }>("/wallet");
   return (
     <AppShell active="/mentor/dashboard" mentor>
       <main className={styles.main}>
         <PageTitle>Dashboard</PageTitle>
         <section className={styles.summary}>
           <div>
-            <Banknote size={24} color="var(--lime)" /> ₹10,000<small>Total Earning</small>
+            <Banknote size={24} color="var(--lime)" /> INR {((dashboard?.earnings_minor ?? 0) / 100).toLocaleString()}<small>Total Earning</small>
           </div>
           <div>
-            <Clock size={24} color="var(--lime)" /> 240 hrs<small>Total Teaching</small>
+            <Clock size={24} color="var(--lime)" /> {dashboard?.completed_bookings ?? 0}<small>Completed sessions</small>
           </div>
           <div>
-            <BookOpen size={24} color="var(--lime)" /> 12<small>Total lessons</small>
+            <BookOpen size={24} color="var(--lime)" /> {dashboard?.completed_bookings ?? 0}<small>Total lessons</small>
           </div>
         </section>
         <section className={styles.dashboard}>
           <article className={styles.panel}>
             <h2>Hours Sent</h2>
-            <div className={styles.bars}>
-              {[65, 40, 72, 50, 25, 76, 70].map((h, i) => (
-                <i style={{ height: `${h}%` }} key={i} />
-              ))}
-            </div>
-            <p>Jan Feb Mar Apr May Jun Jul</p>
+            <p className="data-state">Detailed activity analytics appear as lessons are completed.</p>
           </article>
           <aside className={styles.panel}>
             <h2>Available Credit</h2>
-            <strong>₹2,350</strong>
+            <strong>{wallet?.currency ?? "INR"} {((wallet?.balance_minor ?? 0) / 100).toLocaleString()}</strong>
             <p>Your current balance</p>
             <Link className="button button-primary" href="/payment">
               Add Credits <ArrowUpRight size={16} />
@@ -318,18 +327,12 @@ export function MentorDashboardPage() {
           </aside>
           <article className={styles.panel}>
             <h2>Leader Board</h2>
-            {leaders.map((x, i) => (
-              <p className={styles.leader} key={x}>
-                <b>{i + 1}</b>
-                {x}
-                <strong>{13 - i}.450</strong>
-              </p>
-            ))}
+            <p className="data-state">Leaderboard data is not available yet.</p>
           </article>
           <aside className={styles.panel}>
             <h2>Credit score</h2>
-            <strong className={styles.score}>821</strong>
-            <p>Your Reputation Points</p>
+            <strong className={styles.score}>0</strong>
+            <p>Reputation points</p>
           </aside>
         </section>
       </main>

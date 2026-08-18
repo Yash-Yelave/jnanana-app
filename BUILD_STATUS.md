@@ -2,7 +2,7 @@
 
 ## Current phase
 
-`Production integration — authentication and role routing complete; dynamic workflows in progress`
+`Production integration complete — final commits blocked by the environment Git-approval limit`
 
 ## Repository
 
@@ -24,7 +24,7 @@
 ## Routes
 
 - Completed: All 28 production routes
-- In progress: Replacing authenticated fixture content with FastAPI/Supabase data
+- In progress: Final milestone commits
 - Not started: None
 
 ## Shared components
@@ -39,6 +39,7 @@
 - Responsive login, onboarding form, skill selector, role selector and waiting-state patterns
 - Mentor cards/directory, profile tabs, calendar/booking, settings, statistics, payment tables, chat and meeting layouts
 - Mentor marketing, home, lesson booking/counter-bid, lesson management, profile and dashboard layouts
+- Shared authenticated API loader, persisted-role routing, avatar Storage upload, honest loading/error/empty states, and protected administration dashboard
 
 ## Known visual mismatches
 
@@ -49,7 +50,7 @@
 
 - Landing assets are complete and stored locally; no temporary Figma URLs are used.
 - Exact Figma fonts are configured through Next.js font loading.
-- Remaining application assets will be extracted from the user-provided full-resolution board exports as each route is implemented.
+- No known missing production assets.
 
 ## Deferred external integrations
 
@@ -60,7 +61,7 @@
 ## Quality gates
 
 - Browser console: Pending; browser backend unavailable
-- HTTP route smoke test: Pass — all 28 routes returned HTTP 200 from the production server
+- HTTP route smoke test: Pass — public/auth routes return 200; student, mentor, and admin routes redirect unauthenticated requests to login
 - Accessibility pass: Semantic/keyboard code review complete; rendered pass pending
 - Responsive pass: CSS implemented at 1440, 1280, 1024, 768, 390 and 360 anchors; rendered pass pending
 - Lint: Pass
@@ -70,18 +71,18 @@
 
 ## Next action
 
-Complete missing backend workflow endpoints, connect the remaining authenticated route data/actions, then run browser QA.
+Commit the completed workflow/deployment changes when Git write approval is available, then configure custom SMTP/payment/video providers and run signed-in browser QA when a browser backend is available.
 
 ## Backend implementation
 
-- Current phase: Backend foundation is live on hosted Supabase; workflow expansion in progress
+- Current phase: Backend and connected frontend workflows complete
 - Architecture: FastAPI under `backend/`, Supabase PostgreSQL/Auth/Storage/Realtime
 - Supabase connection: Hosted PostgreSQL connection and readiness check pass
 - Database schema: Initial migration applied; 32 public tables, RLS policies, Storage buckets, Realtime publication, auth trigger, and seed data verified
 - Backend APIs: Accounts, persisted role administration/audit, mentor approval/profile, availability, bookings/offers/reviews, courses, community/chat, subscriptions, invoices, notifications, referrals, wallet, dashboards, and provider boundaries complete
-- Frontend integration: Validated Supabase configuration, JWT API forwarding, role-aware session proxy, login, signup/onboarding, email confirmation/resend, password recovery, logout, community membership, and Realtime chat complete
-- Frontend lint/typecheck/build: Pass / Pass / Pass (33 generated routes including auth flows)
+- Frontend integration: Auth, persisted roles, mentor approval/admin, profiles/avatar Storage, discovery, lesson requests/offers/bookings/reviews, courses/plans, settings, community/chat, wallet/invoices/referrals, dashboards, loading/error/empty states, and explicit provider-disabled states complete
+- Frontend lint/typecheck/build: Pass / Pass / Pass (34 generated routes including auth/admin support routes)
 - Backend lint/typecheck/tests: Pass / Pass / Pass (4 tests)
 - Backend documentation: Complete (architecture, database/RLS, API, operations, and project overview)
 - External providers: Payment, transactional email delivery, and hosted video intentionally unconfigured; endpoints fail explicitly
-- Remaining gate: Complete dynamic product workflows, configure production SMTP/payment/video providers, and run end-to-end browser QA
+- Remaining gate: Configure production SMTP/payment/video providers and run signed-in end-to-end browser QA; Dockerfiles are present but Docker is unavailable locally for image-build verification

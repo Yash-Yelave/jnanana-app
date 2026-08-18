@@ -1,2 +1,5 @@
 import { SchedulePage } from "@/components/utility-pages";
-export default function BookLessonPage(){ return <SchedulePage booking/>; }
+export default async function BookLessonPage({ searchParams }: { searchParams: Promise<{ mentor?: string }> }) {
+  const { mentor } = await searchParams;
+  return <SchedulePage booking mentorId={mentor}/>;
+}

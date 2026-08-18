@@ -46,3 +46,12 @@ Do not add Next.js API routes that merely proxy FastAPI. Add a server action/rou
 Payment checkout and hosted meeting creation currently return `503 integration_not_configured`. Preserve that failure until a provider is implemented and verified; UI navigation alone is never proof of payment or meeting authorization.
 
 See [backend API documentation](../../backend/docs/API.md) and [operations](../../backend/docs/OPERATIONS.md).
+# Production integration status
+
+- Supabase Auth: signup, confirmation, resend, login, logout, password recovery, and SSR cookie refresh are connected.
+- Supabase PostgreSQL: FastAPI owns business workflows and validates every bearer token.
+- Supabase Storage: avatar uploads use the `avatars` bucket and per-user folder policies.
+- Supabase Realtime: conversation messages subscribe to Postgres changes.
+- Roles: student/mentor roles are persisted in `profiles`; admin authority comes only from trusted Auth app metadata.
+- Payment and video: intentionally disabled until providers with server-side verification are configured.
+- Email: Supabase Auth is the delivery boundary; production requires custom SMTP and exact redirect allowlists.

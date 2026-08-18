@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import {
   ChevronLeft,
   ChevronRight,
@@ -27,7 +27,9 @@ import {
 import { AppShell } from "@/components/app-shell";
 import { PageTitle } from "@/components/student-pages";
 import { apiFetch } from "@/lib/api";
-import { createClient } from "@/lib/supabase/client";
+import { createClient, publicAsset } from "@/lib/supabase/client";
+import type { Booking, Offer, Plan, Profile, Skill } from "@/lib/types";
+import { useApi } from "@/lib/use-api";
 import styles from "./utility-pages.module.css";
 
 const days = Array.from({ length: 31 }, (_, i) => i + 1);
@@ -54,8 +56,51 @@ type ChatMessage = {
   created_at: string;
 };
 
-export function SchedulePage({ booking = false }: { booking?: boolean }) {
+export function SchedulePage({ booking = false, mentorId }: { booking?: boolean; mentorId?: string }) {
   const [day, setDay] = useState(19);
+  const router = useRouter();
+  const { data: skills } = useApi<Skill[]>("/skills");
+  const { data: bookingData, reload } = useApi<{ items: Booking[] }>("/bookings");
+  const offers = useApi<{ items: Offer[] }>("/offers");
+  const [error, setError] = useState("");
+
+  async function requestLesson(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+    const start = new Date(`${data.get("date")}T${data.get("time")}`);
+    try {
+      await apiFetch("/lesson-requests", {
+        method: "POST",
+        body: JSON.stringify({
+          preferred_mentor_id: mentorId ?? null,
+          skill_id: data.get("skill_id") || null,
+          title: data.get("title"),
+          description: data.get("description"),
+          requested_start: start.toISOString(),
+          requested_end: new Date(start.getTime() + 60 * 60 * 1000).toISOString(),
+          proposed_amount_minor: Number(data.get("amount")) * 100,
+          currency: "INR",
+        }),
+      });
+      await reload();
+      router.push("/schedule");
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "Unable to request lesson");
+    }
+  }
+
+  async function updateOffer(offer: Offer, accept: boolean) {
+    try {
+      if (accept) {
+        await apiFetch(`/offers/${offer.id}/accept`, { method: "POST", headers: { "Idempotency-Key": crypto.randomUUID() } });
+      } else {
+        await apiFetch(`/offers/${offer.id}/status`, { method: "POST", body: JSON.stringify({ status: "rejected" }) });
+      }
+      await Promise.all([reload(), offers.reload()]);
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "Unable to update offer");
+    }
+  }
   return (
     <AppShell active="/mentors">
       <main className={styles.main}>
@@ -89,22 +134,25 @@ export function SchedulePage({ booking = false }: { booking?: boolean }) {
             </div>
           </article>
           <aside>
+            <form onSubmit={requestLesson}>
             <h2>Availability</h2>
+            {booking && <><label>Lesson title<input required name="title" minLength={3} placeholder="What do you want to learn?" /></label><label>Description<textarea required name="description" minLength={10} placeholder="Describe your learning goal" /></label></>}
             <label>
               Category
-              <select>
-                <option>UI/UX Design</option>
-                <option>Development</option>
+              <select name="skill_id" required={booking}>
+                <option value="">Choose a skill</option>
+                {skills?.map((skill) => <option value={skill.id} key={skill.id}>{skill.name}</option>)}
               </select>
             </label>
             <label>
               Date
-              <input type="date" defaultValue="2026-08-19" />
+              <input name="date" type="date" defaultValue="2026-08-19" required={booking} />
             </label>
             <label>
               Time
-              <input type="time" defaultValue="14:00" />
+              <input name="time" type="time" defaultValue="14:00" required={booking} />
             </label>
+            {booking && <label>Offer amount (INR)<input required name="amount" type="number" min="0" defaultValue="300" /></label>}
             <div className={styles.bill}>
               <h2>Bill</h2>
               <p>
@@ -118,9 +166,9 @@ export function SchedulePage({ booking = false }: { booking?: boolean }) {
               </p>
               <strong>Total ₹300</strong>
             </div>
-            <Link className="button button-primary" href="/payment">
-              Pay <ArrowRight size={16} />
-            </Link>
+            {error && <p className="data-state" role="alert">{error}</p>}
+            {booking ? <button className="button button-primary">Request lesson <ArrowRight size={16} /></button> : <><p>{bookingData?.items.length ?? 0} lessons in your schedule</p><h2>Pending offers</h2>{offers.data?.items.filter((offer) => offer.status === "pending").map((offer) => <div className={styles.bill} key={offer.id}><p>{offer.currency} {(offer.amount_minor / 100).toLocaleString()}</p><button className="button button-primary" type="button" onClick={() => void updateOffer(offer, true)}>Accept</button><button className="button button-secondary" type="button" onClick={() => void updateOffer(offer, false)}>Reject</button></div>)}{offers.data?.items.length === 0 && <p>No offers yet.</p>}</>}
+            </form>
           </aside>
         </section>
       </main>
@@ -129,8 +177,10 @@ export function SchedulePage({ booking = false }: { booking?: boolean }) {
 }
 
 export function SubscriptionPage() {
+  const { data: plans, error, loading } = useApi<Plan[]>("/plans");
+  const { data: profile } = useApi<Profile>("/me");
   return (
-    <AppShell active="/dashboard/home">
+    <AppShell active={profile?.role === "mentor" ? "/mentor/home" : "/dashboard/home"} mentor={profile?.role === "mentor"}>
       <main className={styles.main}>
         <PageTitle>Subscription</PageTitle>
         <header className={styles.planIntro}>
@@ -139,36 +189,23 @@ export function SubscriptionPage() {
           <p>Unlock unlimited learning, mentorship and community access.</p>
         </header>
         <section className={styles.plans}>
-          {[
-            ["Basic", "₹499", "Essential courses and community access"],
-            ["Professional", "₹999", "Everything in Basic plus monthly mentorship"],
-            ["Premium", "₹1,499", "Unlimited mentorship and priority booking"],
-          ].map(([name, price, copy], i) => (
-            <article className={i === 1 ? styles.featured : ""} key={name}>
+          {loading && <p className="data-state">Loading plans…</p>}
+          {error && <p className="data-state" role="alert">{error}</p>}
+          {plans?.map((plan, i) => (
+            <article className={i === 1 ? styles.featured : ""} key={plan.id}>
               <small>{i === 1 ? "MOST POPULAR" : "MONTHLY"}</small>
-              <h2>{name}</h2>
+              <h2>{plan.name}</h2>
               <strong>
-                {price}
-                <i>/month</i>
+                {plan.currency} {(plan.price_minor / 100).toLocaleString()}
+                <i>/{plan.billing_interval}</i>
               </strong>
-              <p>{copy}</p>
+              <p>{plan.features[0] ?? "Mentoring membership"}</p>
               <ul>
-                <li>
-                  <Check size={16} color="var(--lime)" /> Access all learning tracks
-                </li>
-                <li>
-                  <Check size={16} color="var(--lime)" /> Verified mentor network
-                </li>
-                <li>
-                  <Check size={16} color="var(--lime)" /> Community rooms
-                </li>
-                <li>
-                  <Check size={16} color="var(--lime)" /> Progress analytics
-                </li>
+                {plan.features.map((feature) => <li key={feature}><Check size={16} color="var(--lime)" /> {feature}</li>)}
               </ul>
-              <Link className={i === 1 ? "button button-primary" : "button button-secondary"} href="/payment">
-                Choose {name} <ArrowRight size={16} />
-              </Link>
+              <button className={i === 1 ? "button button-primary" : "button button-secondary"} disabled title="Payment provider is not configured">
+                Payments coming soon <ArrowRight size={16} />
+              </button>
             </article>
           ))}
         </section>
@@ -178,47 +215,93 @@ export function SubscriptionPage() {
 }
 
 export function EditProfilePage() {
+  const { data: profile, error, reload } = useApi<Profile>("/me");
+  const [message, setMessage] = useState("");
+
+  async function saveProfile(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const data = Object.fromEntries(
+      Array.from(new FormData(event.currentTarget), ([key, value]) => [key, String(value).trim() || null]),
+    );
+    try {
+      await apiFetch("/me/profile", { method: "PATCH", body: JSON.stringify(data) });
+      if (profile?.role === "mentor") {
+        await apiFetch("/mentor/profile", {
+          method: "PATCH",
+          body: JSON.stringify({
+            headline: data.headline,
+            hourly_rate_minor: Number(data.hourly_rate || 0) * 100,
+            languages: String(data.languages ?? "").split(",").map((item) => item.trim()).filter(Boolean),
+            professions: String(data.professions ?? "").split(",").map((item) => item.trim()).filter(Boolean),
+            companies: String(data.companies ?? "").split(",").map((item) => item.trim()).filter(Boolean),
+          }),
+        });
+      }
+      setMessage("Profile saved.");
+      await reload();
+    } catch (reason) {
+      setMessage(reason instanceof Error ? reason.message : "Unable to save profile");
+    }
+  }
+
+  async function uploadAvatar(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (!file || !profile) return;
+    const path = `${profile.id}/${crypto.randomUUID()}-${file.name.replaceAll(" ", "-")}`;
+    const { error: uploadError } = await createClient().storage.from("avatars").upload(path, file, { upsert: false });
+    if (uploadError) { setMessage(uploadError.message); return; }
+    await apiFetch("/me/profile", { method: "PATCH", body: JSON.stringify({ avatar_path: path }) });
+    await reload();
+  }
+
   return (
-    <AppShell active="/dashboard/home">
+    <AppShell active={profile?.role === "mentor" ? "/mentor/profile" : "/dashboard/home"} mentor={profile?.role === "mentor"}>
       <main className={styles.main}>
         <PageTitle>Edit Profile</PageTitle>
-        <form className={styles.edit}>
+        {error && <p className="data-state" role="alert">{error}</p>}
+        <form className={styles.edit} key={profile?.id} onSubmit={saveProfile}>
           <div className={styles.photo}>
-            <Image src="/assets/app/mentor-1.png" alt="Profile" width={130} height={130} />
-            <button className="button button-secondary" type="button">
-              Change photo
-            </button>
+            <Image src={publicAsset("avatars", profile?.avatar_path) ?? "/assets/app/mentor-1.png"} alt="Profile" width={130} height={130} />
+            <label className="button button-secondary">Change photo<input type="file" accept="image/png,image/jpeg,image/webp" onChange={uploadAvatar} hidden /></label>
           </div>
           <div className={styles.formGrid}>
             <label>
               First Name
-              <input defaultValue="Kristin" />
+              <input required name="first_name" defaultValue={profile?.first_name} />
             </label>
             <label>
               Last Name
-              <input defaultValue="Watson" />
+              <input required name="last_name" defaultValue={profile?.last_name} />
             </label>
             <label>
               Username
-              <input defaultValue="intBhubnesh" />
+              <input name="username" defaultValue={profile?.username ?? ""} />
             </label>
             <label>
               Email
-              <input type="email" defaultValue="bhubnesh2002@gmail.com" />
+              <input type="email" value="Managed by Supabase Auth" disabled />
             </label>
             <label>
               Phone
-              <input type="tel" defaultValue="+91 98765 43210" />
+              <input name="phone" type="tel" defaultValue={profile?.phone ?? ""} />
             </label>
             <label>
               Location
-              <input defaultValue="Berlin, Germany" />
+              <input name="location" defaultValue={profile?.location ?? ""} />
             </label>
             <label className={styles.wide}>
               About
-              <textarea rows={5} defaultValue="UI/UX designer and lifelong learner." />
+              <textarea name="bio" rows={5} defaultValue={profile?.bio ?? ""} />
             </label>
+            {profile?.role === "mentor" && <>
+              <label>Headline<input name="headline" defaultValue={profile.mentor?.headline ?? ""} /></label>
+              <label>Hourly rate (INR)<input name="hourly_rate" type="number" min="0" defaultValue={(profile.mentor?.hourly_rate_minor ?? 0) / 100} /></label>
+              <label>Languages<input name="languages" defaultValue={profile.mentor?.languages.join(", ") ?? ""} /></label>
+              <label>Professions<input name="professions" defaultValue={profile.mentor?.professions.join(", ") ?? ""} /></label>
+              <label className={styles.wide}>Companies<input name="companies" defaultValue={profile.mentor?.companies.join(", ") ?? ""} /></label>
+            </>}
           </div>
+          {message && <p className="data-state" role="status">{message}</p>}
           <div className={styles.actions}>
             <Link className="button button-secondary" href="/profile">
               Cancel
@@ -232,8 +315,12 @@ export function EditProfilePage() {
 }
 
 export function PaymentPage() {
+  type Invoice = { id: string; number: string; storage_path: string | null; issued_at: string };
+  const { data: wallet } = useApi<{ currency: string; balance_minor: number }>("/wallet");
+  const { data: invoices, error } = useApi<Invoice[]>("/invoices");
+  const { data: profile } = useApi<Profile>("/me");
   return (
-    <AppShell active="/settings">
+    <AppShell active="/settings" mentor={profile?.role === "mentor"}>
       <main className={styles.main}>
         <PageTitle>Payment</PageTitle>
         <section className={styles.payment}>
@@ -242,7 +329,7 @@ export function PaymentPage() {
             <label>
               <input type="radio" name="email" defaultChecked /> Send to my account email
               <br />
-              <b>bhubnesh2002@gmail.com</b>
+              <b>Supabase account email</b>
             </label>
             <label>
               <input type="radio" name="email" /> Send to another email
@@ -251,39 +338,33 @@ export function PaymentPage() {
           </article>
           <article>
             <h2>
-              Card Details <button className={styles.addCardBtn} type="button">+ Add Payment</button>
+              Card Details <button className={styles.addCardBtn} type="button" disabled title="Payment provider is not configured">+ Add Payment</button>
             </h2>
             <label className={styles.wallet}>
               <input type="radio" name="card" defaultChecked />
               <b>
                 <Wallet size={18} /> Wallet
                 <br />
-                Get 50 reputation points
+                {wallet?.currency ?? "INR"} {((wallet?.balance_minor ?? 0) / 100).toLocaleString()} available
               </b>
             </label>
-            <label>
-              <input type="radio" name="card" />
-              <b>
-                VISA **** 3278
-                <br />
-                Get 50 reputation points
-              </b>
-            </label>
+            <p>Card payments are unavailable until a payment provider is configured.</p>
           </article>
         </section>
         <section className={styles.invoices}>
           <h2>Invoices</h2>
-          {["Jun 10, 2022", "May 10, 2022", "Apr 10, 2022"].map((date, i) => (
-            <div key={date}>
+          {error && <p className="data-state" role="alert">{error}</p>}
+          {!error && invoices?.length === 0 && <p className="data-state">No invoices yet.</p>}
+          {invoices?.map((invoice) => (
+            <div key={invoice.id}>
               <b>
-                <Calendar size={16} /> Basic Plan - June 2022
+                <Calendar size={16} /> Invoice {invoice.number}
               </b>
-              <strong>{i === 1 ? "₹1,440.00" : "₹144.00"}</strong>
-              <span>{date}</span>
+              <span>{new Date(invoice.issued_at).toLocaleDateString()}</span>
               <i className={styles.paidStatus}>
                 <CheckCircle2 size={16} /> Paid
               </i>
-              <button className={styles.downloadBtn} type="button">
+              <button className={styles.downloadBtn} type="button" disabled={!invoice.storage_path}>
                 <Download size={14} /> Download
               </button>
             </div>
@@ -295,8 +376,11 @@ export function PaymentPage() {
 }
 
 export function ReferralsPage() {
+  const { data: referral, error } = useApi<{ code: string; active: boolean }>("/referrals");
+  const { data: wallet } = useApi<{ currency: string; balance_minor: number }>("/wallet");
+  const { data: profile } = useApi<Profile>("/me");
   return (
-    <AppShell active="/settings">
+    <AppShell active="/settings" mentor={profile?.role === "mentor"}>
       <main className={styles.main}>
         <PageTitle>Referral</PageTitle>
         <section className={styles.referralHero}>
@@ -314,25 +398,18 @@ export function ReferralsPage() {
             <Image src="/assets/app/workshop.png" alt="Learner working in a library" width={850} height={450} />
             <h2>Referral Codes</h2>
             <div className={styles.codes}>
-              <b>Attend 10 Lessons in a Week 4/5</b>
-              <b>Foundation of UX Design 4/5</b>
-              <b>FDS34NJDS 4/5</b>
+              {error ? <b>{error}</b> : <b>{referral?.code ?? "Loading…"} {referral?.active ? "Active" : "Inactive"}</b>}
             </div>
           </article>
           <aside>
             <h2>Available Credit</h2>
-            <strong>₹2,350</strong>
+            <strong>{wallet?.currency ?? "INR"} {((wallet?.balance_minor ?? 0) / 100).toLocaleString()}</strong>
             <p>Your current balance</p>
             <Link className="button button-primary" href="/payment">
               Add Credits <ArrowUpRight size={16} />
             </Link>
             <h2>Referral Earning</h2>
-            {["Joel Becker", "Emily R.", "Jacob M."].map((x) => (
-              <p key={x}>
-                {x}
-                <b>+ ₹32</b>
-              </p>
-            ))}
+            <p>Earnings appear in your wallet after qualifying activity.</p>
           </aside>
         </section>
       </main>
@@ -347,6 +424,7 @@ export function ChatPage() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [userId, setUserId] = useState<string>();
   const [error, setError] = useState("");
+  const { data: profile } = useApi<Profile>("/me");
 
   useEffect(() => {
     void Promise.all([apiFetch<{ items: Conversation[] }>("/conversations"), createClient().auth.getClaims()])
@@ -399,7 +477,7 @@ export function ChatPage() {
 
   const activeConversation = conversations.find(({ id }) => id === activeId);
   return (
-    <AppShell active="/chat">
+    <AppShell active="/chat" mentor={profile?.role === "mentor"}>
       <main className={styles.main}>
         <PageTitle>Chat Room</PageTitle>
         <section className={styles.chat}>
@@ -465,6 +543,7 @@ export function CommunityPage() {
   const router = useRouter();
   const [communities, setCommunities] = useState<Community[]>([]);
   const [error, setError] = useState("");
+  const { data: profile } = useApi<Profile>("/me");
 
   useEffect(() => {
     void apiFetch<Community[]>("/communities")
@@ -482,7 +561,7 @@ export function CommunityPage() {
   }
 
   return (
-    <AppShell active="/community">
+    <AppShell active="/community" mentor={profile?.role === "mentor"}>
       <main className={styles.main}>
         <PageTitle>Open Mic</PageTitle>
         <section className={styles.community}>
@@ -520,10 +599,11 @@ export function MeetingPage() {
     <main className={styles.meeting}>
       <header>
         <PageTitle>Basic Of JavaScript</PageTitle>
-        <button className={styles.reportBtn} type="button">
+        <button className={styles.reportBtn} type="button" disabled>
           <Flag size={16} /> Report a problem
         </button>
       </header>
+      <p className="data-state" role="status">Live video is unavailable until a video provider is configured.</p>
       <section>
         <div className={styles.video}>
           <Image src="/assets/app/meeting-hero.png" alt="Video call with tutor" fill priority sizes="75vw" />
@@ -532,22 +612,22 @@ export function MeetingPage() {
             <Clock size={15} /> 00:04:24
           </time>
           <nav className={styles.meetingControls}>
-            <button className={styles.endCall} type="button" aria-label="End call">
+            <button className={styles.endCall} type="button" aria-label="End call" disabled>
               <PhoneOff size={20} />
             </button>
-            <button type="button" aria-label="Share screen">
+            <button type="button" aria-label="Share screen" disabled>
               <Monitor size={20} />
             </button>
-            <button type="button" aria-label="Reactions">
+            <button type="button" aria-label="Reactions" disabled>
               <Smile size={20} />
             </button>
-            <button type="button" aria-label="Search or attach file">
+            <button type="button" aria-label="Search or attach file" disabled>
               <Search size={20} />
             </button>
-            <button type="button" aria-label="Mute microphone">
+            <button type="button" aria-label="Mute microphone" disabled>
               <MicOff size={20} />
             </button>
-            <button type="button" aria-label="Toggle camera">
+            <button type="button" aria-label="Toggle camera" disabled>
               <Video size={20} />
             </button>
           </nav>
@@ -556,8 +636,8 @@ export function MeetingPage() {
           <h2>Jesus Brown</h2>
           <p>Hello, I would like to know you could postpone the lesson to another day?</p>
           <p className={styles.mine}>Yes, of course. I have free time on Thursday at 9 am.</p>
-          <textarea aria-label="Meeting chat reply" placeholder="Reply" />
-          <button className="button button-primary" type="button">Reply</button>
+          <textarea aria-label="Meeting chat reply" placeholder="Reply" disabled />
+          <button className="button button-primary" type="button" disabled>Reply</button>
         </aside>
       </section>
     </main>

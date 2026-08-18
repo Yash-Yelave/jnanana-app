@@ -12,7 +12,7 @@ from sqlalchemy.sql import Select
 from app.auth import CurrentUser, get_current_user, require_admin
 from app.db import get_db
 from app.models import AuditEvent, MentorAvailability, MentorProfile, Profile, Review
-from app.schemas import AvailabilityInput, AvailabilityRead, MentorRead, MentorSelfRead, MentorSelfUpdate
+from app.schemas import AvailabilityInput, AvailabilityRead, MentorRead, MentorSelfRead, MentorSelfUpdate, ReviewRead
 
 router = APIRouter(tags=["mentors"])
 Db = Annotated[AsyncSession, Depends(get_db)]
@@ -117,6 +117,25 @@ async def get_availability(mentor_id: UUID, db: Db) -> list[MentorAvailability]:
             )
         ).all()
     )
+
+
+@router.get("/mentors/{mentor_id}/reviews")
+async def mentor_reviews(mentor_id: UUID, db: Db, limit: int = Query(default=50, ge=1, le=100)) -> dict[str, object]:
+    approved = await db.scalar(
+        select(MentorProfile.profile_id).where(
+            MentorProfile.profile_id == mentor_id, MentorProfile.approval_status == "approved"
+        )
+    )
+    if approved is None:
+        raise HTTPException(status_code=404, detail="mentor not found")
+    reviews = list(
+        (
+            await db.scalars(
+                select(Review).where(Review.mentor_id == mentor_id).order_by(Review.created_at.desc()).limit(limit)
+            )
+        ).all()
+    )
+    return {"items": [ReviewRead.model_validate(review) for review in reviews], "next_cursor": None}
 
 
 @router.put("/mentor/availability", response_model=list[AvailabilityRead])

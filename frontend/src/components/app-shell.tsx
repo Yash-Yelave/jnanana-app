@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
@@ -15,6 +17,9 @@ import {
   Calendar,
 } from "lucide-react";
 import { Brand } from "@/components/brand";
+import type { Profile } from "@/lib/types";
+import { useApi } from "@/lib/use-api";
+import { publicAsset } from "@/lib/supabase/client";
 import styles from "./app-shell.module.css";
 
 const studentNav = [
@@ -60,6 +65,9 @@ export function AppShell({
   rightRail?: ReactNode;
   mentor?: boolean;
 }) {
+  const { data: profile } = useApi<Profile>("/me");
+  const avatar = publicAsset("avatars", profile?.avatar_path) ?? "/assets/app/avatar.png";
+  const name = profile ? `${profile.first_name} ${profile.last_name}` : "Profile";
   return (
     <div className={`${styles.shell} ${rightRail ? "" : styles.withoutRail}`}>
       <aside className={styles.sidebar}>
@@ -90,7 +98,7 @@ export function AppShell({
           <Navigation active={active} mentor={mentor} />
         </details>
         <Link href={mentor ? "/mentor/profile" : "/profile"} aria-label="Open profile">
-          <Image src="/assets/app/avatar.png" alt="Profile avatar" width={44} height={44} />
+          <Image src={avatar} alt={name} width={44} height={44} />
         </Link>
       </header>
 
@@ -100,7 +108,7 @@ export function AppShell({
           <input type="search" placeholder="Search courses" aria-label="Search courses" />
         </label>
         <Link className={styles.profileBtn} href={mentor ? "/mentor/profile" : "/profile"} aria-label="Open profile">
-          <Image src="/assets/app/avatar.png" alt="User profile" width={46} height={46} priority />
+          <Image src={avatar} alt={name} width={46} height={46} priority />
         </Link>
       </header>
 

@@ -7,10 +7,7 @@ const studentPrefixes = [
   "/mentors",
   "/lessons",
   "/schedule",
-  "/subscription",
   "/profile",
-  "/payment",
-  "/referrals",
 ];
 const mentorPrefixes = [
   "/mentor/home",
@@ -19,7 +16,7 @@ const mentorPrefixes = [
   "/mentor/lessons",
   "/mentor/dashboard",
 ];
-const sharedPrefixes = ["/meeting", "/community", "/chat", "/settings"];
+const sharedPrefixes = ["/meeting", "/community", "/chat", "/settings", "/subscription", "/payment", "/referrals"];
 
 function matches(path: string, prefixes: string[]) {
   return prefixes.some((prefix) => path === prefix || path.startsWith(`${prefix}/`));
@@ -57,8 +54,9 @@ export async function updateSession(request: NextRequest) {
   const role = profile?.role as "student" | "mentor" | undefined;
   const status = profile?.onboarding_status as string | undefined;
   if (path.startsWith("/admin") && !isAdmin) return NextResponse.redirect(new URL("/dashboard/home", request.url));
-  if (status === "pending" && path !== "/waiting" && !path.startsWith("/auth/")) return NextResponse.redirect(new URL("/waiting", request.url));
-  if (matches(path, studentPrefixes) && role === "mentor") return NextResponse.redirect(new URL("/mentor/home", request.url));
+  const pendingAllowed = path === "/waiting" || path === "/profile/edit" || path === "/mentor/profile" || path === "/settings" || path.startsWith("/auth/");
+  if (status === "pending" && !pendingAllowed) return NextResponse.redirect(new URL("/waiting", request.url));
+  if (matches(path, studentPrefixes) && role === "mentor" && path !== "/profile/edit") return NextResponse.redirect(new URL("/mentor/home", request.url));
   if (matches(path, mentorPrefixes) && role !== "mentor") return NextResponse.redirect(new URL("/dashboard/home", request.url));
   if (path === "/login") {
     const destination = isAdmin ? "/admin" : status === "pending" ? "/waiting" : role === "mentor" ? "/mentor/home" : "/dashboard/home";

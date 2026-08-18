@@ -25,4 +25,4 @@ OpenAPI is available at `http://127.0.0.1:8000/docs`. Never place the Supabase s
 - [API contract](./docs/API.md)
 - [Setup and operations](./docs/OPERATIONS.md)
 
-The initial migration is ready under `supabase/migrations/`. It must be applied and advisor-checked against a connected non-production Supabase project before hosted integration is considered verified.
+The initial migration under `supabase/migrations/` has been applied to the configured development project. Repeat migration, RLS, Storage, Realtime, and advisor checks for every staging/production project.

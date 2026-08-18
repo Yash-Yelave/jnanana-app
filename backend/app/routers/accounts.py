@@ -134,6 +134,14 @@ async def update_profile(payload: ProfileUpdate, db: Db, user: User) -> Profile:
     for field, value in payload.model_dump(exclude_unset=True).items():
         setattr(profile, field, value)
     profile.updated_at = datetime.now(UTC)
+    if profile.role == "mentor":
+        mentor = await db.get(MentorProfile, user.id)
+        if mentor is not None:
+            if payload.bio is not None:
+                mentor.bio = payload.bio
+            if mentor.approval_status == "rejected":
+                mentor.approval_status = "pending"
+                mentor.rejection_reason = None
     await db.commit()
     await db.refresh(profile)
     return profile
