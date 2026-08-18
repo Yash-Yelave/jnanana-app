@@ -62,7 +62,7 @@ export function LoginForm() {
         Password
         <input required name="password" type="password" autoComplete="current-password" placeholder="Enter your password" />
       </label>
-      <Link href="/onboarding/student">Forgot password?</Link>
+      <Link href="/forgot-password">Forgot password?</Link>
       {error && <p className={styles.error} role="alert">{error}</p>}
       <button disabled={pending}>{pending ? "Logging inâ€¦" : "Log in"} <span>â†’</span></button>
     </form>

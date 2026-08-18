@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Manrope, Public_Sans, Sue_Ellen_Francisco } from "next/font/google";
 import type { ReactNode } from "react";
+import { siteUrl } from "@/lib/env";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -23,7 +24,7 @@ const handwritten = Sue_Ellen_Francisco({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://upskillink.example"),
+  metadataBase: new URL(siteUrl()),
   title: {
     default: "Upskillink | Learn with top mentors",
     template: "%s | Upskillink",

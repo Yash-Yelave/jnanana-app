@@ -7,6 +7,11 @@
 .content p { max-width: 700px; margin: 0; color: #777; font-size: 20px; line-height: 1.5; }
 .content > a { margin-top: 26px; padding: 16px 28px; border-radius: 999px; background: #a3d95d; font-weight: 800; }
 .stars { color: #a3d95d; font-size: 46px; letter-spacing: 10px; }
+.resend { position: relative; display: flex; width: min(100%, 480px); margin-top: 24px; gap: 10px; align-items: end; }
+.resend label { display: grid; flex: 1; gap: 6px; text-align: left; font-weight: 700; }
+.resend input { height: 48px; padding: 0 14px; border: 1px solid #d8d8d8; border-radius: 10px; }
+.resend button { height: 48px; padding: 0 18px; border: 0; border-radius: 999px; background: #a3d95d; font-weight: 800; cursor: pointer; }
+.resend span { position: absolute; top: 100%; margin-top: 6px; color: #555; font-size: 13px; }
 
 @media (max-width: 600px) {
   .page { padding: 0; }
@@ -14,4 +19,5 @@
   .content { margin-top: 10vh; }
   .content p { font-size: 16px; }
   .stars { font-size: 33px; letter-spacing: 6px; }
+  .resend { align-items: stretch; flex-direction: column; }
 }

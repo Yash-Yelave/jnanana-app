@@ -2,7 +2,7 @@
 
 ## Current phase
 
-`Implementation complete — all 28 routes built and statically validated`
+`Production integration — authentication and role routing complete; dynamic workflows in progress`
 
 ## Repository
 
@@ -24,7 +24,7 @@
 ## Routes
 
 - Completed: All 28 production routes
-- In progress: None
+- In progress: Replacing authenticated fixture content with FastAPI/Supabase data
 - Not started: None
 
 ## Shared components
@@ -55,7 +55,7 @@
 
 - Payment processing and server-side verification
 - Video meeting provider
-- Transactional email delivery and analytics
+- Custom SMTP provider and analytics
 
 ## Quality gates
 
@@ -65,23 +65,23 @@
 - Responsive pass: CSS implemented at 1440, 1280, 1024, 768, 390 and 360 anchors; rendered pass pending
 - Lint: Pass
 - Typecheck: Pass
-- Tests: Backend test suite passes (3 tests); no frontend test suite is configured
+- Tests: Backend test suite passes (4 tests); no frontend test suite is configured
 - Production build: Pass
 
 ## Next action
 
-Connect a browser backend for rendered pixel/console QA at the documented viewport matrix; implementation and static/runtime validation are complete.
+Complete missing backend workflow endpoints, connect the remaining authenticated route data/actions, then run browser QA.
 
 ## Backend implementation
 
-- Current phase: Backend implementation complete; hosted Supabase verification pending connection
+- Current phase: Backend foundation is live on hosted Supabase; workflow expansion in progress
 - Architecture: FastAPI under `backend/`, Supabase PostgreSQL/Auth/Storage/Realtime
-- Supabase connection: MCP not exposed in this session; hosted migration verification pending
-- Database schema: Initial migration authored with RLS, indexes, Storage policies, Realtime, and seed data; hosted apply pending Supabase connection
+- Supabase connection: Hosted PostgreSQL connection and readiness check pass
+- Database schema: Initial migration applied; 32 public tables, RLS policies, Storage buckets, Realtime publication, auth trigger, and seed data verified
 - Backend APIs: Accounts, mentors, availability, bookings/offers/reviews, courses, community/chat, subscriptions, referrals, wallet, dashboards, and provider boundaries complete
-- Frontend integration: Supabase SSR clients, JWT API forwarding, session proxy, login, signup/onboarding, email confirmation, waiting states, logout, community membership, and Realtime chat complete
-- Frontend lint/typecheck/build: Pass / Pass / Pass (31 generated routes including auth confirmation)
-- Backend lint/typecheck/tests: Pass / Pass / Pass (3 tests)
+- Frontend integration: Validated Supabase configuration, JWT API forwarding, role-aware session proxy, login, signup/onboarding, email confirmation/resend, password recovery, logout, community membership, and Realtime chat complete
+- Frontend lint/typecheck/build: Pass / Pass / Pass (33 generated routes including auth flows)
+- Backend lint/typecheck/tests: Pass / Pass / Pass (4 tests)
 - Backend documentation: Complete (architecture, database/RLS, API, operations, and project overview)
 - External providers: Payment, transactional email delivery, and hosted video intentionally unconfigured; endpoints fail explicitly
-- Remaining gate: Connect the development Supabase project, apply the migration, run SQL/RLS/Storage/Realtime integration tests and advisors
+- Remaining gate: Complete dynamic product workflows, configure production SMTP/payment/video providers, and run end-to-end browser QA

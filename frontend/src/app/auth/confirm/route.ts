@@ -16,5 +16,10 @@ export async function GET(request: NextRequest) {
       ? await supabase.auth.verifyOtp({ type, token_hash: tokenHash })
       : { error: new Error("Missing verification token") };
 
-  return NextResponse.redirect(new URL(result.error ? "/login?error=verification" : next, request.url));
+  const destination = result.error
+    ? "/login?error=verification"
+    : type === "recovery"
+      ? "/reset-password"
+      : next;
+  return NextResponse.redirect(new URL(destination, request.url));
 }

@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/client";
+import { apiUrl } from "@/lib/env";
 
 export class ApiError extends Error {
   constructor(
@@ -10,14 +11,11 @@ export class ApiError extends Error {
 }
 
 export async function apiFetch<T>(path: string, init: RequestInit = {}): Promise<T> {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-  if (!apiUrl) throw new ApiError("Backend API is not configured", 503);
-
   const supabase = createClient();
   const { data } = await supabase.auth.getSession();
   if (!data.session?.access_token) throw new ApiError("Authentication required", 401);
 
-  const response = await fetch(`${apiUrl.replace(/\/$/, "")}/api/v1${path}`, {
+  const response = await fetch(`${apiUrl()}/api/v1${path}`, {
     ...init,
     headers: {
       "Content-Type": "application/json",

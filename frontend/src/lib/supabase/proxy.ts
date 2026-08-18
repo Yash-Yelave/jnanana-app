@@ -1,30 +1,32 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { supabaseEnv } from "@/lib/env";
 
-const protectedPrefixes = [
+const studentPrefixes = [
   "/dashboard",
   "/mentors",
   "/lessons",
   "/schedule",
   "/subscription",
   "/profile",
-  "/meeting",
-  "/community",
-  "/chat",
-  "/settings",
   "/payment",
   "/referrals",
+];
+const mentorPrefixes = [
   "/mentor/home",
   "/mentor/bookings",
   "/mentor/profile",
   "/mentor/lessons",
   "/mentor/dashboard",
 ];
+const sharedPrefixes = ["/meeting", "/community", "/chat", "/settings"];
+
+function matches(path: string, prefixes: string[]) {
+  return prefixes.some((prefix) => path === prefix || path.startsWith(`${prefix}/`));
+}
 
 export async function updateSession(request: NextRequest) {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
-  if (!url || !key) return NextResponse.next({ request });
+  const { url, key } = supabaseEnv();
 
   let response = NextResponse.next({ request });
   const supabase = createServerClient(url, key, {
@@ -39,13 +41,28 @@ export async function updateSession(request: NextRequest) {
   });
 
   const { data } = await supabase.auth.getClaims();
-  const signedIn = Boolean(data?.claims?.sub);
+  const claims = data?.claims;
+  const signedIn = Boolean(claims?.sub);
   const path = request.nextUrl.pathname;
-  if (!signedIn && protectedPrefixes.some((prefix) => path === prefix || path.startsWith(`${prefix}/`))) {
+  const isAdmin = claims?.app_metadata && typeof claims.app_metadata === "object" && "role" in claims.app_metadata && claims.app_metadata.role === "admin";
+  const protectedRoute = matches(path, [...studentPrefixes, ...mentorPrefixes, ...sharedPrefixes]) || path.startsWith("/admin");
+  if (!signedIn && protectedRoute) {
     const login = new URL("/login", request.url);
     login.searchParams.set("next", path);
     return NextResponse.redirect(login);
   }
-  if (signedIn && path === "/login") return NextResponse.redirect(new URL("/dashboard/home", request.url));
+  if (!signedIn) return response;
+
+  const { data: profile } = await supabase.from("profiles").select("role,onboarding_status").eq("id", claims!.sub).maybeSingle();
+  const role = profile?.role as "student" | "mentor" | undefined;
+  const status = profile?.onboarding_status as string | undefined;
+  if (path.startsWith("/admin") && !isAdmin) return NextResponse.redirect(new URL("/dashboard/home", request.url));
+  if (status === "pending" && path !== "/waiting" && !path.startsWith("/auth/")) return NextResponse.redirect(new URL("/waiting", request.url));
+  if (matches(path, studentPrefixes) && role === "mentor") return NextResponse.redirect(new URL("/mentor/home", request.url));
+  if (matches(path, mentorPrefixes) && role !== "mentor") return NextResponse.redirect(new URL("/dashboard/home", request.url));
+  if (path === "/login") {
+    const destination = isAdmin ? "/admin" : status === "pending" ? "/waiting" : role === "mentor" ? "/mentor/home" : "/dashboard/home";
+    return NextResponse.redirect(new URL(destination, request.url));
+  }
   return response;
 }

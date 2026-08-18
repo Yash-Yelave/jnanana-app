@@ -361,7 +361,6 @@ export function ChatPage() {
   useEffect(() => {
     if (!activeId) return;
     let current = true;
-    setMessages([]);
     const supabase = createClient();
     void apiFetch<{ items: ChatMessage[] }>(`/conversations/${activeId}/messages`)
       .then((result) => current && setMessages(result.items))
@@ -413,7 +412,10 @@ export function ChatPage() {
               <button
                 className={conversation.id === activeId ? styles.selectedChat : ""}
                 key={conversation.id}
-                onClick={() => setActiveId(conversation.id)}
+                onClick={() => {
+                  setMessages([]);
+                  setActiveId(conversation.id);
+                }}
                 type="button"
               >
                 <Image src={`/assets/app/mentor-${(i % 4) + 1}.png`} alt="" width={48} height={48} />

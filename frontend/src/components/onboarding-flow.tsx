@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { Brand } from "@/components/brand";
 import { ApiError, apiFetch } from "@/lib/api";
+import { siteUrl } from "@/lib/env";
 import { createClient } from "@/lib/supabase/client";
 import styles from "./onboarding-flow.module.css";
 
@@ -53,7 +54,7 @@ export function OnboardingFlow({ role }: { role: "student" | "mentor" }) {
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/confirm?next=${role === "mentor" ? "/waiting" : "/dashboard/home"}`,
+          emailRedirectTo: `${siteUrl()}/auth/confirm?next=${role === "mentor" ? "/waiting" : "/dashboard/home"}`,
           data: {
             role,
             first_name: firstName,
