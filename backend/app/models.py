@@ -281,6 +281,17 @@ class WalletEntry(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
 
+class Invoice(Base):
+    __tablename__ = "invoices"
+
+    id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
+    user_id: Mapped[UUID] = mapped_column(ForeignKey("profiles.id", ondelete="RESTRICT"))
+    payment_id: Mapped[UUID] = mapped_column(unique=True)
+    number: Mapped[str] = mapped_column(unique=True)
+    storage_path: Mapped[str | None]
+    issued_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
 class Notification(Base):
     __tablename__ = "notifications"
 
@@ -304,4 +315,17 @@ class IdempotencyKey(Base):
     resource_id: Mapped[UUID | None]
     response_status: Mapped[int | None]
     response_body: Mapped[dict[str, object] | None] = mapped_column(JSONB)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class AuditEvent(Base):
+    __tablename__ = "audit_events"
+    __table_args__ = {"schema": "private"}
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    actor_id: Mapped[UUID | None] = mapped_column(ForeignKey("profiles.id", ondelete="SET NULL"))
+    action: Mapped[str]
+    entity_type: Mapped[str]
+    entity_id: Mapped[UUID | None]
+    data: Mapped[dict[str, object]] = mapped_column(JSONB, default=dict)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())

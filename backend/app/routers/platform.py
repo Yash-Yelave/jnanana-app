@@ -1,3 +1,4 @@
+from datetime import UTC, datetime
 from typing import Annotated
 from uuid import UUID, uuid4
 
@@ -12,6 +13,7 @@ from app.models import (
     Booking,
     Course,
     Enrollment,
+    Invoice,
     Notification,
     Plan,
     Profile,
@@ -19,7 +21,15 @@ from app.models import (
     Subscription,
     WalletEntry,
 )
-from app.schemas import CourseRead, EnrollmentRead, PlanRead, SubscriptionRead, WalletSummary
+from app.schemas import (
+    CourseRead,
+    EnrollmentRead,
+    InvoiceRead,
+    PlanRead,
+    SubscriptionRead,
+    WalletEntryRead,
+    WalletSummary,
+)
 
 router = APIRouter(tags=["platform"])
 Db = Annotated[AsyncSession, Depends(get_db)]
@@ -118,6 +128,27 @@ async def wallet(db: Db, user: User) -> WalletSummary:
     return WalletSummary(currency="INR", balance_minor=int(balance or 0))
 
 
+@router.get("/wallet/entries", response_model=list[WalletEntryRead])
+async def wallet_entries(db: Db, user: User, limit: int = Query(default=50, ge=1, le=100)) -> list[WalletEntry]:
+    return list(
+        (
+            await db.scalars(
+                select(WalletEntry)
+                .where(WalletEntry.user_id == user.id)
+                .order_by(WalletEntry.created_at.desc())
+                .limit(limit)
+            )
+        ).all()
+    )
+
+
+@router.get("/invoices", response_model=list[InvoiceRead])
+async def invoices(db: Db, user: User) -> list[Invoice]:
+    return list(
+        (await db.scalars(select(Invoice).where(Invoice.user_id == user.id).order_by(Invoice.issued_at.desc()))).all()
+    )
+
+
 @router.get("/referrals")
 async def referrals(db: Db, user: User) -> dict[str, object]:
     code = await db.scalar(select(ReferralCode).where(ReferralCode.owner_id == user.id))
@@ -158,8 +189,20 @@ async def notifications(db: Db, user: User, limit: int = Query(default=50, ge=1,
     }
 
 
+@router.post("/notifications/{notification_id}/read", status_code=204)
+async def mark_notification_read(notification_id: UUID, db: Db, user: User) -> None:
+    notification = await db.get(Notification, notification_id)
+    if notification is None or notification.user_id != user.id:
+        raise HTTPException(status_code=404, detail="notification not found")
+    notification.read_at = datetime.now(UTC)
+    await db.commit()
+
+
 @router.get("/dashboard/student")
 async def student_dashboard(db: Db, user: User) -> dict[str, int]:
+    profile = await db.get(Profile, user.id)
+    if profile is None or profile.role != "student" or profile.onboarding_status != "complete":
+        raise HTTPException(status_code=403, detail="completed student profile required")
     completed_bookings = await db.scalar(
         select(func.count()).select_from(Booking).where(Booking.student_id == user.id, Booking.status == "completed")
     )
@@ -173,6 +216,9 @@ async def student_dashboard(db: Db, user: User) -> dict[str, int]:
 
 @router.get("/dashboard/mentor")
 async def mentor_dashboard(db: Db, user: User) -> dict[str, int]:
+    profile = await db.get(Profile, user.id)
+    if profile is None or profile.role != "mentor" or profile.onboarding_status != "complete":
+        raise HTTPException(status_code=403, detail="completed mentor profile required")
     completed, earnings = (
         await db.execute(
             select(func.count(), func.coalesce(func.sum(Booking.amount_minor - Booking.platform_fee_minor), 0)).where(

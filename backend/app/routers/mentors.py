@@ -11,8 +11,8 @@ from sqlalchemy.sql import Select
 
 from app.auth import CurrentUser, get_current_user, require_admin
 from app.db import get_db
-from app.models import MentorAvailability, MentorProfile, Profile, Review
-from app.schemas import AvailabilityInput, AvailabilityRead, MentorRead
+from app.models import AuditEvent, MentorAvailability, MentorProfile, Profile, Review
+from app.schemas import AvailabilityInput, AvailabilityRead, MentorRead, MentorSelfRead, MentorSelfUpdate
 
 router = APIRouter(tags=["mentors"])
 Db = Annotated[AsyncSession, Depends(get_db)]
@@ -45,7 +45,7 @@ def mentor_projection() -> Select[Any]:
         )
         .join(Profile, Profile.id == MentorProfile.profile_id)
         .outerjoin(Review, Review.mentor_id == MentorProfile.profile_id)
-        .where(MentorProfile.approval_status == "approved")
+        .where(MentorProfile.approval_status == "approved", Profile.role == "mentor")
         .group_by(MentorProfile.profile_id, Profile.id)
     )
 
@@ -136,6 +136,29 @@ async def replace_availability(payload: list[AvailabilityInput], db: Db, user: U
     return rules
 
 
+@router.get("/mentor/profile", response_model=MentorSelfRead)
+async def get_own_mentor_profile(db: Db, user: User) -> MentorProfile:
+    profile = await db.get(Profile, user.id)
+    mentor = await db.get(MentorProfile, user.id)
+    if profile is None or profile.role != "mentor" or mentor is None:
+        raise HTTPException(status_code=403, detail="mentor profile required")
+    return mentor
+
+
+@router.patch("/mentor/profile", response_model=MentorSelfRead)
+async def update_own_mentor_profile(payload: MentorSelfUpdate, db: Db, user: User) -> MentorProfile:
+    mentor = await db.get(MentorProfile, user.id)
+    profile = await db.get(Profile, user.id)
+    if profile is None or profile.role != "mentor" or mentor is None:
+        raise HTTPException(status_code=403, detail="mentor profile required")
+    for field, value in payload.model_dump(exclude_unset=True).items():
+        setattr(mentor, field, value.upper() if field == "currency" and value else value)
+    mentor.updated_at = datetime.now(UTC)
+    await db.commit()
+    await db.refresh(mentor)
+    return mentor
+
+
 @router.get("/admin/mentor-applications")
 async def mentor_applications(db: Db, _: Admin) -> dict[str, object]:
     rows = (
@@ -161,14 +184,27 @@ async def mentor_applications(db: Db, _: Admin) -> dict[str, object]:
 
 
 @router.post("/admin/mentor-applications/{mentor_id}/decision")
-async def decide_mentor(mentor_id: UUID, payload: MentorDecision, db: Db, _: Admin) -> dict[str, str]:
+async def decide_mentor(mentor_id: UUID, payload: MentorDecision, db: Db, admin: Admin) -> dict[str, str]:
     mentor = await db.get(MentorProfile, mentor_id, with_for_update=True)
     profile = await db.get(Profile, mentor_id, with_for_update=True)
     if mentor is None or profile is None:
         raise HTTPException(status_code=404, detail="mentor application not found")
+    if profile.role != "mentor":
+        raise HTTPException(status_code=409, detail="profile is not a mentor")
+    if payload.status == "rejected" and not payload.reason:
+        raise HTTPException(status_code=422, detail="rejection reason is required")
     mentor.approval_status = payload.status
     mentor.rejection_reason = payload.reason if payload.status == "rejected" else None
     mentor.approved_at = datetime.now(UTC) if payload.status == "approved" else None
     profile.onboarding_status = "complete" if payload.status == "approved" else "pending"
+    db.add(
+        AuditEvent(
+            actor_id=admin.id,
+            action=f"mentor.{payload.status}",
+            entity_type="mentor_profile",
+            entity_id=mentor_id,
+            data={"reason": payload.reason} if payload.reason else {},
+        )
+    )
     await db.commit()
     return {"status": payload.status}

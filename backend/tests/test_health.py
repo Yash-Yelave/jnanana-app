@@ -19,4 +19,6 @@ def test_openapi_and_auth_boundary() -> None:
 
     assert schema.status_code == 200
     assert "/api/v1/offers/{offer_id}/accept" in schema.json()["paths"]
+    assert "/api/v1/admin/users/{profile_id}/role" in schema.json()["paths"]
+    assert "/api/v1/notifications/{notification_id}/read" in schema.json()["paths"]
     assert protected.status_code == 401

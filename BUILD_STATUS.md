@@ -78,7 +78,7 @@ Complete missing backend workflow endpoints, connect the remaining authenticated
 - Architecture: FastAPI under `backend/`, Supabase PostgreSQL/Auth/Storage/Realtime
 - Supabase connection: Hosted PostgreSQL connection and readiness check pass
 - Database schema: Initial migration applied; 32 public tables, RLS policies, Storage buckets, Realtime publication, auth trigger, and seed data verified
-- Backend APIs: Accounts, mentors, availability, bookings/offers/reviews, courses, community/chat, subscriptions, referrals, wallet, dashboards, and provider boundaries complete
+- Backend APIs: Accounts, persisted role administration/audit, mentor approval/profile, availability, bookings/offers/reviews, courses, community/chat, subscriptions, invoices, notifications, referrals, wallet, dashboards, and provider boundaries complete
 - Frontend integration: Validated Supabase configuration, JWT API forwarding, role-aware session proxy, login, signup/onboarding, email confirmation/resend, password recovery, logout, community membership, and Realtime chat complete
 - Frontend lint/typecheck/build: Pass / Pass / Pass (33 generated routes including auth flows)
 - Backend lint/typecheck/tests: Pass / Pass / Pass (4 tests)

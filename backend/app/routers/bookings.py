@@ -17,6 +17,7 @@ from app.schemas import (
     LessonRequestRead,
     OfferCreate,
     OfferRead,
+    OfferStatusInput,
     ReviewCreate,
     ReviewRead,
 )
@@ -60,8 +61,8 @@ async def create_lesson_request(payload: LessonRequestCreate, db: Db, user: User
 @router.get("/lesson-requests")
 async def list_lesson_requests(db: Db, user: User, limit: int = Query(default=50, ge=1, le=100)) -> dict[str, object]:
     profile = await db.get(Profile, user.id)
-    if profile is None:
-        raise HTTPException(status_code=403, detail="profile required")
+    if profile is None or profile.onboarding_status != "complete" or profile.role not in {"student", "mentor"}:
+        raise HTTPException(status_code=403, detail="completed profile required")
     statement = select(LessonRequest).order_by(LessonRequest.created_at.desc()).limit(limit)
     if profile.role == "student":
         statement = statement.where(LessonRequest.student_id == user.id)
@@ -72,6 +73,22 @@ async def list_lesson_requests(db: Db, user: User, limit: int = Query(default=50
         )
     items = list((await db.scalars(statement)).all())
     return {"items": [LessonRequestRead.model_validate(item) for item in items], "next_cursor": None}
+
+
+@router.get("/offers")
+async def list_offers(db: Db, user: User, limit: int = Query(default=50, ge=1, le=100)) -> dict[str, object]:
+    profile = await db.get(Profile, user.id)
+    if profile is None:
+        raise HTTPException(status_code=403, detail="profile required")
+    statement = select(LessonOffer).order_by(LessonOffer.created_at.desc()).limit(limit)
+    if profile.role == "mentor":
+        statement = statement.where(LessonOffer.mentor_id == user.id)
+    else:
+        statement = statement.join(LessonRequest, LessonRequest.id == LessonOffer.request_id).where(
+            LessonRequest.student_id == user.id
+        )
+    items = list((await db.scalars(statement)).all())
+    return {"items": [OfferRead.model_validate(item) for item in items], "next_cursor": None}
 
 
 @router.post("/lesson-requests/{request_id}/offers", response_model=OfferRead, status_code=201)
@@ -163,6 +180,23 @@ async def accept_offer(
     return booking
 
 
+@router.post("/offers/{offer_id}/status", response_model=OfferRead)
+async def update_offer_status(offer_id: UUID, payload: OfferStatusInput, db: Db, user: User) -> LessonOffer:
+    offer = await db.get(LessonOffer, offer_id, with_for_update=True)
+    if offer is None or offer.status != "pending":
+        raise HTTPException(status_code=409, detail="offer is no longer available")
+    request = await db.get(LessonRequest, offer.request_id)
+    allowed = payload.status == "withdrawn" and offer.mentor_id == user.id
+    allowed = allowed or (payload.status == "rejected" and request is not None and request.student_id == user.id)
+    if not allowed:
+        raise HTTPException(status_code=403, detail="offer cannot be updated")
+    offer.status = payload.status
+    offer.updated_at = datetime.now(UTC)
+    await db.commit()
+    await db.refresh(offer)
+    return offer
+
+
 @router.get("/bookings")
 async def list_bookings(db: Db, user: User, limit: int = Query(default=50, ge=1, le=100)) -> dict[str, object]:
     items = list(
@@ -216,6 +250,21 @@ async def create_review(booking_id: UUID, payload: ReviewCreate, db: Db, user: U
     await db.commit()
     await db.refresh(review)
     return review
+
+
+@router.get("/reviews")
+async def list_reviews(db: Db, user: User, limit: int = Query(default=50, ge=1, le=100)) -> dict[str, object]:
+    items = list(
+        (
+            await db.scalars(
+                select(Review)
+                .where((Review.student_id == user.id) | (Review.mentor_id == user.id))
+                .order_by(Review.created_at.desc())
+                .limit(limit)
+            )
+        ).all()
+    )
+    return {"items": [ReviewRead.model_validate(item) for item in items], "next_cursor": None}
 
 
 @router.post("/bookings/{booking_id}/meeting")

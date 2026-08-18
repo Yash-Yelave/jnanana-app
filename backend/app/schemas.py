@@ -49,6 +49,34 @@ class ProfileRead(ORMModel):
     bio: str | None
 
 
+class MentorSelfRead(ORMModel):
+    profile_id: UUID
+    headline: str | None
+    bio: str | None
+    hourly_rate_minor: int
+    currency: str
+    languages: list[str]
+    professions: list[str]
+    companies: list[str]
+    approval_status: str
+    rejection_reason: str | None
+
+
+class MentorSelfUpdate(BaseModel):
+    headline: str | None = Field(default=None, max_length=200)
+    bio: str | None = Field(default=None, max_length=2000)
+    hourly_rate_minor: int | None = Field(default=None, ge=0, le=10_000_000)
+    currency: str | None = Field(default=None, min_length=3, max_length=3)
+    languages: list[str] | None = Field(default=None, max_length=20)
+    professions: list[str] | None = Field(default=None, max_length=20)
+    companies: list[str] | None = Field(default=None, max_length=20)
+
+
+class MeRead(ProfileRead):
+    skills: list["SkillRead"] = Field(default_factory=list)
+    mentor: MentorSelfRead | None = None
+
+
 class SettingsInput(BaseModel):
     notify_activity: bool = True
     weekly_digest: bool = True
@@ -142,6 +170,10 @@ class OfferRead(OfferCreate):
     mentor_id: UUID
     status: str
     created_at: datetime
+
+
+class OfferStatusInput(BaseModel):
+    status: Literal["withdrawn", "rejected"]
 
 
 class BookingRead(ORMModel):
@@ -252,3 +284,24 @@ class SubscriptionRead(ORMModel):
 class WalletSummary(BaseModel):
     currency: str
     balance_minor: int
+
+
+class WalletEntryRead(ORMModel):
+    id: UUID
+    amount_minor: int
+    currency: str
+    kind: str
+    reference_id: UUID | None
+    created_at: datetime
+
+
+class InvoiceRead(ORMModel):
+    id: UUID
+    number: str
+    storage_path: str | None
+    issued_at: datetime
+
+
+class RoleChangeInput(BaseModel):
+    role: Literal["student", "mentor"]
+    reason: str = Field(min_length=3, max_length=1000)
