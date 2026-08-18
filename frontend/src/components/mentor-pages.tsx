@@ -156,60 +156,44 @@ export function MentorHomePage() {
 
 export function MentorBookingsPage() {
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [bid, setBid] = useState(false);
-  const [showCreateModal, setShowCreateModal] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
+  const [pending, setPending] = useState(false);
   const { data, reload } = useApi<{ items: LessonRequest[] }>("/lesson-requests");
 
   const requests = data?.items ?? [];
   const request = requests[selectedIndex] || requests[0];
 
-  async function makeOffer(event: FormEvent<HTMLFormElement>) {
+  async function handleOfferSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!request) return;
+    setPending(true);
     setError("");
     setMessage("");
     const form = new FormData(event.currentTarget);
+    const amount = Number(form.get("amount")) || (request.proposed_amount_minor / 100);
+    const note = String(form.get("note") || "Ready to mentor this session.");
     try {
       await apiFetch(`/lesson-requests/${request.id}/offers`, {
         method: "POST",
         body: JSON.stringify({
-          amount_minor: Number(form.get("amount")) * 100,
+          amount_minor: amount * 100,
           currency: request.currency,
-          note: String(form.get("note")),
+          note,
         }),
       });
-      setBid(false);
-      setMessage("Counter offer submitted successfully!");
+      setMessage("Offer submitted successfully!");
       await reload();
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : "Unable to create offer");
+      setError(reason instanceof Error ? reason.message : "Unable to submit offer");
+    } finally {
+      setPending(false);
     }
   }
 
-  async function acceptDirectly() {
-    if (!request) return;
-    setError("");
-    setMessage("");
-    try {
-      await apiFetch(`/lesson-requests/${request.id}/offers`, {
-        method: "POST",
-        body: JSON.stringify({
-          amount_minor: request.proposed_amount_minor,
-          currency: request.currency,
-          note: "Accepted request at proposed rate.",
-        }),
-      });
-      setMessage("Lesson offer created for proposed amount!");
-      await reload();
-    } catch (reason) {
-      setError(reason instanceof Error ? reason.message : "Unable to accept lesson");
-    }
-  }
-
-  async function createSampleRequest(event: FormEvent<HTMLFormElement>) {
+  async function handleCreateRequestSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    setPending(true);
     setError("");
     setMessage("");
     const form = new FormData(event.currentTarget);
@@ -233,11 +217,12 @@ export function MentorBookingsPage() {
           requested_end: endDate.toISOString(),
         }),
       });
-      setShowCreateModal(false);
-      setMessage("New lesson request created successfully!");
+      setMessage("Lesson request created successfully!");
       await reload();
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : "Unable to create lesson request (Student account required to post requests)");
+      setError(reason instanceof Error ? reason.message : "Unable to create lesson request");
+    } finally {
+      setPending(false);
     }
   }
 
@@ -246,154 +231,152 @@ export function MentorBookingsPage() {
       <main className={styles.main}>
         <PageTitle>Accept Lesson</PageTitle>
 
-        {message && <p className="data-state" style={{ color: "#5e9d26", fontWeight: "700" }}>{message}</p>}
-        {error && <p className="data-state" role="alert" style={{ color: "#b42318", fontWeight: "700" }}>{error}</p>}
+        {message && <p className="data-state" style={{ color: "#5e9d26", fontWeight: "800", fontSize: "16px", marginBottom: "16px" }}>✓ {message}</p>}
+        {error && <p className="data-state" role="alert" style={{ color: "#b42318", fontWeight: "800", fontSize: "16px", marginBottom: "16px" }}>⚠ {error}</p>}
 
-        {requests.length > 1 && (
-          <div style={{ marginBottom: "20px", display: "flex", alignItems: "center", gap: "12px" }}>
-            <label style={{ fontWeight: "700", color: "#333" }}>Select Lesson Request:</label>
-            <select
-              value={selectedIndex}
-              onChange={(e) => setSelectedIndex(Number(e.target.value))}
-              style={{ padding: "10px 16px", borderRadius: "12px", border: "1px solid #d8d8d8", outline: "none", fontSize: "14px" }}
-            >
-              {requests.map((item, index) => (
-                <option key={item.id} value={index}>
-                  {item.title} — {item.currency} {(item.proposed_amount_minor / 100).toLocaleString()}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
+        {!request ? (
+          <section className={styles.panel} style={{ maxWidth: "720px", margin: "0 auto 40px", padding: "36px" }}>
+            <h2 style={{ fontSize: "24px", marginBottom: "12px" }}>Create Lesson Request</h2>
+            <p style={{ color: "#666", marginBottom: "24px" }}>No open requests found. Fill in details below to post a new lesson request.</p>
 
-        {!request && data && (
-          <div className={styles.panel} style={{ textAlign: "center", padding: "40px 20px", marginBottom: "24px" }}>
-            <h2>No Open Lesson Requests</h2>
-            <p style={{ color: "#666", margin: "12px 0 20px" }}>Create a new lesson request to test filling and submitting booking details.</p>
-            <button
-              className="button button-primary"
-              type="button"
-              onClick={() => setShowCreateModal(true)}
-              style={{ cursor: "pointer", border: 0, padding: "12px 28px", borderRadius: "999px", background: "#a3d95d", fontWeight: 800 }}
-            >
-              Create Lesson Request +
-            </button>
-          </div>
-        )}
-
-        <section className={styles.booking}>
-          <article className={styles.panel}>
-            <h2>{request?.title ?? "Lesson request"}</h2>
-            <p className={styles.metaRow}>
-              <Calendar size={16} /> {request ? new Date(request.requested_start).toLocaleDateString() : "—"} &nbsp;&nbsp;&nbsp;&nbsp;
-              <Clock size={16} /> {request ? new Date(request.requested_start).toLocaleTimeString() : "—"}
-            </p>
-            <div>
-              <h3>Description</h3>
-              <p>{request?.description ?? "Select an open request to see its description."}</p>
-            </div>
-            <div>
-              <h3>Tags</h3>
-              <p>
-                <b>{request?.status ?? "open"}</b>
-              </p>
-            </div>
-            <h2>Resources</h2>
-            <label className={styles.upload}>
-              <UploadCloud size={32} />
-              <input type="file" disabled />
-              Resources become available after a booking is confirmed
-              <br />
-              SVG, PNG, JPG or GIF
-            </label>
-          </article>
-
-          <aside className={styles.panel}>
-            <h2>Bill</h2>
-            <p>
-              Live Lesson <b>{request?.currency ?? "INR"} {((request?.proposed_amount_minor ?? 0) / 100).toLocaleString()}</b>
-            </p>
-            <p>
-              Platform Fees <b>Calculated after payment setup</b>
-            </p>
-            <hr />
-            <strong>Total {request?.currency ?? "INR"} {((request?.proposed_amount_minor ?? 0) / 100).toLocaleString()}</strong>
-            <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginTop: "20px" }}>
-              <button
-                className="button button-primary"
-                type="button"
-                disabled={!request}
-                onClick={acceptDirectly}
-                style={{ cursor: request ? "pointer" : "not-allowed" }}
-              >
-                Accept Lesson <ArrowRight size={16} />
-              </button>
-              <button
-                className="button button-secondary"
-                type="button"
-                disabled={!request}
-                onClick={() => setBid(true)}
-                style={{ cursor: request ? "pointer" : "not-allowed", border: "1px solid #ddd", borderRadius: "999px", padding: "12px", fontWeight: 700 }}
-              >
-                Make Counter Offer
-              </button>
-              <button
-                type="button"
-                onClick={() => setShowCreateModal(true)}
-                style={{ cursor: "pointer", border: 0, padding: "10px", borderRadius: "999px", background: "#f0f0f0", fontWeight: 700, fontSize: "13px" }}
-              >
-                + New Request
-              </button>
-            </div>
-          </aside>
-        </section>
-
-        {bid && (
-          <div className={styles.modal} role="dialog" aria-modal="true" aria-labelledby="bid-title">
-            <form onSubmit={makeOffer}>
-              <h2 id="bid-title">Make a counter offer</h2>
-              <label>
-                New Bid (INR)
-                <input name="amount" type="number" defaultValue={(request?.proposed_amount_minor ?? 0) / 100} min="1" required />
+            <form onSubmit={handleCreateRequestSubmit} style={{ display: "grid", gap: "20px" }}>
+              <label style={{ display: "grid", gap: "8px", fontWeight: "700" }}>
+                Lesson Title / Topic
+                <input
+                  name="title"
+                  placeholder="e.g. React & Next.js Architecture Deep Dive"
+                  required
+                  minLength={3}
+                  style={{ height: "52px", padding: "0 18px", borderRadius: "12px", border: "1px solid #d8d8d8", outline: "none", fontSize: "16px" }}
+                />
               </label>
-              <label>
-                Feedback / Note
-                <textarea name="note" defaultValue="The topic requires additional time and preparation." required />
-              </label>
-              <div style={{ display: "flex", gap: "10px" }}>
-                <button type="submit" className="button button-primary" style={{ flex: 1, cursor: "pointer" }}>Submit Offer</button>
-                <button className="button button-secondary" type="button" onClick={() => setBid(false)} style={{ flex: 1, cursor: "pointer", border: "1px solid #ccc", background: "#f5f5f5" }}>
-                  Cancel
-                </button>
-              </div>
-            </form>
-          </div>
-        )}
 
-        {showCreateModal && (
-          <div className={styles.modal} role="dialog" aria-modal="true" aria-labelledby="create-title">
-            <form onSubmit={createSampleRequest}>
-              <h2 id="create-title">Create Lesson Request</h2>
-              <label>
-                Title
-                <input name="title" placeholder="e.g. Advanced React & Next.js Architecture" required minLength={3} />
-              </label>
-              <label>
+              <label style={{ display: "grid", gap: "8px", fontWeight: "700" }}>
                 Description
-                <textarea name="description" placeholder="Explain what topic you need help with..." required minLength={10} />
+                <textarea
+                  name="description"
+                  placeholder="Describe what you want to learn or teach in this session..."
+                  required
+                  minLength={10}
+                  style={{ minHeight: "120px", padding: "14px 18px", borderRadius: "12px", border: "1px solid #d8d8d8", outline: "none", fontSize: "15px", fontFamily: "inherit" }}
+                />
               </label>
-              <label>
-                Proposed Amount (INR)
-                <input name="amount" type="number" defaultValue={250} min="1" required />
+
+              <label style={{ display: "grid", gap: "8px", fontWeight: "700" }}>
+                Proposed Rate (INR)
+                <input
+                  name="amount"
+                  type="number"
+                  defaultValue={250}
+                  min="1"
+                  required
+                  style={{ height: "52px", padding: "0 18px", borderRadius: "12px", border: "1px solid #d8d8d8", outline: "none", fontSize: "16px" }}
+                />
               </label>
-              <div style={{ display: "flex", gap: "10px" }}>
-                <button type="submit" className="button button-primary" style={{ flex: 1, cursor: "pointer" }}>Submit Request</button>
-                <button type="button" onClick={() => setShowCreateModal(false)} style={{ flex: 1, cursor: "pointer", border: "1px solid #ccc", background: "#f5f5f5" }}>
-                  Cancel
-                </button>
-              </div>
+
+              <button
+                type="submit"
+                disabled={pending}
+                className="button button-primary"
+                style={{
+                  height: "56px",
+                  padding: "0 32px",
+                  borderRadius: "999px",
+                  background: "#a3d95d",
+                  color: "#111",
+                  fontWeight: "800",
+                  fontSize: "16px",
+                  border: 0,
+                  cursor: "pointer",
+                  marginTop: "12px",
+                }}
+              >
+                {pending ? "Submitting…" : "Submit Lesson Request →"}
+              </button>
             </form>
-          </div>
+          </section>
+        ) : (
+          <section className={styles.booking}>
+            <article className={styles.panel}>
+              {requests.length > 1 && (
+                <div style={{ marginBottom: "20px", display: "flex", alignItems: "center", gap: "12px" }}>
+                  <label style={{ fontWeight: "700", color: "#333" }}>Select Request:</label>
+                  <select
+                    value={selectedIndex}
+                    onChange={(e) => setSelectedIndex(Number(e.target.value))}
+                    style={{ padding: "10px 16px", borderRadius: "12px", border: "1px solid #d8d8d8", outline: "none", fontSize: "14px" }}
+                  >
+                    {requests.map((item, index) => (
+                      <option key={item.id} value={index}>
+                        {item.title} — {item.currency} {(item.proposed_amount_minor / 100).toLocaleString()}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              <h2>{request.title}</h2>
+              <p className={styles.metaRow}>
+                <Calendar size={16} /> {new Date(request.requested_start).toLocaleDateString()} &nbsp;&nbsp;&nbsp;&nbsp;
+                <Clock size={16} /> {new Date(request.requested_start).toLocaleTimeString()}
+              </p>
+              <div>
+                <h3>Description</h3>
+                <p>{request.description}</p>
+              </div>
+              <div>
+                <h3>Status</h3>
+                <p>
+                  <b>{request.status}</b>
+                </p>
+              </div>
+            </article>
+
+            <aside className={styles.panel}>
+              <h2>Lesson Offer Form</h2>
+              <form onSubmit={handleOfferSubmit} style={{ display: "grid", gap: "16px", marginTop: "16px" }}>
+                <label style={{ display: "grid", gap: "6px", fontWeight: "700" }}>
+                  Offer Rate (INR)
+                  <input
+                    name="amount"
+                    type="number"
+                    defaultValue={(request.proposed_amount_minor / 100)}
+                    min="1"
+                    required
+                    style={{ height: "48px", padding: "0 16px", borderRadius: "12px", border: "1px solid #ddd", fontSize: "15px" }}
+                  />
+                </label>
+
+                <label style={{ display: "grid", gap: "6px", fontWeight: "700" }}>
+                  Note / Message
+                  <textarea
+                    name="note"
+                    defaultValue="Ready to mentor this session at the proposed topic depth."
+                    required
+                    style={{ minHeight: "90px", padding: "12px", borderRadius: "12px", border: "1px solid #ddd", fontSize: "14px", fontFamily: "inherit" }}
+                  />
+                </label>
+
+                <button
+                  type="submit"
+                  disabled={pending}
+                  className="button button-primary"
+                  style={{
+                    height: "52px",
+                    borderRadius: "999px",
+                    background: "#a3d95d",
+                    color: "#111",
+                    fontWeight: "800",
+                    border: 0,
+                    cursor: "pointer",
+                    marginTop: "8px",
+                  }}
+                >
+                  {pending ? "Submitting…" : "Submit Offer →"}
+                </button>
+              </form>
+            </aside>
+          </section>
         )}
       </main>
     </AppShell>

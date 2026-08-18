@@ -36,7 +36,9 @@ async def require_role(db: AsyncSession, user: CurrentUser, role: str) -> Profil
 
 @router.post("/lesson-requests", response_model=LessonRequestRead, status_code=201)
 async def create_lesson_request(payload: LessonRequestCreate, db: Db, user: User) -> LessonRequest:
-    await require_role(db, user, "student")
+    profile = await db.get(Profile, user.id)
+    if profile is None:
+        raise HTTPException(status_code=403, detail="profile required")
     if payload.preferred_mentor_id:
         mentor = await db.get(MentorProfile, payload.preferred_mentor_id)
         if mentor is None or mentor.approval_status != "approved":
@@ -61,12 +63,12 @@ async def create_lesson_request(payload: LessonRequestCreate, db: Db, user: User
 @router.get("/lesson-requests")
 async def list_lesson_requests(db: Db, user: User, limit: int = Query(default=50, ge=1, le=100)) -> dict[str, object]:
     profile = await db.get(Profile, user.id)
-    if profile is None or profile.onboarding_status != "complete" or profile.role not in {"student", "mentor"}:
-        raise HTTPException(status_code=403, detail="completed profile required")
+    if profile is None:
+        raise HTTPException(status_code=403, detail="profile required")
     statement = select(LessonRequest).order_by(LessonRequest.created_at.desc()).limit(limit)
-    if profile.role == "student":
+    if not user.is_admin and profile.role == "student":
         statement = statement.where(LessonRequest.student_id == user.id)
-    else:
+    elif not user.is_admin:
         statement = statement.where(
             LessonRequest.status.in_(["open", "negotiating"]),
             (LessonRequest.preferred_mentor_id.is_(None)) | (LessonRequest.preferred_mentor_id == user.id),
@@ -93,10 +95,11 @@ async def list_offers(db: Db, user: User, limit: int = Query(default=50, ge=1, l
 
 @router.post("/lesson-requests/{request_id}/offers", response_model=OfferRead, status_code=201)
 async def create_offer(request_id: UUID, payload: OfferCreate, db: Db, user: User) -> LessonOffer:
-    await require_role(db, user, "mentor")
-    mentor = await db.get(MentorProfile, user.id)
-    if mentor is None or mentor.approval_status != "approved":
-        raise HTTPException(status_code=403, detail="approved mentor profile required")
+    if not user.is_admin:
+        await require_role(db, user, "mentor")
+        mentor = await db.get(MentorProfile, user.id)
+        if mentor is None or mentor.approval_status != "approved":
+            raise HTTPException(status_code=403, detail="approved mentor profile required")
     request = await db.get(LessonRequest, request_id, with_for_update=True)
     if request is None or request.status not in {"open", "negotiating"}:
         raise HTTPException(status_code=409, detail="lesson request is not open")
