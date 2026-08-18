@@ -49,34 +49,62 @@ function Navigation({ active, mentor = false }: { active: string; mentor?: boole
   );
 }
 
-export function AppShell({ children, active, rightRail, mentor = false }: { children: ReactNode; active: string; rightRail?: ReactNode; mentor?: boolean }) {
+export function AppShell({
+  children,
+  active,
+  rightRail,
+  mentor = false,
+}: {
+  children: ReactNode;
+  active: string;
+  rightRail?: ReactNode;
+  mentor?: boolean;
+}) {
   return (
     <div className={`${styles.shell} ${rightRail ? "" : styles.withoutRail}`}>
       <aside className={styles.sidebar}>
         <Brand inverse />
         <Navigation active={active} mentor={mentor} />
         <Link className={styles.subscription} href="/subscription">
-          <span className={styles.arrowBox}><ArrowUpRight size={18} /></span>
-          <strong>Get the<br />Subscription</strong>
+          <span className={styles.arrowBox}>
+            <ArrowUpRight size={18} />
+          </span>
+          <strong>
+            Get the
+            <br />
+            Subscription
+          </strong>
           <Menu className={styles.subIcon} size={20} aria-hidden="true" />
         </Link>
       </aside>
+
       <header className={styles.mobileHeader}>
         <Brand inverse />
-        <Link href="/schedule" aria-label="Open schedule"><Calendar size={22} /></Link>
-        <details><summary aria-label="Open menu"><Menu size={24} /></summary><Navigation active={active} mentor={mentor} /></details>
-        <Link href={mentor ? "/mentor/profile" : "/profile"} aria-label="Open profile"><Image src="/assets/app/avatar.png" alt="" width={44} height={44} /></Link>
+        <Link href="/schedule" aria-label="Open schedule">
+          <Calendar size={22} />
+        </Link>
+        <details>
+          <summary aria-label="Open menu">
+            <Menu size={24} />
+          </summary>
+          <Navigation active={active} mentor={mentor} />
+        </details>
+        <Link href={mentor ? "/mentor/profile" : "/profile"} aria-label="Open profile">
+          <Image src="/assets/app/avatar.png" alt="Profile avatar" width={44} height={44} />
+        </Link>
       </header>
-      <section className={styles.content}>
-        <header className={styles.topbar}>
-          <label>
-            <Search size={18} />
-            <input type="search" placeholder="Search courses" aria-label="Search courses" />
-          </label>
-          <Link href={mentor ? "/mentor/profile" : "/profile"} aria-label="Open profile"><Image src="/assets/app/avatar.png" alt="" width={58} height={58} /></Link>
-        </header>
-        {children}
-      </section>
+
+      <header className={styles.topbarHeader}>
+        <label className={styles.searchBox}>
+          <Search size={18} />
+          <input type="search" placeholder="Search courses" aria-label="Search courses" />
+        </label>
+        <Link className={styles.profileBtn} href={mentor ? "/mentor/profile" : "/profile"} aria-label="Open profile">
+          <Image src="/assets/app/avatar.png" alt="User profile" width={46} height={46} priority />
+        </Link>
+      </header>
+
+      <section className={styles.content}>{children}</section>
       {rightRail && <aside className={styles.rightRail}>{rightRail}</aside>}
     </div>
   );
