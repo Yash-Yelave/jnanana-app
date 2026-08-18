@@ -552,7 +552,13 @@ export function MentorLessonsPage() {
           {lessonItems.length === 0 && data && <p className="data-state">No booked lessons yet.</p>}
           {lessonItems.map((booking, i) => (
             <article className={styles.panel} key={booking.id}>
-              <Image src={`/assets/app/course-${["design", "css", "data", "design"][i]}.png`} alt="" width={220} height={160} />
+              <Image
+                src={`/assets/app/course-${["design", "css", "data"][i % 3]}.png`}
+                alt=""
+                width={220}
+                height={160}
+                style={{ width: "auto", height: "auto" }}
+              />
               <div>
                 <small>{booking.status.replaceAll("_", " ")}</small>
                 <h2>Mentoring session</h2>
@@ -561,11 +567,16 @@ export function MentorLessonsPage() {
                 </p>
                 <p>Student: Bhubnesh Maharana</p>
               </div>
-              <Link className="button button-primary" href={booking.status === "confirmed" ? "/meeting" : "/mentor/bookings"}>
-                {booking.status === "confirmed" ? "Start class" : "View details"} <ArrowRight size={16} />
-              </Link>
-              {booking.status === "confirmed" && <button className="button button-secondary" type="button" onClick={() => void updateStatus(booking, "in_progress")}>Mark started</button>}
-              {booking.status === "in_progress" && <button className="button button-primary" type="button" onClick={() => void updateStatus(booking, "completed")}>Mark completed</button>}
+              <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                <Link className="button button-primary" href={booking.status === "confirmed" ? "/meeting" : "/mentor/bookings"}>
+                  {booking.status === "confirmed" ? "Start class" : "View details"} <ArrowRight size={16} />
+                </Link>
+                <Link className="button button-secondary" href={`/chat?studentId=${booking.student_id}`} style={{ borderRadius: "999px", fontWeight: 700, textAlign: "center", textDecoration: "none", fontSize: "14px" }}>
+                  Chat with Student 💬
+                </Link>
+                {booking.status === "confirmed" && <button className="button button-secondary" type="button" onClick={() => void updateStatus(booking, "in_progress")}>Mark started</button>}
+                {booking.status === "in_progress" && <button className="button button-primary" type="button" onClick={() => void updateStatus(booking, "completed")}>Mark completed</button>}
+              </div>
             </article>
           ))}
         </section>

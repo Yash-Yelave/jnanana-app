@@ -36,6 +36,7 @@ const mentorNav = [
   { label: "Dashboard", href: "/mentor/dashboard", icon: LayoutDashboard },
   { label: "Bookings", href: "/mentor/bookings", icon: GraduationCap },
   { label: "Lessons", href: "/mentor/lessons", icon: BookOpen },
+  { label: "Chat Room", href: "/chat", icon: MessageSquare },
   { label: "Community", href: "/community", icon: Mic },
   { label: "Settings", href: "/settings", icon: Settings },
 ] as const;

@@ -10,8 +10,8 @@ from sqlalchemy.orm import aliased
 
 from app.auth import CurrentUser, get_current_user
 from app.db import get_db
-from app.models import Community, CommunityMember, Conversation, ConversationMember, Message, Profile
-from app.schemas import CommunityRead, ConversationRead, MessageCreate, MessageRead
+from app.models import Community, CommunityMember, Conversation, ConversationMember, Message, MentorProfile, Profile
+from app.schemas import CommunityRead, ConversationParticipantRead, ConversationRead, MessageCreate, MessageRead
 
 router = APIRouter(tags=["community"])
 Db = Annotated[AsyncSession, Depends(get_db)]

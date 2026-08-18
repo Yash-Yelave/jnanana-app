@@ -227,7 +227,6 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
                   Edit Profile
                 </Link>
               )}
-              {mentorDetail && <Link className={styles.button} href={`/chat?mentorId=${mentorId || data?.id || ""}`} style={{ marginLeft: "auto" }}>Message</Link>}
             </section>
             <nav className={styles.tabs}>
               {tabs.map(([label, href]) => (

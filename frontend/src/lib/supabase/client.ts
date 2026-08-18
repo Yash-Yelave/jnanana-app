@@ -7,9 +7,10 @@ export function createClient() {
 }
 
 export function publicAsset(bucket: string, path: string | null | undefined) {
-  if (!path) return null;
-  if (path.startsWith("http://") || path.startsWith("https://") || path.startsWith("/")) {
-    return path;
+  if (!path || typeof path !== "string" || path.trim() === "") return null;
+  const trimmed = path.trim();
+  if (trimmed.startsWith("http://") || trimmed.startsWith("https://") || trimmed.startsWith("/")) {
+    return trimmed;
   }
-  return createClient().storage.from(bucket).getPublicUrl(path).data.publicUrl;
+  return createClient().storage.from(bucket).getPublicUrl(trimmed).data.publicUrl;
 }

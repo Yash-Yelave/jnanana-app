@@ -242,6 +242,62 @@ export function SchedulePage({ booking = false, mentorId }: { booking?: boolean;
                 )}
               </section>
             )}
+
+            {!booking && (
+              <section style={{ marginTop: "32px", paddingTop: "24px", borderTop: "1px solid #eee" }}>
+                <h2 style={{ fontSize: "22px", marginBottom: "16px", color: "#111" }}>
+                  📅 Approved & Confirmed Sessions ({bookingData?.items.length ?? 0})
+                </h2>
+                {(bookingData?.items ?? []).length === 0 ? (
+                  <p style={{ color: "#777", fontSize: "14px", fontStyle: "italic" }}>
+                    No approved sessions yet. Once an offer is accepted, your approved lesson with direct messaging option will appear here.
+                  </p>
+                ) : (
+                  <div style={{ display: "grid", gap: "16px" }}>
+                    {bookingData?.items.map((b) => (
+                      <article
+                        key={b.id}
+                        style={{
+                          padding: "18px 20px",
+                          borderRadius: "20px",
+                          background: "#efffde",
+                          border: "1.5px solid #a3dc58",
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          flexWrap: "wrap",
+                          gap: "12px",
+                        }}
+                      >
+                        <div>
+                          <span style={{ fontSize: "11px", fontWeight: 800, padding: "3px 10px", borderRadius: "999px", background: "#5c9822", color: "#fff" }}>
+                            APPROVED & CONFIRMED
+                          </span>
+                          <h3 style={{ margin: "6px 0 2px", fontSize: "17px", color: "#111" }}>Mentoring Lesson Session</h3>
+                          <p style={{ margin: 0, color: "#444", fontSize: "13px" }}>
+                            <Clock size={14} style={{ verticalAlign: "middle" }} /> {new Date(b.starts_at).toLocaleString()}
+                          </p>
+                        </div>
+                        <Link
+                          href={`/chat?mentorId=${b.mentor_id}`}
+                          style={{
+                            padding: "10px 22px",
+                            borderRadius: "999px",
+                            background: "#111",
+                            color: "#fff",
+                            fontWeight: 800,
+                            fontSize: "13px",
+                            textDecoration: "none",
+                          }}
+                        >
+                          Message Mentor 💬 →
+                        </Link>
+                      </article>
+                    ))}
+                  </div>
+                )}
+              </section>
+            )}
           </article>
           <aside>
             <form onSubmit={requestLesson}>
@@ -584,7 +640,7 @@ export function ReferralsPage() {
 
 export function ChatPage() {
   const searchParams = useSearchParams();
-  const targetMentorId = searchParams.get("mentorId");
+  const targetUserId = searchParams.get("studentId") || searchParams.get("mentorId");
 
   const [message, setMessage] = useState("");
   const [conversations, setConversations] = useState<Conversation[]>([]);
@@ -607,15 +663,15 @@ export function ChatPage() {
         let list = result.items;
         let selectedId = list[0]?.id;
 
-        if (targetMentorId) {
-          const existing = list.find((c) => c.other_participant?.id === targetMentorId);
+        if (targetUserId) {
+          const existing = list.find((c) => c.other_participant?.id === targetUserId);
           if (existing) {
             selectedId = existing.id;
           } else {
             try {
               const targetConv = await apiFetch<Conversation>("/conversations", {
                 method: "POST",
-                body: JSON.stringify({ other_user_id: targetMentorId }),
+                body: JSON.stringify({ other_user_id: targetUserId }),
               });
               if (targetConv && active) {
                 if (!list.some((c) => c.id === targetConv.id)) {
@@ -640,7 +696,7 @@ export function ChatPage() {
     return () => {
       active = false;
     };
-  }, [targetMentorId]);
+  }, [targetUserId]);
 
   useEffect(() => {
     if (!activeId) return;

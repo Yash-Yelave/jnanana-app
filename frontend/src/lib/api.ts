@@ -13,7 +13,12 @@ export class ApiError extends Error {
 export async function apiFetch<T>(path: string, init: RequestInit = {}): Promise<T> {
   const supabase = createClient();
   const { data } = await supabase.auth.getSession();
-  if (!data.session?.access_token) throw new ApiError("Authentication required", 401);
+  if (!data.session?.access_token) {
+    if (typeof window !== "undefined" && !["/login", "/", "/mentors"].includes(window.location.pathname)) {
+      window.location.href = "/login";
+    }
+    throw new ApiError("Authentication required", 401);
+  }
 
   const response = await fetch(`${apiUrl()}/api/v1${path}`, {
     ...init,
@@ -24,6 +29,9 @@ export async function apiFetch<T>(path: string, init: RequestInit = {}): Promise
     },
   });
   if (!response.ok) {
+    if (response.status === 401 && typeof window !== "undefined" && !["/login", "/", "/mentors"].includes(window.location.pathname)) {
+      window.location.href = "/login";
+    }
     const body = (await response.json().catch(() => null)) as { detail?: string } | null;
     throw new ApiError(body?.detail ?? "Request failed", response.status);
   }
