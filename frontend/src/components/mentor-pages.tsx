@@ -155,29 +155,132 @@ export function MentorHomePage() {
 }
 
 export function MentorBookingsPage() {
+  const [selectedIndex, setSelectedIndex] = useState(0);
   const [bid, setBid] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
   const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
   const { data, reload } = useApi<{ items: LessonRequest[] }>("/lesson-requests");
-  const request = data?.items[0];
+
+  const requests = data?.items ?? [];
+  const request = requests[selectedIndex] || requests[0];
 
   async function makeOffer(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!request) return;
+    setError("");
+    setMessage("");
     const form = new FormData(event.currentTarget);
     try {
-      await apiFetch(`/lesson-requests/${request.id}/offers`, { method: "POST", body: JSON.stringify({ amount_minor: Number(form.get("amount")) * 100, currency: request.currency, note: form.get("note") }) });
+      await apiFetch(`/lesson-requests/${request.id}/offers`, {
+        method: "POST",
+        body: JSON.stringify({
+          amount_minor: Number(form.get("amount")) * 100,
+          currency: request.currency,
+          note: String(form.get("note")),
+        }),
+      });
       setBid(false);
+      setMessage("Counter offer submitted successfully!");
       await reload();
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : "Unable to create offer");
     }
   }
+
+  async function acceptDirectly() {
+    if (!request) return;
+    setError("");
+    setMessage("");
+    try {
+      await apiFetch(`/lesson-requests/${request.id}/offers`, {
+        method: "POST",
+        body: JSON.stringify({
+          amount_minor: request.proposed_amount_minor,
+          currency: request.currency,
+          note: "Accepted request at proposed rate.",
+        }),
+      });
+      setMessage("Lesson offer created for proposed amount!");
+      await reload();
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "Unable to accept lesson");
+    }
+  }
+
+  async function createSampleRequest(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setError("");
+    setMessage("");
+    const form = new FormData(event.currentTarget);
+    const title = String(form.get("title"));
+    const description = String(form.get("description"));
+    const amount = Number(form.get("amount")) || 200;
+
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() + 1);
+    const endDate = new Date(startDate.getTime() + 3600000);
+
+    try {
+      await apiFetch("/lesson-requests", {
+        method: "POST",
+        body: JSON.stringify({
+          title,
+          description,
+          proposed_amount_minor: amount * 100,
+          currency: "INR",
+          requested_start: startDate.toISOString(),
+          requested_end: endDate.toISOString(),
+        }),
+      });
+      setShowCreateModal(false);
+      setMessage("New lesson request created successfully!");
+      await reload();
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "Unable to create lesson request (Student account required to post requests)");
+    }
+  }
+
   return (
     <AppShell active="/mentor/bookings" mentor>
       <main className={styles.main}>
         <PageTitle>Accept Lesson</PageTitle>
-        {!request && data && <p className="data-state">No open lesson requests.</p>}
-        {error && <p className="data-state" role="alert">{error}</p>}
+
+        {message && <p className="data-state" style={{ color: "#5e9d26", fontWeight: "700" }}>{message}</p>}
+        {error && <p className="data-state" role="alert" style={{ color: "#b42318", fontWeight: "700" }}>{error}</p>}
+
+        {requests.length > 1 && (
+          <div style={{ marginBottom: "20px", display: "flex", alignItems: "center", gap: "12px" }}>
+            <label style={{ fontWeight: "700", color: "#333" }}>Select Lesson Request:</label>
+            <select
+              value={selectedIndex}
+              onChange={(e) => setSelectedIndex(Number(e.target.value))}
+              style={{ padding: "10px 16px", borderRadius: "12px", border: "1px solid #d8d8d8", outline: "none", fontSize: "14px" }}
+            >
+              {requests.map((item, index) => (
+                <option key={item.id} value={index}>
+                  {item.title} — {item.currency} {(item.proposed_amount_minor / 100).toLocaleString()}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
+        {!request && data && (
+          <div className={styles.panel} style={{ textAlign: "center", padding: "40px 20px", marginBottom: "24px" }}>
+            <h2>No Open Lesson Requests</h2>
+            <p style={{ color: "#666", margin: "12px 0 20px" }}>Create a new lesson request to test filling and submitting booking details.</p>
+            <button
+              className="button button-primary"
+              type="button"
+              onClick={() => setShowCreateModal(true)}
+              style={{ cursor: "pointer", border: 0, padding: "12px 28px", borderRadius: "999px", background: "#a3d95d", fontWeight: 800 }}
+            >
+              Create Lesson Request +
+            </button>
+          </div>
+        )}
+
         <section className={styles.booking}>
           <article className={styles.panel}>
             <h2>{request?.title ?? "Lesson request"}</h2>
@@ -215,8 +318,32 @@ export function MentorBookingsPage() {
             </p>
             <hr />
             <strong>Total {request?.currency ?? "INR"} {((request?.proposed_amount_minor ?? 0) / 100).toLocaleString()}</strong>
-            <div>
-              <button className="button button-primary" type="button" disabled={!request} onClick={() => setBid(true)}>Make offer <ArrowRight size={16} /></button>
+            <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginTop: "20px" }}>
+              <button
+                className="button button-primary"
+                type="button"
+                disabled={!request}
+                onClick={acceptDirectly}
+                style={{ cursor: request ? "pointer" : "not-allowed" }}
+              >
+                Accept Lesson <ArrowRight size={16} />
+              </button>
+              <button
+                className="button button-secondary"
+                type="button"
+                disabled={!request}
+                onClick={() => setBid(true)}
+                style={{ cursor: request ? "pointer" : "not-allowed", border: "1px solid #ddd", borderRadius: "999px", padding: "12px", fontWeight: 700 }}
+              >
+                Make Counter Offer
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowCreateModal(true)}
+                style={{ cursor: "pointer", border: 0, padding: "10px", borderRadius: "999px", background: "#f0f0f0", fontWeight: 700, fontSize: "13px" }}
+              >
+                + New Request
+              </button>
             </div>
           </aside>
         </section>
@@ -226,17 +353,45 @@ export function MentorBookingsPage() {
             <form onSubmit={makeOffer}>
               <h2 id="bid-title">Make a counter offer</h2>
               <label>
-                New Bid
-                <input name="amount" type="number" defaultValue={(request?.proposed_amount_minor ?? 0) / 100} min="0" required />
+                New Bid (INR)
+                <input name="amount" type="number" defaultValue={(request?.proposed_amount_minor ?? 0) / 100} min="1" required />
               </label>
               <label>
-                Feedback
-                <textarea name="note" defaultValue="The topic requires additional time and preparation." />
+                Feedback / Note
+                <textarea name="note" defaultValue="The topic requires additional time and preparation." required />
               </label>
-              <button className="button button-primary">Offer</button>
-              <button className="button button-secondary" type="button" onClick={() => setBid(false)}>
-                Cancel
-              </button>
+              <div style={{ display: "flex", gap: "10px" }}>
+                <button type="submit" className="button button-primary" style={{ flex: 1, cursor: "pointer" }}>Submit Offer</button>
+                <button className="button button-secondary" type="button" onClick={() => setBid(false)} style={{ flex: 1, cursor: "pointer", border: "1px solid #ccc", background: "#f5f5f5" }}>
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
+
+        {showCreateModal && (
+          <div className={styles.modal} role="dialog" aria-modal="true" aria-labelledby="create-title">
+            <form onSubmit={createSampleRequest}>
+              <h2 id="create-title">Create Lesson Request</h2>
+              <label>
+                Title
+                <input name="title" placeholder="e.g. Advanced React & Next.js Architecture" required minLength={3} />
+              </label>
+              <label>
+                Description
+                <textarea name="description" placeholder="Explain what topic you need help with..." required minLength={10} />
+              </label>
+              <label>
+                Proposed Amount (INR)
+                <input name="amount" type="number" defaultValue={250} min="1" required />
+              </label>
+              <div style={{ display: "flex", gap: "10px" }}>
+                <button type="submit" className="button button-primary" style={{ flex: 1, cursor: "pointer" }}>Submit Request</button>
+                <button type="button" onClick={() => setShowCreateModal(false)} style={{ flex: 1, cursor: "pointer", border: "1px solid #ccc", background: "#f5f5f5" }}>
+                  Cancel
+                </button>
+              </div>
             </form>
           </div>
         )}
