@@ -30,6 +30,21 @@ export function ResendForm() {
 
 export function ApprovalStatus() {
   const { data } = useApi<Profile>("/me");
-  if (data?.mentor?.approval_status === "rejected") return <><h1>Application needs attention</h1><p>{data.mentor.rejection_reason ?? "Your mentor application was not approved."}</p><Link href="/mentor/profile">Update mentor profile →</Link></>;
-  return <><h1>Patience, please!</h1><p>We&apos;re reviewing your mentor profile. We&apos;ll let you know when it is approved.</p><Link href="/login">Back to login →</Link></>;
+  if (data?.mentor?.approval_status === "rejected")
+    return (
+      <>
+        <h1>Application needs attention</h1>
+        <p>{data.mentor.rejection_reason ?? "Your mentor application was not approved."}</p>
+        <Link href="/mentor/profile">Update mentor profile →</Link>
+      </>
+    );
+  return (
+    <>
+      <h1>Patience, please!</h1>
+      <p>We&apos;re reviewing your mentor profile. We&apos;ll let you know when it is approved.</p>
+      <Link className="button button-primary" href="/login">
+        Back to login →
+      </Link>
+    </>
+  );
 }

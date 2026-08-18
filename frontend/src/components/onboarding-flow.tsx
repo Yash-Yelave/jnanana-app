@@ -99,34 +99,103 @@ export function OnboardingFlow({ role }: { role: "student" | "mentor" }) {
     }
   }
 
-  if (role === "student" && step === 0) return <main className={styles.page}><section className={`${styles.panel} ${styles.rolePanel}`}>
-    <StepHeader step={1} total={3} />
-    <h1>Choose Your Side</h1>
-    <div className={styles.roles}>
-      {(["student", "mentor"] as const).map((value) => <article className={value === "student" ? styles.selected : ""} key={value}>
-        <Image src={`/assets/onboarding/${value === "student" ? "learner" : "tutor"}-choice.png`} alt="" width={280} height={210} />
-        <h2>{value === "student" ? "Learner" : "Tutor"}</h2>
-        <ul><li>Learn from skilled mentors</li><li>Book sessions at your pace</li><li>Grow with practical guidance</li></ul>
-        <button type="button" onClick={() => value === "student" ? setStep(1) : router.push("/onboarding/mentor")}>Continue <span>→</span></button>
-      </article>)}
-    </div>
-  </section></main>;
+  if (role === "student" && step === 0)
+    return (
+      <main className={styles.page}>
+        <section className={`${styles.panel} ${styles.rolePanel}`}>
+          <StepHeader step={1} total={3} />
+          <h1>Choose Your Side</h1>
+          <div className={styles.roles}>
+            {(["student", "mentor"] as const).map((value) => (
+              <article className={value === "student" ? styles.selected : ""} key={value}>
+                <Image src={`/assets/onboarding/${value === "student" ? "learner" : "tutor"}-choice.png`} alt="" width={280} height={210} />
+                <h2>{value === "student" ? "Learner" : "Tutor"}</h2>
+                <ul>
+                  <li>Learn from skilled mentors</li>
+                  <li>Book sessions at your pace</li>
+                  <li>Grow with practical guidance</li>
+                </ul>
+                <button type="button" onClick={() => (value === "student" ? setStep(1) : router.push("/onboarding/mentor"))}>
+                  Continue <span>→</span>
+                </button>
+              </article>
+            ))}
+          </div>
+          <div style={{ textAlign: "center", marginTop: "24px" }}>
+            <button
+              type="button"
+              className={styles.back}
+              onClick={() => router.push("/login")}
+            >
+              ← Back to login
+            </button>
+          </div>
+        </section>
+      </main>
+    );
 
-  const detailsStep = step === 2;
-  return <main className={styles.page}><section className={styles.panel}>
-    <div className={styles.formSide}>
-      <StepHeader step={detailsStep ? (role === "mentor" ? 2 : 3) : (role === "mentor" ? 1 : 2)} total={3} />
-      {detailsStep ? <form onSubmit={complete}>
-        <h1>Tell us about <em>you</em></h1><Fields mentor={role === "mentor"} />
-        {error && <p className={styles.error} role="alert">{error}</p>}
-        <div className={styles.actions}><button type="button" className={styles.back} onClick={() => setStep(1)}>Back</button><button disabled={pending}>{pending ? "Creating account…" : "Continue"} <span>→</span></button></div>
-      </form> : <>
-        <h1>What a kind of <em>skills</em> you wanna {role === "mentor" ? <em>Teach</em> : "learn"} ?</h1>
-        <div className={styles.skills}>{skills.map((name, index) => <button type="button" className={skill === name ? styles.selectedSkill : ""} onClick={() => setSkill(name)} key={name}><span>{["↗", "✦", "‹/›", "◎"][index]}</span>{name}</button>)}</div>
-        <div className={styles.dots}><b></b><i></i><i></i></div>
-        <div className={styles.actions}><button type="button" className={styles.back} onClick={() => role === "student" ? setStep(0) : router.push("/login")}>Back</button><button type="button" onClick={() => setStep(2)}>Finish <span>→</span></button></div>
-      </>}
-    </div>
-    <Figure learner={detailsStep} />
-  </section></main>;
+  const isDetails = role === "mentor" ? step === 1 : step === 2;
+  const totalSteps = role === "mentor" ? 2 : 3;
+  const currentStep = role === "mentor" ? (isDetails ? 2 : 1) : (isDetails ? 3 : 2);
+
+  return (
+    <main className={styles.page}>
+      <section className={styles.panel}>
+        <div className={styles.formSide}>
+          <StepHeader step={currentStep} total={totalSteps} />
+          {isDetails ? (
+            <form onSubmit={complete}>
+              <h1>
+                Tell us about <em>you</em>
+              </h1>
+              <Fields mentor={role === "mentor"} />
+              {error && (
+                <p className={styles.error} role="alert">
+                  {error}
+                </p>
+              )}
+              <div className={styles.actions}>
+                <button type="button" className={styles.back} onClick={() => setStep(role === "mentor" ? 0 : 1)}>
+                  Back
+                </button>
+                <button disabled={pending}>
+                  {pending ? "Creating account…" : "Continue"} <span>→</span>
+                </button>
+              </div>
+            </form>
+          ) : (
+            <>
+              <h1>What a kind of <em>skills</em> you wanna {role === "mentor" ? <em>Teach</em> : "learn"} ?</h1>
+              <div className={styles.skills}>
+                {skills.map((name, index) => (
+                  <button type="button" className={skill === name ? styles.selectedSkill : ""} onClick={() => setSkill(name)} key={name}>
+                    <span>{["↗", "✦", "‹/›", "◎"][index]}</span>
+                    {name}
+                  </button>
+                ))}
+              </div>
+              <div className={styles.dots}>
+                <b></b>
+                <i></i>
+                <i></i>
+              </div>
+              <div className={styles.actions}>
+                <button
+                  type="button"
+                  className={styles.back}
+                  onClick={() => (role === "student" ? setStep(0) : router.push("/login"))}
+                >
+                  {role === "student" ? "Back" : "← Back to login"}
+                </button>
+                <button type="button" onClick={() => setStep(role === "mentor" ? 1 : 2)}>
+                  Finish <span>→</span>
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+        <Figure learner={isDetails} />
+      </section>
+    </main>
+  );
 }
