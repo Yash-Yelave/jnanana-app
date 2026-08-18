@@ -208,6 +208,8 @@ class BookingRead(ORMModel):
     status: str
     cancellation_reason: str | None
     created_at: datetime
+    student_name: str | None = None
+    mentor_name: str | None = None
 
 
 class BookingStatusInput(BaseModel):

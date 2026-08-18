@@ -54,6 +54,6 @@ export type LessonRequest = {
   status: string;
 };
 export type Offer = { id: string; request_id: string; mentor_id: string; amount_minor: number; currency: string; note: string | null; status: string; created_at: string };
-export type Booking = { id: string; student_id: string; mentor_id: string; starts_at: string; ends_at: string; amount_minor: number; currency: string; status: string };
+export type Booking = { id: string; student_id: string; mentor_id: string; starts_at: string; ends_at: string; amount_minor: number; currency: string; status: string; student_name?: string | null; mentor_name?: string | null };
 export type Review = { id: string; booking_id: string; student_id: string; mentor_id: string; rating: number; comment: string | null; created_at: string };
 export type Plan = { id: string; slug: string; name: string; price_minor: number; currency: string; billing_interval: string; features: string[] };

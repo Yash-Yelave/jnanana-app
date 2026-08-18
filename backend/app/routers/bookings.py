@@ -247,6 +247,17 @@ async def update_offer_status(offer_id: UUID, payload: OfferStatusInput, db: Db,
     return offer
 
 
+async def populate_booking_read(db: AsyncSession, booking: Booking) -> BookingRead:
+    model = BookingRead.model_validate(booking)
+    student = await db.get(Profile, booking.student_id)
+    if student:
+        model.student_name = f"{student.first_name} {student.last_name}"
+    mentor = await db.get(Profile, booking.mentor_id)
+    if mentor:
+        model.mentor_name = f"{mentor.first_name} {mentor.last_name}"
+    return model
+
+
 @router.get("/bookings")
 async def list_bookings(db: Db, user: User, limit: int = Query(default=50, ge=1, le=100)) -> dict[str, object]:
     items = list(
@@ -259,7 +270,8 @@ async def list_bookings(db: Db, user: User, limit: int = Query(default=50, ge=1,
             )
         ).all()
     )
-    return {"items": [BookingRead.model_validate(item) for item in items], "next_cursor": None}
+    results = [await populate_booking_read(db, item) for item in items]
+    return {"items": results, "next_cursor": None}
 
 
 @router.post("/bookings/{booking_id}/status", response_model=BookingRead)

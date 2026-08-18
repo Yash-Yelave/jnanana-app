@@ -565,7 +565,7 @@ export function MentorLessonsPage() {
                 <p>
                   <Clock size={15} /> {new Date(booking.starts_at).toLocaleString()}
                 </p>
-                <p>Student: Bhubnesh Maharana</p>
+                <p>Student: {booking.student_name || "Kavita Patil"}</p>
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
                 <Link className="button button-primary" href={booking.status === "confirmed" ? "/meeting" : "/mentor/bookings"}>
