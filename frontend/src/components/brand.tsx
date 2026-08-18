@@ -3,27 +3,28 @@ import Link from "next/link";
 
 export function Brand({ inverse = false }: { inverse?: boolean }) {
   return (
-    <Link className="inline-flex items-center gap-3 shrink-0 py-1" href="/" aria-label="Jnanana Foundation home">
+    <Link className="inline-flex items-center gap-4 shrink-0 py-1" href="/" aria-label="Jnanana Foundation home">
       <Image
         src="/assets/brand/logo-icon.png"
         alt="Jnanana Logo"
-        width={77}
-        height={123}
-        className={`h-14 w-auto object-contain transition-transform ${
-          inverse ? "brightness-0 invert" : ""
-        }`}
+        width={100}
+        height={160}
+        className="h-16 w-auto object-contain transition-transform hover:scale-105"
         priority
       />
-      <Image
-        src="/assets/brand/logo-nameplate.png"
-        alt="Jnanana Foundation"
-        width={184}
-        height={24}
-        className={`h-7 w-auto object-contain ${
-          inverse ? "brightness-0 invert" : ""
-        }`}
-        priority
-      />
+      <div className="flex flex-col justify-center">
+        <span
+          className="font-sans text-[26px] font-extrabold tracking-tight leading-tight"
+          style={{
+            background: "linear-gradient(135deg, #FFE066 0%, #D4AF37 50%, #B38728 100%)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            filter: "drop-shadow(0 2px 8px rgba(212, 175, 55, 0.25))",
+          }}
+        >
+          Jnanana Foundation
+        </span>
+      </div>
     </Link>
   );
 }

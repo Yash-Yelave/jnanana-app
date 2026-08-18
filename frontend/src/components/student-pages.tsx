@@ -339,20 +339,13 @@ function Lessons({ mentorId }: { mentorId?: string }) {
     }
   }
   return (
-    <section className={styles.profileGrid}>
+    <section className={styles.profileGrid} style={{ gridTemplateColumns: "1fr" }}>
       <article className={styles.whitePanel}>
         {loading && <p className="data-state">Loading lessons…</p>}
         {error && <p className="data-state" role="alert">{error}</p>}
         {!loading && !error && bookings.length === 0 && <p className="data-state">No lessons yet.</p>}
         {bookings.map((booking) => <div className={styles.review} key={booking.id}><Clock size={20} /><p><b>Mentoring session</b><br />{new Date(booking.starts_at).toLocaleString()} · {booking.status.replaceAll("_", " ")}</p>{booking.status === "completed" && !mentorId && <button type="button" onClick={() => void review(booking)}>Leave review</button>}</div>)}
       </article>
-      <aside className={styles.whitePanel}>
-        <h2>Start learning now</h2>
-        <p>Choose an approved mentor and request a time that works for you.</p>
-        <Link className={styles.primary} href="/lessons/book">
-          Book a lesson <ArrowUpRight size={16} />
-        </Link>
-      </aside>
     </section>
   );
 }
