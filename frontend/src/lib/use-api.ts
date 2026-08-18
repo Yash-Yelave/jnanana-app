@@ -21,6 +21,7 @@ export function useApi<T>(path: string) {
 
   const load = useCallback(async () => {
     try {
+      apiCache.delete(path);
       const result = await apiFetch<T>(path);
       apiCache.set(path, result);
       setData(result);

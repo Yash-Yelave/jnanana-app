@@ -49,6 +49,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
   return (
     <html
       lang="en"
+      data-scroll-behavior="smooth"
       className={`${manrope.variable} ${publicSans.variable} ${handwritten.variable}`}
     >
       <body>{children}</body>

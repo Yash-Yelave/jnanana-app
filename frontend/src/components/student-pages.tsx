@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   Star,
@@ -21,8 +22,8 @@ import {
 import { AppShell } from "@/components/app-shell";
 import { apiFetch } from "@/lib/api";
 import { createClient, publicAsset } from "@/lib/supabase/client";
-import type { Booking, Mentor, MentorProfile, Profile, Review } from "@/lib/types";
-import { useApi } from "@/lib/use-api";
+import type { Booking, LessonRequest, Mentor, MentorProfile, Offer, Profile, Review } from "@/lib/types";
+import { useApi, clearApiCache } from "@/lib/use-api";
 import styles from "./student-pages.module.css";
 
 export function StarRating({ rating = 5 }: { rating?: number }) {
@@ -325,28 +326,139 @@ function About({ profile, mentor }: { profile?: Profile | Mentor; mentor?: Mento
 }
 
 function Lessons({ mentorId }: { mentorId?: string }) {
-  const { data, error, loading, reload } = useApi<{ items: Booking[] }>("/bookings");
-  const bookings = (data?.items ?? []).filter((booking) => !mentorId || booking.mentor_id === mentorId);
+  const { data: bookingData, error: bookingError, loading: bookingLoading, reload: reloadBookings } = useApi<{ items: Booking[] }>(
+    mentorId ? `/mentors/${mentorId}/bookings` : "/bookings"
+  );
+  const { data: requestData, reload: reloadRequests } = useApi<{ items: LessonRequest[] }>("/lesson-requests");
+  const { data: offerData, reload: reloadOffers } = useApi<{ items: Offer[] }>("/offers");
+
+  const bookings = bookingData?.items ?? [];
+  const requests = requestData?.items ?? [];
+  const offers = offerData?.items ?? [];
+  const [actingOfferId, setActingOfferId] = useState<string>();
+  const [actionMsg, setActionMsg] = useState("");
+
+  const handleAcceptOffer = async (offerId: string) => {
+    setActingOfferId(offerId);
+    setActionMsg("");
+    try {
+      await apiFetch(`/offers/${offerId}/accept`, {
+        method: "POST",
+        headers: { "Idempotency-Key": crypto.randomUUID() },
+      });
+      clearApiCache();
+      setActionMsg("Offer accepted! Booking confirmed. Opening chat...");
+      await Promise.all([reloadBookings(), reloadRequests(), reloadOffers()]);
+    } catch (reason) {
+      alert(reason instanceof Error ? reason.message : "Unable to accept offer");
+    } finally {
+      setActingOfferId(undefined);
+    }
+  };
+
   async function review(booking: Booking) {
     const rating = Number(window.prompt("Rating from 1 to 5"));
     if (!Number.isInteger(rating) || rating < 1 || rating > 5) return;
     const comment = window.prompt("Feedback (optional)");
     try {
       await apiFetch(`/bookings/${booking.id}/reviews`, { method: "POST", body: JSON.stringify({ rating, comment }) });
-      await reload();
+      await reloadBookings();
     } catch (reason) {
       window.alert(reason instanceof Error ? reason.message : "Unable to save review");
     }
   }
+
   return (
-    <section className={styles.profileGrid} style={{ gridTemplateColumns: "1fr" }}>
-      <article className={styles.whitePanel}>
-        {loading && <p className="data-state">Loading lessons…</p>}
-        {error && <p className="data-state" role="alert">{error}</p>}
-        {!loading && !error && bookings.length === 0 && <p className="data-state">No lessons yet.</p>}
-        {bookings.map((booking) => <div className={styles.review} key={booking.id}><Clock size={20} /><p><b>Mentoring session</b><br />{new Date(booking.starts_at).toLocaleString()} · {booking.status.replaceAll("_", " ")}</p>{booking.status === "completed" && !mentorId && <button type="button" onClick={() => void review(booking)}>Leave review</button>}</div>)}
-      </article>
-    </section>
+    <div style={{ display: "grid", gap: "28px" }}>
+      {actionMsg && (
+        <p style={{ padding: "14px 20px", borderRadius: "16px", background: "#efffde", color: "#5c9822", fontWeight: 800 }}>
+          ✓ {actionMsg}
+        </p>
+      )}
+
+      {!mentorId && (
+        <section className={styles.whitePanel}>
+          <h2 style={{ fontSize: "22px", marginBottom: "16px" }}>My Lesson Requests & Mentor Offers</h2>
+          {requests.length === 0 ? (
+            <p className="data-state">No active lesson requests created yet.</p>
+          ) : (
+            <div style={{ display: "grid", gap: "16px" }}>
+              {requests.map((req) => {
+                const reqOffers = offers.filter((o) => o.request_id === req.id && o.status === "pending");
+                return (
+                  <div key={req.id} style={{ padding: "20px", borderRadius: "20px", border: "1px solid #eee", background: "#fafafa" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                      <h3 style={{ margin: 0, fontSize: "18px" }}>{req.title}</h3>
+                      <span style={{ padding: "4px 14px", borderRadius: "999px", background: req.status === "accepted" ? "#efffde" : "#e9e9e9", color: req.status === "accepted" ? "#5c9822" : "#333", fontWeight: 800, fontSize: "13px" }}>
+                        {req.status.toUpperCase()}
+                      </span>
+                    </div>
+                    <p style={{ color: "#666", margin: "10px 0 14px", fontSize: "14px" }}>{req.description}</p>
+                    <p style={{ fontWeight: 700, color: "#111", fontSize: "14px" }}>
+                      Proposed Rate: {req.currency} {(req.proposed_amount_minor / 100).toLocaleString()}
+                    </p>
+
+                    {reqOffers.length > 0 && (
+                      <div style={{ marginTop: "16px", paddingTop: "16px", borderTop: "1px solid #ddd" }}>
+                        <h4 style={{ fontSize: "14px", color: "#555", marginBottom: "10px" }}>Offers Received from Mentors:</h4>
+                        {reqOffers.map((off) => (
+                          <div key={off.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px", borderRadius: "14px", background: "#fff", border: "1px solid #e0e0e0" }}>
+                            <div>
+                              <p style={{ margin: 0, fontWeight: 800, fontSize: "15px" }}>Rate: {off.currency} {(off.amount_minor / 100).toLocaleString()}</p>
+                              {off.note && <small style={{ color: "#666" }}>"{off.note}"</small>}
+                            </div>
+                            <button
+                              type="button"
+                              disabled={actingOfferId === off.id}
+                              onClick={() => void handleAcceptOffer(off.id)}
+                              style={{ padding: "10px 20px", borderRadius: "999px", background: "#a3dc58", color: "#111", border: 0, fontWeight: 800, cursor: "pointer" }}
+                            >
+                              {actingOfferId === off.id ? "Accepting…" : "Accept Offer & Book →"}
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </section>
+      )}
+
+      <section className={styles.whitePanel}>
+        <h2 style={{ fontSize: "22px", marginBottom: "16px" }}>Booked Mentoring Sessions & Status</h2>
+        {bookingLoading && <p className="data-state">Loading lessons…</p>}
+        {bookingError && <p className="data-state" role="alert">{bookingError}</p>}
+        {!bookingLoading && !bookingError && bookings.length === 0 && <p className="data-state">No confirmed mentoring sessions yet.</p>}
+        <div style={{ display: "grid", gap: "16px" }}>
+          {bookings.map((booking) => (
+            <div className={styles.review} key={booking.id} style={{ alignItems: "center" }}>
+              <Clock size={24} color="#5c9822" />
+              <div style={{ flex: 1 }}>
+                <b>Mentoring session</b>
+                <br />
+                <span>{new Date(booking.starts_at).toLocaleString()} · </span>
+                <span style={{ padding: "3px 10px", borderRadius: "999px", background: "#efffde", color: "#5c9822", fontWeight: 800, fontSize: "12px" }}>
+                  {booking.status.replaceAll("_", " ").toUpperCase()}
+                </span>
+              </div>
+              <div style={{ display: "flex", gap: "10px" }}>
+                <Link href={`/chat?mentorId=${booking.mentor_id}`} style={{ padding: "10px 18px", borderRadius: "999px", background: "#111", color: "#fff", fontWeight: 700, textDecoration: "none", fontSize: "14px" }}>
+                  Chat with Mentor →
+                </Link>
+                {booking.status === "completed" && !mentorId && (
+                  <button type="button" onClick={() => void review(booking)} style={{ padding: "10px 18px", borderRadius: "999px", background: "#a3dc58", border: 0, fontWeight: 800, cursor: "pointer" }}>
+                    Leave review
+                  </button>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+    </div>
   );
 }
 

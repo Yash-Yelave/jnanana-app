@@ -17,7 +17,7 @@ import { Brand } from "@/components/brand";
 import { PageTitle, ProfileView, StarRating } from "@/components/student-pages";
 import { apiFetch } from "@/lib/api";
 import type { Booking, LessonRequest, Mentor } from "@/lib/types";
-import { useApi } from "@/lib/use-api";
+import { useApi, clearApiCache } from "@/lib/use-api";
 import styles from "./mentor-pages.module.css";
 
 export function MentorMarketingPage() {
@@ -173,7 +173,8 @@ export function MentorBookingsPage() {
           note,
         }),
       });
-      setMessage("Offer submitted successfully!");
+      clearApiCache();
+      setMessage("Offer submitted successfully! Student has been notified.");
       await reload();
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : "Unable to submit offer");
@@ -462,8 +463,15 @@ export function MentorBookingsPage() {
                   </div>
                   <div>
                     <h3>Status</h3>
-                    <p>
-                      <b>{request.status}</b>
+                    <p style={{ display: "flex", alignItems: "center", gap: "10px", marginTop: "8px" }}>
+                      <span style={{ padding: "4px 14px", borderRadius: "999px", background: request.status === "accepted" ? "#efffde" : "#e9e9e9", color: request.status === "accepted" ? "#5c9822" : "#333", fontWeight: "800", fontSize: "14px" }}>
+                        {request.status.toUpperCase()}
+                      </span>
+                      {request.status === "accepted" && (
+                        <Link href="/chat" style={{ padding: "6px 16px", borderRadius: "999px", background: "#111", color: "#fff", fontWeight: 700, fontSize: "13px", textDecoration: "none" }}>
+                          Chat with Student →
+                        </Link>
+                      )}
                     </p>
                   </div>
                 </>

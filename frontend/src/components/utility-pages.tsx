@@ -28,8 +28,8 @@ import { AppShell } from "@/components/app-shell";
 import { PageTitle } from "@/components/student-pages";
 import { apiFetch } from "@/lib/api";
 import { createClient, publicAsset } from "@/lib/supabase/client";
-import type { Booking, Offer, Plan, Profile, Skill } from "@/lib/types";
-import { useApi } from "@/lib/use-api";
+import type { Booking, LessonRequest, Mentor, Offer, Plan, Profile, Skill } from "@/lib/types";
+import { useApi, clearApiCache } from "@/lib/use-api";
 import styles from "./utility-pages.module.css";
 
 const days = Array.from({ length: 31 }, (_, i) => i + 1);
@@ -71,8 +71,15 @@ export function SchedulePage({ booking = false, mentorId }: { booking?: boolean;
   const router = useRouter();
   const { data: skills } = useApi<Skill[]>("/skills");
   const { data: bookingData, reload } = useApi<{ items: Booking[] }>("/bookings");
+  const { data: requestData, reload: reloadRequests } = useApi<{ items: LessonRequest[] }>("/lesson-requests");
+  const { data: mentorData } = useApi<{ items: Mentor[] }>("/mentors");
   const offers = useApi<{ items: Offer[] }>("/offers");
   const [error, setError] = useState("");
+  const [actionMsg, setActionMsg] = useState("");
+
+  const pendingOffers = (offers.data?.items ?? []).filter((offer) => offer.status === "pending");
+  const requests = requestData?.items ?? [];
+  const mentors = mentorData?.items ?? [];
 
   async function requestLesson(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -92,7 +99,8 @@ export function SchedulePage({ booking = false, mentorId }: { booking?: boolean;
           currency: "INR",
         }),
       });
-      await reload();
+      clearApiCache();
+      await Promise.all([reload(), reloadRequests()]);
       router.push("/schedule");
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : "Unable to request lesson");
@@ -103,14 +111,18 @@ export function SchedulePage({ booking = false, mentorId }: { booking?: boolean;
     try {
       if (accept) {
         await apiFetch(`/offers/${offer.id}/accept`, { method: "POST", headers: { "Idempotency-Key": crypto.randomUUID() } });
+        setActionMsg("Offer accepted! Booking confirmed. Direct chat created.");
       } else {
         await apiFetch(`/offers/${offer.id}/status`, { method: "POST", body: JSON.stringify({ status: "rejected" }) });
+        setActionMsg("Offer declined.");
       }
-      await Promise.all([reload(), offers.reload()]);
+      clearApiCache();
+      await Promise.all([reload(), offers.reload(), reloadRequests()]);
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : "Unable to update offer");
     }
   }
+
   return (
     <AppShell active="/mentors">
       <main className={styles.main}>
@@ -118,7 +130,7 @@ export function SchedulePage({ booking = false, mentorId }: { booking?: boolean;
         <section className={styles.schedule}>
           <article>
             <div className={styles.monthHeader}>
-              <h2>January 2022</h2>
+              <h2>January 2026</h2>
               <div className={styles.navBtns}>
                 <button type="button" aria-label="Previous month">
                   <ChevronLeft size={18} />
@@ -142,42 +154,150 @@ export function SchedulePage({ booking = false, mentorId }: { booking?: boolean;
                 </button>
               ))}
             </div>
+
+            {actionMsg && (
+              <p style={{ marginTop: "20px", padding: "12px 18px", borderRadius: "12px", background: "#efffde", color: "#5c9822", fontWeight: 800 }}>
+                ✓ {actionMsg}
+              </p>
+            )}
+
+            {!booking && (
+              <section style={{ marginTop: "32px", paddingTop: "24px", borderTop: "1px solid #eee" }}>
+                <h2 style={{ fontSize: "22px", marginBottom: "16px", color: "#111" }}>
+                  📩 Received Mentor Offers ({pendingOffers.length})
+                </h2>
+                {pendingOffers.length === 0 ? (
+                  <p style={{ color: "#777", fontSize: "14px", fontStyle: "italic" }}>
+                    No pending mentor offers right now. When a mentor responds to your lesson request, their offer with topic details and rates will appear here.
+                  </p>
+                ) : (
+                  <div style={{ display: "grid", gap: "16px" }}>
+                    {pendingOffers.map((offer) => {
+                      const req = requests.find((r) => r.id === offer.request_id);
+                      const mentor = mentors.find((m) => m.id === offer.mentor_id);
+                      return (
+                        <article
+                          key={offer.id}
+                          style={{
+                            padding: "20px",
+                            borderRadius: "20px",
+                            background: "#fcfdfe",
+                            border: "1.5px solid #dbeabe",
+                            display: "grid",
+                            gap: "12px",
+                          }}
+                        >
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "12px", flexWrap: "wrap" }}>
+                            <div>
+                              <span style={{ fontSize: "11px", fontWeight: 800, padding: "3px 10px", borderRadius: "999px", background: "#a3dc58", color: "#111" }}>
+                                PENDING OFFER
+                              </span>
+                              <h3 style={{ margin: "8px 0 4px", fontSize: "18px", color: "#111" }}>
+                                {req?.title || "Mentoring Session Request"}
+                              </h3>
+                              {req?.description && (
+                                <p style={{ margin: "0 0 8px", color: "#555", fontSize: "14px" }}>
+                                  <b>Goal:</b> {req.description}
+                                </p>
+                              )}
+                              {mentor && (
+                                <p style={{ margin: "4px 0", color: "#222", fontSize: "14px", fontWeight: 700 }}>
+                                  Mentor: {mentor.first_name} {mentor.last_name} {mentor.headline ? `— ${mentor.headline}` : ""}
+                                </p>
+                              )}
+                              {offer.note && (
+                                <p style={{ margin: "8px 0 0", color: "#444", fontSize: "14px", background: "#f5f5f5", padding: "10px 14px", borderRadius: "12px" }}>
+                                  💬 <i>"{offer.note}"</i>
+                                </p>
+                              )}
+                            </div>
+                            <div style={{ textAlign: "right" }}>
+                              <span style={{ fontSize: "22px", fontWeight: 800, color: "#111", display: "block" }}>
+                                {offer.currency} {(offer.amount_minor / 100).toLocaleString()}
+                              </span>
+                              <div style={{ display: "flex", gap: "8px", marginTop: "12px" }}>
+                                <button
+                                  className="button button-primary"
+                                  type="button"
+                                  onClick={() => void updateOffer(offer, true)}
+                                  style={{ padding: "10px 20px", borderRadius: "999px", background: "#a3dc58", color: "#111", border: 0, fontWeight: 800, cursor: "pointer", fontSize: "13px" }}
+                                >
+                                  Accept & Book →
+                                </button>
+                                <button
+                                  className="button button-secondary"
+                                  type="button"
+                                  onClick={() => void updateOffer(offer, false)}
+                                  style={{ padding: "10px 16px", borderRadius: "999px", background: "#fee2e2", color: "#991b1b", border: 0, fontWeight: 700, cursor: "pointer", fontSize: "13px" }}
+                                >
+                                  Decline
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </article>
+                      );
+                    })}
+                  </div>
+                )}
+              </section>
+            )}
           </article>
           <aside>
             <form onSubmit={requestLesson}>
-            <h2>Availability</h2>
-            {booking && <><label>Lesson title<input required name="title" minLength={3} placeholder="What do you want to learn?" /></label><label>Description<textarea required name="description" minLength={10} placeholder="Describe your learning goal" /></label></>}
-            <label>
-              Category
-              <select name="skill_id" required={booking}>
-                <option value="">Choose a skill</option>
-                {skills?.map((skill) => <option value={skill.id} key={skill.id}>{skill.name}</option>)}
-              </select>
-            </label>
-            <label>
-              Date
-              <input name="date" type="date" defaultValue="2026-08-19" required={booking} />
-            </label>
-            <label>
-              Time
-              <input name="time" type="time" defaultValue="14:00" required={booking} />
-            </label>
-            {booking && <label>Offer amount (INR)<input required name="amount" type="number" min="0" defaultValue="300" /></label>}
-            <div className={styles.bill}>
-              <h2>Bill</h2>
-              <p>
-                Base Charge <b>₹300</b>
-              </p>
-              <p>
-                Hourly Charge <b>₹20</b>
-              </p>
-              <p>
-                Streak benefit <b>-₹20</b>
-              </p>
-              <strong>Total ₹300</strong>
-            </div>
-            {error && <p className="data-state" role="alert">{error}</p>}
-            {booking ? <button className="button button-primary">Request lesson <ArrowRight size={16} /></button> : <><p>{bookingData?.items.length ?? 0} lessons in your schedule</p><h2>Pending offers</h2>{offers.data?.items.filter((offer) => offer.status === "pending").map((offer) => <div className={styles.bill} key={offer.id}><p>{offer.currency} {(offer.amount_minor / 100).toLocaleString()}</p><button className="button button-primary" type="button" onClick={() => void updateOffer(offer, true)}>Accept</button><button className="button button-secondary" type="button" onClick={() => void updateOffer(offer, false)}>Reject</button></div>)}{offers.data?.items.length === 0 && <p>No offers yet.</p>}</>}
+              <h2>Availability</h2>
+              {booking && (
+                <>
+                  <label>
+                    Lesson title
+                    <input required name="title" minLength={3} placeholder="What do you want to learn?" />
+                  </label>
+                  <label>
+                    Description
+                    <textarea required name="description" minLength={10} placeholder="Describe your learning goal" />
+                  </label>
+                </>
+              )}
+              <label>
+                Category
+                <select name="skill_id" required={booking}>
+                  <option value="">Choose a skill</option>
+                  {skills?.map((skill) => (
+                    <option value={skill.id} key={skill.id}>
+                      {skill.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label>
+                Date
+                <input name="date" type="date" defaultValue="2026-08-19" required={booking} />
+              </label>
+              <label>
+                Time
+                <input name="time" type="time" defaultValue="14:00" required={booking} />
+              </label>
+              {booking && (
+                <label>
+                  Offer amount (INR)
+                  <input required name="amount" type="number" min="0" defaultValue="300" />
+                </label>
+              )}
+              <div className={styles.bill}>
+                <h2>Summary</h2>
+                <p>
+                  Confirmed Sessions <b>{bookingData?.items.length ?? 0}</b>
+                </p>
+                <p>
+                  Pending Offers <b>{pendingOffers.length}</b>
+                </p>
+              </div>
+              {error && <p className="data-state" role="alert">{error}</p>}
+              {booking && (
+                <button className="button button-primary">
+                  Request lesson <ArrowRight size={16} />
+                </button>
+              )}
             </form>
           </aside>
         </section>
@@ -488,19 +608,24 @@ export function ChatPage() {
         let selectedId = list[0]?.id;
 
         if (targetMentorId) {
-          try {
-            const targetConv = await apiFetch<Conversation>("/conversations", {
-              method: "POST",
-              body: JSON.stringify({ other_user_id: targetMentorId }),
-            });
-            if (targetConv && active) {
-              if (!list.some((c) => c.id === targetConv.id)) {
-                list = [targetConv, ...list];
+          const existing = list.find((c) => c.other_participant?.id === targetMentorId);
+          if (existing) {
+            selectedId = existing.id;
+          } else {
+            try {
+              const targetConv = await apiFetch<Conversation>("/conversations", {
+                method: "POST",
+                body: JSON.stringify({ other_user_id: targetMentorId }),
+              });
+              if (targetConv && active) {
+                if (!list.some((c) => c.id === targetConv.id)) {
+                  list = [targetConv, ...list];
+                }
+                selectedId = targetConv.id;
               }
-              selectedId = targetConv.id;
+            } catch {
+              // Ignore if conversation already exists or failed
             }
-          } catch {
-            // Ignore if conversation already exists or failed
           }
         }
 

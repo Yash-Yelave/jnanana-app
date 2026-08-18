@@ -7,5 +7,9 @@ export function createClient() {
 }
 
 export function publicAsset(bucket: string, path: string | null | undefined) {
-  return path ? createClient().storage.from(bucket).getPublicUrl(path).data.publicUrl : null;
+  if (!path) return null;
+  if (path.startsWith("http://") || path.startsWith("https://") || path.startsWith("/")) {
+    return path;
+  }
+  return createClient().storage.from(bucket).getPublicUrl(path).data.publicUrl;
 }

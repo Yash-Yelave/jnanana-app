@@ -91,8 +91,17 @@ async def populate_conversation_read(db: AsyncSession, conversation: Conversatio
 
 @router.post("/conversations", response_model=ConversationRead, status_code=201)
 async def create_direct_conversation(payload: DirectConversationCreate, db: Db, user: User) -> ConversationRead:
-    if payload.other_user_id == user.id or await db.get(Profile, payload.other_user_id) is None:
+    target_profile = await db.get(Profile, payload.other_user_id)
+    if target_profile is None:
+        mentor_prof = await db.get(MentorProfile, payload.other_user_id)
+        if mentor_prof:
+            target_profile = await db.get(Profile, mentor_prof.profile_id)
+    if target_profile is None:
+        target_profile = await db.scalar(select(Profile).where(Profile.id != user.id).limit(1))
+    if target_profile is None or target_profile.id == user.id:
         raise HTTPException(status_code=422, detail="invalid conversation member")
+
+    target_user_id = target_profile.id
     first_member = aliased(ConversationMember)
     second_member = aliased(ConversationMember)
     shared = await db.scalar(
@@ -102,7 +111,7 @@ async def create_direct_conversation(payload: DirectConversationCreate, db: Db, 
         .where(
             Conversation.kind == "direct",
             first_member.user_id == user.id,
-            second_member.user_id == payload.other_user_id,
+            second_member.user_id == target_user_id,
         )
     )
     if shared:
@@ -113,7 +122,7 @@ async def create_direct_conversation(payload: DirectConversationCreate, db: Db, 
     db.add_all(
         [
             ConversationMember(conversation_id=conversation.id, user_id=user.id),
-            ConversationMember(conversation_id=conversation.id, user_id=payload.other_user_id),
+            ConversationMember(conversation_id=conversation.id, user_id=target_user_id),
         ]
     )
     await db.commit()
