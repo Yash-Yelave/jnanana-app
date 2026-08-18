@@ -238,6 +238,14 @@ class CommunityRead(ORMModel):
     tags: list[str]
 
 
+class ConversationParticipantRead(BaseModel):
+    id: UUID
+    first_name: str
+    last_name: str
+    avatar_path: str | None = None
+    role: str | None = None
+
+
 class ConversationRead(ORMModel):
     id: UUID
     kind: str
@@ -245,6 +253,7 @@ class ConversationRead(ORMModel):
     community_id: UUID | None
     title: str | None
     created_at: datetime
+    other_participant: ConversationParticipantRead | None = None
 
 
 class MessageCreate(BaseModel):

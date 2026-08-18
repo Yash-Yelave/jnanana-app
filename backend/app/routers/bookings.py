@@ -5,11 +5,12 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, Header, HTTPException, Query
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import aliased
 
 from app.auth import CurrentUser, get_current_user
 from app.db import get_db
 from app.domain import ensure_transition
-from app.models import Booking, IdempotencyKey, LessonOffer, LessonRequest, MentorProfile, Profile, Review
+from app.models import Booking, Conversation, ConversationMember, IdempotencyKey, LessonOffer, LessonRequest, MentorProfile, Profile, Review
 from app.schemas import (
     BookingRead,
     BookingStatusInput,
@@ -182,6 +183,30 @@ async def accept_offer(
     )
     db.add(booking)
     await db.flush()
+
+    first_member = aliased(ConversationMember)
+    second_member = aliased(ConversationMember)
+    shared_conv = await db.scalar(
+        select(Conversation)
+        .join(first_member, first_member.conversation_id == Conversation.id)
+        .join(second_member, second_member.conversation_id == Conversation.id)
+        .where(
+            Conversation.kind == "direct",
+            first_member.user_id == request.student_id,
+            second_member.user_id == offer.mentor_id,
+        )
+    )
+    if not shared_conv:
+        conv = Conversation(kind="direct")
+        db.add(conv)
+        await db.flush()
+        db.add_all(
+            [
+                ConversationMember(conversation_id=conv.id, user_id=request.student_id),
+                ConversationMember(conversation_id=conv.id, user_id=offer.mentor_id),
+            ]
+        )
+
     request.status = "accepted"
     request.updated_at = datetime.now(UTC)
     offer.status = "accepted"

@@ -66,8 +66,31 @@ async def leave_community(community_id: UUID, db: Db, user: User) -> None:
     await db.commit()
 
 
+async def populate_conversation_read(db: AsyncSession, conversation: Conversation, current_user_id: UUID) -> ConversationRead:
+    model = ConversationRead.model_validate(conversation)
+    if conversation.kind == "direct":
+        other_member_id = await db.scalar(
+            select(ConversationMember.user_id).where(
+                ConversationMember.conversation_id == conversation.id,
+                ConversationMember.user_id != current_user_id,
+            )
+        )
+        if other_member_id:
+            other_profile = await db.get(Profile, other_member_id)
+            if other_profile:
+                model.other_participant = ConversationParticipantRead(
+                    id=other_profile.id,
+                    first_name=other_profile.first_name,
+                    last_name=other_profile.last_name,
+                    avatar_path=other_profile.avatar_path,
+                    role=other_profile.role,
+                )
+                model.title = f"{other_profile.first_name} {other_profile.last_name}"
+    return model
+
+
 @router.post("/conversations", response_model=ConversationRead, status_code=201)
-async def create_direct_conversation(payload: DirectConversationCreate, db: Db, user: User) -> Conversation:
+async def create_direct_conversation(payload: DirectConversationCreate, db: Db, user: User) -> ConversationRead:
     if payload.other_user_id == user.id or await db.get(Profile, payload.other_user_id) is None:
         raise HTTPException(status_code=422, detail="invalid conversation member")
     first_member = aliased(ConversationMember)
@@ -83,7 +106,7 @@ async def create_direct_conversation(payload: DirectConversationCreate, db: Db, 
         )
     )
     if shared:
-        return shared
+        return await populate_conversation_read(db, shared, user.id)
     conversation = Conversation(kind="direct")
     db.add(conversation)
     await db.flush()
@@ -95,7 +118,7 @@ async def create_direct_conversation(payload: DirectConversationCreate, db: Db, 
     )
     await db.commit()
     await db.refresh(conversation)
-    return conversation
+    return await populate_conversation_read(db, conversation, user.id)
 
 
 @router.get("/conversations")
@@ -110,7 +133,8 @@ async def list_conversations(db: Db, user: User) -> dict[str, object]:
             )
         ).all()
     )
-    return {"items": [ConversationRead.model_validate(item) for item in items], "next_cursor": None}
+    results = [await populate_conversation_read(db, item, user.id) for item in items]
+    return {"items": results, "next_cursor": None}
 
 
 @router.get("/conversations/{conversation_id}/messages")

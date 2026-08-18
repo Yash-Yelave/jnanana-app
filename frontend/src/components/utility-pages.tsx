@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import {
   ChevronLeft,
@@ -36,16 +36,26 @@ const days = Array.from({ length: 31 }, (_, i) => i + 1);
 
 type Community = {
   id: string;
+  slug: string;
   name: string;
   description: string;
   image_path: string | null;
   tags: string[];
 };
 
+type ConversationParticipant = {
+  id: string;
+  first_name: string;
+  last_name: string;
+  avatar_path: string | null;
+  role: string | null;
+};
+
 type Conversation = {
   id: string;
   kind: string;
   title: string | null;
+  other_participant?: ConversationParticipant | null;
 };
 
 type ChatMessage = {
@@ -453,6 +463,9 @@ export function ReferralsPage() {
 }
 
 export function ChatPage() {
+  const searchParams = useSearchParams();
+  const targetMentorId = searchParams.get("mentorId");
+
   const [message, setMessage] = useState("");
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeId, setActiveId] = useState<string>();
@@ -462,14 +475,47 @@ export function ChatPage() {
   const { data: profile } = useApi<Profile>("/me");
 
   useEffect(() => {
-    void Promise.all([apiFetch<{ items: Conversation[] }>("/conversations"), createClient().auth.getClaims()])
-      .then(([result, auth]) => {
-        setConversations(result.items);
-        setActiveId(result.items[0]?.id);
+    let active = true;
+    async function loadData() {
+      try {
+        const [result, auth] = await Promise.all([
+          apiFetch<{ items: Conversation[] }>("/conversations"),
+          createClient().auth.getClaims(),
+        ]);
+        if (!active) return;
+
+        let list = result.items;
+        let selectedId = list[0]?.id;
+
+        if (targetMentorId) {
+          try {
+            const targetConv = await apiFetch<Conversation>("/conversations", {
+              method: "POST",
+              body: JSON.stringify({ other_user_id: targetMentorId }),
+            });
+            if (targetConv && active) {
+              if (!list.some((c) => c.id === targetConv.id)) {
+                list = [targetConv, ...list];
+              }
+              selectedId = targetConv.id;
+            }
+          } catch {
+            // Ignore if conversation already exists or failed
+          }
+        }
+
+        setConversations(list);
+        setActiveId(selectedId);
         setUserId(auth.data?.claims?.sub);
-      })
-      .catch((reason: unknown) => setError(reason instanceof Error ? reason.message : "Unable to load conversations"));
-  }, []);
+      } catch (reason: unknown) {
+        if (active) setError(reason instanceof Error ? reason.message : "Unable to load conversations");
+      }
+    }
+    void loadData();
+    return () => {
+      active = false;
+    };
+  }, [targetMentorId]);
 
   useEffect(() => {
     if (!activeId) return;
@@ -518,30 +564,44 @@ export function ChatPage() {
         <section className={styles.chat}>
           <aside>
             <nav>
-              <b>Direct</b>
-              <b>Community</b>
+              <b>Direct Chats</b>
             </nav>
-            {conversations.map((conversation, i) => (
-              <button
-                className={conversation.id === activeId ? styles.selectedChat : ""}
-                key={conversation.id}
-                onClick={() => {
-                  setMessages([]);
-                  setActiveId(conversation.id);
-                }}
-                type="button"
-              >
-                <Image src={`/assets/app/mentor-${(i % 4) + 1}.png`} alt="" width={48} height={48} />
-                <span>
-                  <b>{conversation.title ?? "Direct conversation"}</b>
-                  <small>{conversation.kind}</small>
-                </span>
-              </button>
-            ))}
-            {!conversations.length && !error && <p>Join a community to start chatting.</p>}
+            {conversations.map((conversation, i) => {
+              const avatar = publicAsset("avatars", conversation.other_participant?.avatar_path) ?? `/assets/app/mentor-${(i % 4) + 1}.png`;
+              const title = conversation.title || (conversation.kind === "direct" ? "Direct Chat" : "Community Chat");
+              return (
+                <button
+                  className={conversation.id === activeId ? styles.selectedChat : ""}
+                  key={conversation.id}
+                  onClick={() => {
+                    setMessages([]);
+                    setActiveId(conversation.id);
+                  }}
+                  type="button"
+                >
+                  <Image src={avatar} alt={title} width={48} height={48} style={{ borderRadius: "50%", objectFit: "cover" }} />
+                  <span>
+                    <b>{title}</b>
+                    <small>{conversation.kind === "direct" ? "1:1 Chat" : conversation.kind}</small>
+                  </span>
+                </button>
+              );
+            })}
+            {!conversations.length && !error && <p>No direct conversations yet. Select a mentor to start chatting.</p>}
           </aside>
           <article>
-            <h2>{activeConversation?.title ?? "Conversation"}</h2>
+            <div style={{ display: "flex", alignItems: "center", gap: "14px", paddingBottom: "16px", borderBottom: "1px solid #eee", marginBottom: "20px" }}>
+              {activeConversation?.other_participant && (
+                <Image
+                  src={publicAsset("avatars", activeConversation.other_participant.avatar_path) ?? "/assets/app/mentor-1.png"}
+                  alt={activeConversation.title ?? "User"}
+                  width={44}
+                  height={44}
+                  style={{ borderRadius: "50%", objectFit: "cover" }}
+                />
+              )}
+              <h2 style={{ margin: 0, fontSize: "22px" }}>{activeConversation?.title ?? "Conversation"}</h2>
+            </div>
             {error && <p role="alert">{error}</p>}
             <div className={styles.messages}>
               {messages.map((item) => (
