@@ -204,20 +204,26 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
         {error && <p className="data-state" role="alert">{error}</p>}
         {!loading && data && (
           <>
-            <section className={styles.profileHero}>
-              <Image src="/assets/app/profile-hero.png" alt="Profile banner" fill priority sizes="(max-width: 767px) 100vw, 75vw" />
-            </section>
+            <section className={styles.profileHero} />
             <section className={styles.profileName}>
-              <Image src={avatar} alt={formattedName || "Profile Avatar"} width={112} height={112} />
+              <Image src={avatar} alt={formattedName || "Profile Avatar"} width={100} height={100} />
               <div>
                 <h2>
-                  {formattedName || "Member Profile"} <CheckCircle2 size={20} className={styles.checkIcon} />
+                  {formattedName || "Member Profile"} <CheckCircle2 size={24} className={styles.checkIcon} />
                 </h2>
                 <p>
-                  <Crown size={16} /> <b>{mentor ? "Verified mentor" : "Learner"}</b> {mentor?.headline ? `• ${mentor.headline}` : ""}
+                  <span className={styles.mentorBadge}>
+                    <Crown size={14} /> {mentor ? "Verified mentor" : "Learner"}
+                  </span>
+                  {mentor?.headline && <span style={{ color: "#555", fontWeight: "600" }}>• {mentor.headline}</span>}
                 </p>
               </div>
-              {mentorDetail && <Link className={styles.button} href="/chat">Message</Link>}
+              {!mentorDetail && (
+                <Link className={styles.primary} href="/profile/edit" style={{ marginLeft: "auto" }}>
+                  Edit Profile
+                </Link>
+              )}
+              {mentorDetail && <Link className={styles.button} href="/chat" style={{ marginLeft: "auto" }}>Message</Link>}
             </section>
             <nav className={styles.tabs}>
               {tabs.map(([label, href]) => (
