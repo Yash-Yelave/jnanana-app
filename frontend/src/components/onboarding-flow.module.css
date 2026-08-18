@@ -61,3 +61,6 @@
   .roles article { padding: 16px; }
   .roles img { height: 130px; }
 }
+
+.error { margin: 20px 0 0; color: #b42318; font-weight: 700; }
+.actions button:disabled { cursor: wait; opacity: .65; }

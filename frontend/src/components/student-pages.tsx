@@ -19,6 +19,7 @@ import {
   Banknote,
 } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
+import { createClient } from "@/lib/supabase/client";
 import styles from "./student-pages.module.css";
 
 const mentors = [
@@ -374,6 +375,14 @@ export function DashboardPage() {
 }
 
 export function SettingsPage() {
+  const router = useRouter();
+
+  async function logout() {
+    await createClient().auth.signOut();
+    router.replace("/");
+    router.refresh();
+  }
+
   return (
     <AppShell active="/settings">
       <main className={styles.main}>
@@ -410,7 +419,7 @@ export function SettingsPage() {
             </summary>
             <div className={styles.logout}>
               <h2>Are you sure you want to log out?</h2>
-              <Link className={styles.button} href="/">Log out</Link>
+              <button className={styles.button} type="button" onClick={logout}>Log out</button>
             </div>
           </details>
         </section>

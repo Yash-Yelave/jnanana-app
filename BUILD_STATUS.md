@@ -76,10 +76,12 @@ Connect a browser backend for rendered pixel/console QA at the documented viewpo
 
 ## Backend implementation
 
-- Current phase: Frontend authentication and API integration
+- Current phase: Backend documentation and production QA
 - Architecture: FastAPI under `backend/`, Supabase PostgreSQL/Auth/Storage/Realtime
 - Supabase connection: MCP not exposed in this session; hosted migration verification pending
 - Database schema: Initial migration authored with RLS, indexes, Storage policies, Realtime, and seed data; hosted apply pending Supabase connection
 - Backend APIs: Accounts, mentors, availability, bookings/offers/reviews, courses, community/chat, subscriptions, referrals, wallet, dashboards, and provider boundaries complete
+- Frontend integration: Supabase SSR clients, JWT API forwarding, session proxy, login, signup/onboarding, email confirmation, waiting states, and logout complete
+- Frontend lint/typecheck/build: Pass / Pass / Pass (31 generated routes including auth confirmation)
 - Backend lint/typecheck/tests: Pass / Pass / Pass (3 tests)
-- Next backend task: Connect Next.js authentication and API client, then complete documentation and QA
+- Next backend task: Complete architecture/database/API/operations documentation and final QA

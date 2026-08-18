@@ -395,6 +395,90 @@ create table private.audit_events (
   created_at timestamptz not null default now()
 );
 
+create or replace function private.handle_new_auth_user()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  requested_role text := case when new.raw_user_meta_data ->> 'role' = 'mentor' then 'mentor' else 'student' end;
+begin
+  insert into public.profiles (
+    id,
+    role,
+    onboarding_status,
+    first_name,
+    last_name,
+    phone,
+    location,
+    bio
+  ) values (
+    new.id,
+    requested_role,
+    case when requested_role = 'mentor' then 'pending' else 'complete' end,
+    coalesce(nullif(new.raw_user_meta_data ->> 'first_name', ''), split_part(new.email, '@', 1)),
+    coalesce(nullif(new.raw_user_meta_data ->> 'last_name', ''), 'Member'),
+    nullif(new.raw_user_meta_data ->> 'phone', ''),
+    nullif(new.raw_user_meta_data ->> 'location', ''),
+    nullif(new.raw_user_meta_data ->> 'bio', '')
+  ) on conflict (id) do nothing;
+
+  insert into public.user_settings (user_id)
+  values (new.id)
+  on conflict (user_id) do nothing;
+
+  if requested_role = 'mentor' then
+    insert into public.mentor_profiles (
+      profile_id,
+      headline,
+      bio,
+      hourly_rate_minor,
+      currency,
+      languages,
+      professions,
+      companies
+    ) values (
+      new.id,
+      nullif(new.raw_user_meta_data ->> 'headline', ''),
+      nullif(new.raw_user_meta_data ->> 'bio', ''),
+      case
+        when coalesce(new.raw_user_meta_data ->> 'hourly_rate_minor', '') ~ '^[0-9]{1,9}$'
+        then (new.raw_user_meta_data ->> 'hourly_rate_minor')::integer
+        else 0
+      end,
+      'INR',
+      coalesce(array(select jsonb_array_elements_text(
+        case when jsonb_typeof(new.raw_user_meta_data -> 'languages') = 'array'
+          then new.raw_user_meta_data -> 'languages' else '[]'::jsonb end
+      )), '{}'),
+      coalesce(array(select jsonb_array_elements_text(
+        case when jsonb_typeof(new.raw_user_meta_data -> 'professions') = 'array'
+          then new.raw_user_meta_data -> 'professions' else '[]'::jsonb end
+      )), '{}'),
+      coalesce(array(select jsonb_array_elements_text(
+        case when jsonb_typeof(new.raw_user_meta_data -> 'companies') = 'array'
+          then new.raw_user_meta_data -> 'companies' else '[]'::jsonb end
+      )), '{}')
+    ) on conflict (profile_id) do nothing;
+  end if;
+
+  insert into public.profile_skills (profile_id, skill_id, kind)
+  select new.id, id, case when requested_role = 'mentor' then 'teaching' else 'learning' end
+  from public.skills
+  where slug = new.raw_user_meta_data ->> 'skill_slug'
+  on conflict do nothing;
+
+  return new;
+end;
+$$;
+
+revoke all on function private.handle_new_auth_user() from public, anon, authenticated;
+
+create trigger on_auth_user_created
+after insert on auth.users
+for each row execute function private.handle_new_auth_user();
+
 create index profiles_role_idx on public.profiles (role, onboarding_status);
 create index profile_skills_skill_idx on public.profile_skills (skill_id, kind);
 create index mentor_profiles_approved_idx on public.mentor_profiles (approval_status) where approval_status = 'approved';
