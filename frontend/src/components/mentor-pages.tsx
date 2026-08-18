@@ -102,17 +102,6 @@ export function MentorHomePage() {
   return (
     <AppShell active="/mentor/home" mentor>
       <main className={styles.main}>
-        <section className={styles.pro}>
-          <div>
-            <h1>Become a Pro Member</h1>
-            <p>Unlimited access to 2000+ mentors, courses, community and daily free lessons.</p>
-            <Link className="button button-primary" href="/subscription">
-              Register Now <ArrowUpRight size={16} />
-            </Link>
-          </div>
-          <Image src="/assets/onboarding/waiting.png" alt="" width={250} height={180} />
-        </section>
-
         <section className={styles.homeGrid}>
           <article className={styles.panel}>
             <h2>Lesson Requests</h2>
@@ -156,12 +145,12 @@ export function MentorHomePage() {
 
 export function MentorBookingsPage() {
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [isCreating, setIsCreating] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [pending, setPending] = useState(false);
-  const { data, reload } = useApi<{ items: LessonRequest[] }>("/lesson-requests");
+  const { data, loading, reload } = useApi<{ items: LessonRequest[] }>("/lesson-requests");
 
   const requests = data?.items ?? [];
   const request = requests[selectedIndex] || requests[0];
@@ -259,7 +248,7 @@ export function MentorBookingsPage() {
     }
   }
 
-  const showCreateForm = isCreating || requests.length === 0;
+  const showCreateForm = isCreating || (!loading && requests.length === 0);
 
   return (
     <AppShell active="/mentor/bookings" mentor>
@@ -293,10 +282,11 @@ export function MentorBookingsPage() {
           )}
         </div>
 
+        {loading && <p className="data-state">Loading lesson requests…</p>}
         {message && <p className="data-state" style={{ color: "#5e9d26", fontWeight: "800", fontSize: "16px", marginBottom: "16px" }}>✓ {message}</p>}
         {error && <p className="data-state" role="alert" style={{ color: "#b42318", fontWeight: "800", fontSize: "16px", marginBottom: "16px" }}>⚠ {error}</p>}
 
-        {showCreateForm ? (
+        {!loading && (showCreateForm ? (
           <section className={styles.panel} style={{ maxWidth: "720px", margin: "0 auto 40px", padding: "36px" }}>
             <h2 style={{ fontSize: "24px", marginBottom: "12px" }}>Create New Lesson Request</h2>
             <p style={{ color: "#666", marginBottom: "24px" }}>Fill in the details below to publish a new lesson request onto the platform.</p>
@@ -525,7 +515,7 @@ export function MentorBookingsPage() {
               </form>
             </aside>
           </section>
-        )}
+        ))}
       </main>
     </AppShell>
   );

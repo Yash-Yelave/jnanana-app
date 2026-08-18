@@ -76,17 +76,6 @@ export function AppShell({
       <aside className={styles.sidebar}>
         <Brand inverse />
         <Navigation active={active} mentor={isMentor} />
-        <Link className={styles.subscription} href="/subscription">
-          <span className={styles.arrowBox}>
-            <ArrowUpRight size={18} />
-          </span>
-          <strong>
-            Get the
-            <br />
-            Subscription
-          </strong>
-          <Menu className={styles.subIcon} size={20} aria-hidden="true" />
-        </Link>
       </aside>
 
       <header className={styles.mobileHeader}>

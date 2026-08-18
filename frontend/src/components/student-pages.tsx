@@ -182,9 +182,13 @@ const tabs = [
 export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = false, mentorId }: { mode?: "about" | "lessons" | "feedback"; mentorDetail?: boolean; mentorApp?: boolean; mentorId?: string }) {
   const active = mentorDetail ? "/mentors" : mentorApp ? "/mentor/profile" : "/profile";
   const { data, error, loading } = useApi<Profile | Mentor>(mentorDetail && mentorId ? `/mentors/${mentorId}` : "/me");
-  const name = data ? `${data.first_name} ${data.last_name}` : "Profile";
+  
+  const rawFirstName = data?.first_name || "";
+  const rawLastName = data?.last_name || "";
+  const formattedName = (rawFirstName || rawLastName) ? `${rawFirstName} ${rawLastName}`.trim() : "";
   const avatar = publicAsset("avatars", data?.avatar_path) ?? "/assets/app/mentor-1.png";
   const mentor = data && "headline" in data ? data : data?.mentor;
+
   return (
     <AppShell active={active} mentor={mentorApp}>
       <main className={styles.main}>
@@ -196,35 +200,39 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
             </Link>
           )}
         </div>
-        {loading && <p className="data-state">Loading profile…</p>}
+        {loading && <p className="data-state">Loading profile details…</p>}
         {error && <p className="data-state" role="alert">{error}</p>}
-        <section className={styles.profileHero}>
-          <Image src="/assets/app/profile-hero.png" alt="Kristin Watson at her desk" fill priority sizes="(max-width: 767px) 100vw, 75vw" />
-        </section>
-        <section className={styles.profileName}>
-          <Image src={avatar} alt={name} width={112} height={112} />
-          <div>
-            <h2>
-              {name} <CheckCircle2 size={20} className={styles.checkIcon} />
-            </h2>
-            <p>
-              <Crown size={16} /> <b>{mentor ? "Verified mentor" : "Learner"}</b> {mentor?.headline}
-            </p>
-          </div>
-          {mentorDetail && <Link className={styles.button} href="/chat">Message</Link>}
-        </section>
-        <nav className={styles.tabs}>
-          {tabs.map(([label, href]) => (
-            <Link
-              className={mode === label.toLowerCase() ? styles.current : ""}
-              href={mentorApp ? "/mentor/lessons" : mentorDetail ? (label === "About" ? "/mentors/kristin-watson" : href) : href}
-              key={label}
-            >
-              {label}
-            </Link>
-          ))}
-        </nav>
-        {mode === "about" ? <About profile={data} mentor={mentor} /> : mode === "lessons" ? <Lessons mentorId={mentorId} /> : <Feedback mentorId={mentorId} />}
+        {!loading && data && (
+          <>
+            <section className={styles.profileHero}>
+              <Image src="/assets/app/profile-hero.png" alt="Profile banner" fill priority sizes="(max-width: 767px) 100vw, 75vw" />
+            </section>
+            <section className={styles.profileName}>
+              <Image src={avatar} alt={formattedName || "Profile Avatar"} width={112} height={112} />
+              <div>
+                <h2>
+                  {formattedName || "Member Profile"} <CheckCircle2 size={20} className={styles.checkIcon} />
+                </h2>
+                <p>
+                  <Crown size={16} /> <b>{mentor ? "Verified mentor" : "Learner"}</b> {mentor?.headline ? `• ${mentor.headline}` : ""}
+                </p>
+              </div>
+              {mentorDetail && <Link className={styles.button} href="/chat">Message</Link>}
+            </section>
+            <nav className={styles.tabs}>
+              {tabs.map(([label, href]) => (
+                <Link
+                  className={mode === label.toLowerCase() ? styles.current : ""}
+                  href={mentorApp ? "/mentor/lessons" : mentorDetail ? (label === "About" ? "/mentors/kristin-watson" : href) : href}
+                  key={label}
+                >
+                  {label}
+                </Link>
+              ))}
+            </nav>
+            {mode === "about" ? <About profile={data} mentor={mentor} /> : mode === "lessons" ? <Lessons mentorId={mentorId} /> : <Feedback mentorId={mentorId} />}
+          </>
+        )}
       </main>
     </AppShell>
   );
