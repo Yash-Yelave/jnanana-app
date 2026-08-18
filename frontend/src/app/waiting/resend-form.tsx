@@ -28,6 +28,45 @@ export function ResendForm() {
   return <form className={styles.resend} onSubmit={submit}><label>Email address<input required type="email" name="email" autoComplete="email" /></label><button disabled={pending}>{pending ? "Sending…" : "Resend email"}</button>{message && <span role="status">{message}</span>}</form>;
 }
 
+export function BackToLoginButton({ children = "Back to login →", className }: { children?: React.ReactNode; className?: string }) {
+  const [pending, setPending] = useState(false);
+
+  const handleBackToLogin = async () => {
+    setPending(true);
+    try {
+      await createClient().auth.signOut();
+    } catch {
+      // Ignore errors if session was missing
+    }
+    window.location.href = "/login";
+  };
+
+  return (
+    <button
+      type="button"
+      className={className}
+      onClick={handleBackToLogin}
+      disabled={pending}
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        justifyContent: "center",
+        marginTop: "16px",
+        padding: "14px 28px",
+        borderRadius: "999px",
+        background: "#a3d95d",
+        color: "#111",
+        fontWeight: 800,
+        border: 0,
+        cursor: "pointer",
+        transition: "transform 160ms ease, box-shadow 160ms ease",
+      }}
+    >
+      {pending ? "Navigating…" : children}
+    </button>
+  );
+}
+
 export function ApprovalStatus() {
   const { data } = useApi<Profile>("/me");
   if (data?.mentor?.approval_status === "rejected")
@@ -42,9 +81,7 @@ export function ApprovalStatus() {
     <>
       <h1>Patience, please!</h1>
       <p>We&apos;re reviewing your mentor profile. We&apos;ll let you know when it is approved.</p>
-      <Link className="button button-primary" href="/login">
-        Back to login →
-      </Link>
+      <BackToLoginButton />
     </>
   );
 }

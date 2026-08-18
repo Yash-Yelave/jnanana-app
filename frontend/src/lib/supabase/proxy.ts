@@ -59,6 +59,9 @@ export async function updateSession(request: NextRequest) {
   if (matches(path, studentPrefixes) && role === "mentor" && path !== "/profile/edit") return NextResponse.redirect(new URL("/mentor/home", request.url));
   if (matches(path, mentorPrefixes) && role !== "mentor") return NextResponse.redirect(new URL("/dashboard/home", request.url));
   if (path === "/login") {
+    if (request.nextUrl.searchParams.has("force") || request.nextUrl.searchParams.has("logout")) {
+      return response;
+    }
     const destination = isAdmin ? "/admin" : status === "pending" ? "/waiting" : role === "mentor" ? "/mentor/home" : "/dashboard/home";
     return NextResponse.redirect(new URL(destination, request.url));
   }

@@ -39,10 +39,18 @@ export function PageTitle({ children, backHref }: { children: React.ReactNode; b
   const router = useRouter();
 
   const handleBack = () => {
-    if (typeof window !== "undefined" && window.history.length > 1) {
-      router.back();
-    } else if (backHref) {
+    if (backHref) {
       router.push(backHref);
+      return;
+    }
+    if (typeof window !== "undefined" && window.history.length > 1) {
+      const currentPath = window.location.pathname;
+      router.back();
+      setTimeout(() => {
+        if (window.location.pathname === currentPath) {
+          router.push("/dashboard/home");
+        }
+      }, 150);
     } else {
       router.push("/dashboard/home");
     }
