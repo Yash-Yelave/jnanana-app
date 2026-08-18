@@ -2,7 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import {
   ChevronLeft,
   ChevronRight,
@@ -25,9 +26,33 @@ import {
 } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { PageTitle } from "@/components/student-pages";
+import { apiFetch } from "@/lib/api";
+import { createClient } from "@/lib/supabase/client";
 import styles from "./utility-pages.module.css";
 
 const days = Array.from({ length: 31 }, (_, i) => i + 1);
+
+type Community = {
+  id: string;
+  name: string;
+  description: string;
+  image_path: string | null;
+  tags: string[];
+};
+
+type Conversation = {
+  id: string;
+  kind: string;
+  title: string | null;
+};
+
+type ChatMessage = {
+  id: string;
+  conversation_id: string;
+  sender_id: string;
+  body: string;
+  created_at: string;
+};
 
 export function SchedulePage({ booking = false }: { booking?: boolean }) {
   const [day, setDay] = useState(19);
@@ -317,6 +342,63 @@ export function ReferralsPage() {
 
 export function ChatPage() {
   const [message, setMessage] = useState("");
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [activeId, setActiveId] = useState<string>();
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [userId, setUserId] = useState<string>();
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    void Promise.all([apiFetch<{ items: Conversation[] }>("/conversations"), createClient().auth.getClaims()])
+      .then(([result, auth]) => {
+        setConversations(result.items);
+        setActiveId(result.items[0]?.id);
+        setUserId(auth.data?.claims?.sub);
+      })
+      .catch((reason: unknown) => setError(reason instanceof Error ? reason.message : "Unable to load conversations"));
+  }, []);
+
+  useEffect(() => {
+    if (!activeId) return;
+    let current = true;
+    setMessages([]);
+    const supabase = createClient();
+    void apiFetch<{ items: ChatMessage[] }>(`/conversations/${activeId}/messages`)
+      .then((result) => current && setMessages(result.items))
+      .catch((reason: unknown) => current && setError(reason instanceof Error ? reason.message : "Unable to load messages"));
+    const channel = supabase
+      .channel(`conversation:${activeId}`)
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "messages", filter: `conversation_id=eq.${activeId}` },
+        (payload) => {
+          const incoming = payload.new as ChatMessage;
+          setMessages((current) => (current.some(({ id }) => id === incoming.id) ? current : [...current, incoming]));
+        },
+      )
+      .subscribe();
+    return () => {
+      current = false;
+      void supabase.removeChannel(channel);
+    };
+  }, [activeId]);
+
+  async function sendMessage() {
+    const body = message.trim();
+    if (!activeId || !body) return;
+    try {
+      const sent = await apiFetch<ChatMessage>(`/conversations/${activeId}/messages`, {
+        method: "POST",
+        body: JSON.stringify({ body }),
+      });
+      setMessages((current) => (current.some(({ id }) => id === sent.id) ? current : [...current, sent]));
+      setMessage("");
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "Unable to send message");
+    }
+  }
+
+  const activeConversation = conversations.find(({ id }) => id === activeId);
   return (
     <AppShell active="/chat">
       <main className={styles.main}>
@@ -327,31 +409,46 @@ export function ChatPage() {
               <b>Direct</b>
               <b>Community</b>
             </nav>
-            {["Blender Guilt", "Canvas Art", "Startup Strategists", "Bessie’s Group"].map((x, i) => (
-              <button className={i === 0 ? styles.selectedChat : ""} key={x}>
+            {conversations.map((conversation, i) => (
+              <button
+                className={conversation.id === activeId ? styles.selectedChat : ""}
+                key={conversation.id}
+                onClick={() => setActiveId(conversation.id)}
+                type="button"
+              >
                 <Image src={`/assets/app/mentor-${(i % 4) + 1}.png`} alt="" width={48} height={48} />
                 <span>
-                  <b>{x}</b>
-                  <small>{i + 2}m ago</small>
+                  <b>{conversation.title ?? "Direct conversation"}</b>
+                  <small>{conversation.kind}</small>
                 </span>
               </button>
             ))}
+            {!conversations.length && !error && <p>Join a community to start chatting.</p>}
           </aside>
           <article>
-            <h2>Blender Guilt</h2>
+            <h2>{activeConversation?.title ?? "Conversation"}</h2>
+            {error && <p role="alert">{error}</p>}
             <div className={styles.messages}>
-              <p>Hello, would you like to know if you could postpone the lesson to another day?</p>
-              <p>I have free time on Thursday at 9 am</p>
-              <p>Can you share the recorded lecture of the lessons?</p>
+              {messages.map((item) => (
+                <p
+                  key={item.id}
+                  style={{
+                    alignSelf: item.sender_id === userId ? "flex-end" : "flex-start",
+                    background: item.sender_id === userId ? "#efffde" : "#eee",
+                  }}
+                >
+                  {item.body}
+                </p>
+              ))}
             </div>
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                setMessage("");
+                void sendMessage();
               }}
             >
-              <input value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Write a message" aria-label="Message" />
-              <button className={styles.sendBtn} aria-label="Send message">
+              <input disabled={!activeId} value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Write a message" aria-label="Message" />
+              <button className={styles.sendBtn} disabled={!activeId || !message.trim()} aria-label="Send message">
                 <Send size={18} />
               </button>
             </form>
@@ -363,6 +460,25 @@ export function ChatPage() {
 }
 
 export function CommunityPage() {
+  const router = useRouter();
+  const [communities, setCommunities] = useState<Community[]>([]);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    void apiFetch<Community[]>("/communities")
+      .then(setCommunities)
+      .catch((reason: unknown) => setError(reason instanceof Error ? reason.message : "Unable to load communities"));
+  }, []);
+
+  async function joinCommunity(communityId: string) {
+    try {
+      await apiFetch(`/communities/${communityId}/join`, { method: "POST" });
+      router.push("/chat");
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "Unable to join community");
+    }
+  }
+
   return (
     <AppShell active="/community">
       <main className={styles.main}>
@@ -377,21 +493,18 @@ export function CommunityPage() {
             </h2>
             <p>Join rooms created around the skills and ideas you care about.</p>
           </header>
-          {[
-            ["Blender Guilt", "3D Modeling · Texturing Tips"],
-            ["AR x VR World", "AR Games · Beta Testing"],
-            ["Startup Strategists", "Business · Growth"],
-          ].map(([name, tags], i) => (
-            <article key={name}>
-              <Image src={`/assets/app/course-${["design", "css", "data"][i]}.png`} alt="" width={260} height={180} />
+          {error && <p role="alert">{error}</p>}
+          {communities.map((community) => (
+            <article key={community.id}>
+              <Image src={community.image_path ?? "/assets/app/course-design.png"} alt="" width={260} height={180} />
               <div>
-                <h2>{name}</h2>
-                <p>A supportive community to share progress, discuss challenges and exchange feedback.</p>
-                <b>{tags}</b>
+                <h2>{community.name}</h2>
+                <p>{community.description}</p>
+                <b>{community.tags.join(" · ")}</b>
               </div>
-              <Link className="button button-primary" href="/chat">
+              <button className="button button-primary" onClick={() => void joinCommunity(community.id)} type="button">
                 Join <ArrowRight size={16} />
-              </Link>
+              </button>
             </article>
           ))}
         </section>

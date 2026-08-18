@@ -53,6 +53,7 @@ export function OnboardingFlow({ role }: { role: "student" | "mentor" }) {
         email,
         password,
         options: {
+          emailRedirectTo: `${window.location.origin}/auth/confirm?next=${role === "mentor" ? "/waiting" : "/dashboard/home"}`,
           data: {
             role,
             first_name: firstName,
