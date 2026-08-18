@@ -1,5 +1,8 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Star,
   CheckCircle2,
@@ -35,10 +38,29 @@ export function StarRating({ rating = 5 }: { rating?: number }) {
   );
 }
 
-export function PageTitle({ children }: { children: React.ReactNode }) {
+export function PageTitle({ children, backHref }: { children: React.ReactNode; backHref?: string }) {
+  const router = useRouter();
+
+  const handleBack = () => {
+    if (typeof window !== "undefined" && window.history.length > 1) {
+      router.back();
+    } else if (backHref) {
+      router.push(backHref);
+    } else {
+      router.push("/dashboard/home");
+    }
+  };
+
   return (
     <h1 className={styles.pageTitle}>
-      <span className={styles.backBtn}><ArrowLeft size={20} /></span>
+      <button
+        type="button"
+        className={styles.backBtn}
+        onClick={handleBack}
+        aria-label="Go back to previous page"
+      >
+        <ArrowLeft size={20} />
+      </button>
       {children}
     </h1>
   );
