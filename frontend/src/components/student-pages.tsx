@@ -194,17 +194,11 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
       <main className={styles.main}>
         <div className={styles.titleRow}>
           <PageTitle>{mentorDetail ? "Mentorship" : "Profile"}</PageTitle>
-          {!mentorDetail && (
-            <Link className={styles.primary} href="/profile/edit">
-              Edit Profile
-            </Link>
-          )}
         </div>
         {loading && <p className="data-state">Loading profile details…</p>}
         {error && <p className="data-state" role="alert">{error}</p>}
         {!loading && data && (
           <>
-            <section className={styles.profileHero} />
             <section className={styles.profileName}>
               <Image src={avatar} alt={formattedName || "Profile Avatar"} width={100} height={100} />
               <div>

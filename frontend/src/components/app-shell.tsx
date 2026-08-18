@@ -67,7 +67,7 @@ export function AppShell({
 }) {
   const { data: profile } = useApi<Profile>("/me");
   const isMentor = mentor || profile?.role === "mentor";
-  const avatar = publicAsset("avatars", profile?.avatar_path) ?? "/assets/app/avatar.png";
+  const avatar = publicAsset("avatars", profile?.avatar_path) ?? "/assets/app/mentor-1.png";
   const name = profile ? `${profile.first_name} ${profile.last_name}` : "Profile";
   const profileTarget = isMentor ? "/mentor/profile" : "/profile";
 
