@@ -27,13 +27,24 @@ class OnboardingInput(BaseModel):
 
 
 class ProfileUpdate(BaseModel):
-    first_name: str | None = Field(default=None, min_length=1, max_length=80)
-    last_name: str | None = Field(default=None, min_length=1, max_length=80)
-    username: str | None = Field(default=None, pattern=r"^[A-Za-z0-9_]{3,40}$")
+    first_name: str | None = Field(default=None, max_length=80)
+    last_name: str | None = Field(default=None, max_length=80)
+    username: str | None = Field(default=None)
     phone: str | None = Field(default=None, max_length=40)
     location: str | None = Field(default=None, max_length=160)
     avatar_path: str | None = Field(default=None, max_length=500)
     bio: str | None = Field(default=None, max_length=2000)
+    headline: str | None = Field(default=None, max_length=200)
+    languages: list[str] | None = Field(default=None)
+    professions: list[str] | None = Field(default=None)
+    companies: list[str] | None = Field(default=None)
+
+    @model_validator(mode="before")
+    @classmethod
+    def clean_empty_strings(cls, data: object) -> object:
+        if isinstance(data, dict):
+            return {k: (None if v == "" else v) for k, v in data.items()}
+        return data
 
 
 class ProfileRead(ORMModel):

@@ -180,7 +180,7 @@ const tabs = [
 ] as const;
 
 export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = false, mentorId }: { mode?: "about" | "lessons" | "feedback"; mentorDetail?: boolean; mentorApp?: boolean; mentorId?: string }) {
-  const active = mentorDetail ? "/mentors" : mentorApp ? "/mentor/home" : "/dashboard/home";
+  const active = mentorDetail ? "/mentors" : mentorApp ? "/mentor/profile" : "/profile";
   const { data, error, loading } = useApi<Profile | Mentor>(mentorDetail && mentorId ? `/mentors/${mentorId}` : "/me");
   const name = data ? `${data.first_name} ${data.last_name}` : "Profile";
   const avatar = publicAsset("avatars", data?.avatar_path) ?? "/assets/app/mentor-1.png";
@@ -230,31 +230,66 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
   );
 }
 
+function formatLabel(item: unknown): string {
+  if (!item) return "";
+  if (typeof item === "string") return item;
+  if (typeof item === "object") {
+    const obj = item as Record<string, unknown>;
+    if (typeof obj.name === "string") return obj.name;
+    if (typeof obj.title === "string") return obj.title;
+    if (typeof obj.label === "string") return obj.label;
+  }
+  return String(item);
+}
+
 function About({ profile, mentor }: { profile?: Profile | Mentor; mentor?: MentorProfile | Mentor | null }) {
+  const m = mentor ?? (profile && "mentor" in profile ? (profile as any).mentor : null);
+  const rawLanguages: unknown[] = m?.languages ?? [];
+  const rawProfessions: unknown[] = m?.professions ?? (profile && "skills" in profile ? (profile as any).skills : []) ?? [];
+  const rawCompanies: unknown[] = m?.companies ?? [];
+
+  const languages = rawLanguages.map(formatLabel).filter(Boolean);
+  const professions = rawProfessions.map(formatLabel).filter(Boolean);
+  const companies = rawCompanies.map(formatLabel).filter(Boolean);
+
+  const headline = m?.headline ?? (profile && "headline" in profile ? (profile as any).headline : null);
+  const bio = m?.bio ?? (profile && "bio" in profile ? (profile as any).bio : null);
+  const location = profile && "location" in profile ? (profile as any).location : null;
+
   return (
     <section className={styles.profileGrid}>
       <article className={styles.whitePanel}>
         <dl className={styles.about}>
           <dt>Location & Local Time</dt>
           <dd>
-            <i>{profile && "location" in profile ? profile.location ?? "Not provided" : "Available online"}</i>
+            <i>{location || "Available online"}</i>
           </dd>
-          <dt>Experience</dt>
-          <dd>Not provided</dd>
-          <dt>Skills</dt>
+          <dt>Headline / Role</dt>
+          <dd>{headline || "Platform Member"}</dd>
+          <dt>Skills & Topics</dt>
           <dd>
-            {(mentor?.professions ?? (profile && "skills" in profile ? profile.skills.map((skill) => skill.name) : [])).map((skill) => <i key={skill}>{skill}</i>)}
+            {professions.length > 0 ? (
+              professions.map((skill, index) => <i key={index}>{skill}</i>)
+            ) : (
+              <i>General Learning</i>
+            )}
           </dd>
           <dt>About</dt>
-          <dd>{mentor?.bio ?? (profile && "bio" in profile ? profile.bio : null) ?? "No biography has been added yet."}</dd>
+          <dd>{bio || "No biography has been added yet."}</dd>
           <dt>Speaks</dt>
           <dd>
-            {(mentor?.languages ?? []).map((language) => <i key={language}>{language}</i>)}
+            {(languages.length > 0 ? languages : ["English"]).map((language, index) => (
+              <i key={index}>{language}</i>
+            ))}
           </dd>
-          <dt>Educational Institutes</dt>
-          <dd>Not provided</dd>
-          <dt>My teaching materials</dt>
-          <dd>Not provided</dd>
+          <dt>Educational Institutes & Companies</dt>
+          <dd>
+            {companies.length > 0 ? (
+              companies.map((company, index) => <i key={index}>{company}</i>)
+            ) : (
+              "Not provided"
+            )}
+          </dd>
         </dl>
       </article>
       <aside className={styles.whitePanel}>
@@ -265,10 +300,7 @@ function About({ profile, mentor }: { profile?: Profile | Mentor; mentor?: Mento
           Completed lectures <strong>—</strong>
         </p>
         <p>
-          Tutoring Since <strong>Not available</strong>
-        </p>
-        <p>
-          On Upskillink since <strong>Not available</strong>
+          Member Status <strong>Active</strong>
         </p>
       </aside>
     </section>

@@ -51,7 +51,7 @@ async def me(db: Db, user: User) -> MeRead:
             )
         ).all()
     )
-    mentor = await db.get(MentorProfile, user.id) if profile.role == "mentor" else None
+    mentor = await db.get(MentorProfile, user.id)
     return MeRead(**ProfileRead.model_validate(profile).model_dump(), skills=skills, mentor=mentor)
 
 
@@ -68,7 +68,7 @@ async def onboard(payload: OnboardingInput, db: Db, user: User) -> Profile:
         if found != set(payload.skill_ids):
             raise HTTPException(status_code=422, detail="one or more skills are invalid")
 
-    status = "pending" if payload.role == "mentor" else "complete"
+    status = "complete" if payload.role == "student" else "complete" if user.is_admin else "pending"
     if profile is None:
         profile = Profile(
             id=user.id,
@@ -132,16 +132,37 @@ async def onboard(payload: OnboardingInput, db: Db, user: User) -> Profile:
 async def update_profile(payload: ProfileUpdate, db: Db, user: User) -> Profile:
     profile = await profile_for_user(db, user.id)
     for field, value in payload.model_dump(exclude_unset=True).items():
-        setattr(profile, field, value)
+        if hasattr(profile, field):
+            setattr(profile, field, value)
     profile.updated_at = datetime.now(UTC)
-    if profile.role == "mentor":
-        mentor = await db.get(MentorProfile, user.id)
-        if mentor is not None:
-            if payload.bio is not None:
-                mentor.bio = payload.bio
-            if mentor.approval_status == "rejected":
-                mentor.approval_status = "pending"
-                mentor.rejection_reason = None
+
+    mentor = await db.get(MentorProfile, user.id)
+    if mentor is None:
+        mentor = MentorProfile(
+            profile_id=user.id,
+            headline=payload.headline,
+            bio=payload.bio or profile.bio,
+            languages=payload.languages or [],
+            professions=payload.professions or [],
+            companies=payload.companies or [],
+            approval_status="approved" if (user.is_admin or profile.role == "mentor") else "pending",
+        )
+        db.add(mentor)
+    else:
+        if payload.headline is not None:
+            mentor.headline = payload.headline
+        if payload.bio is not None:
+            mentor.bio = payload.bio
+        if payload.languages is not None:
+            mentor.languages = payload.languages
+        if payload.professions is not None:
+            mentor.professions = payload.professions
+        if payload.companies is not None:
+            mentor.companies = payload.companies
+        if mentor.approval_status == "rejected":
+            mentor.approval_status = "pending"
+            mentor.rejection_reason = None
+
     await db.commit()
     await db.refresh(profile)
     return profile

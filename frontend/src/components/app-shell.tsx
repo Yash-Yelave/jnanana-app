@@ -66,13 +66,16 @@ export function AppShell({
   mentor?: boolean;
 }) {
   const { data: profile } = useApi<Profile>("/me");
+  const isMentor = mentor || profile?.role === "mentor";
   const avatar = publicAsset("avatars", profile?.avatar_path) ?? "/assets/app/avatar.png";
   const name = profile ? `${profile.first_name} ${profile.last_name}` : "Profile";
+  const profileTarget = isMentor ? "/mentor/profile" : "/profile";
+
   return (
     <div className={`${styles.shell} ${rightRail ? "" : styles.withoutRail}`}>
       <aside className={styles.sidebar}>
         <Brand inverse />
-        <Navigation active={active} mentor={mentor} />
+        <Navigation active={active} mentor={isMentor} />
         <Link className={styles.subscription} href="/subscription">
           <span className={styles.arrowBox}>
             <ArrowUpRight size={18} />
@@ -95,9 +98,9 @@ export function AppShell({
           <summary aria-label="Open menu">
             <Menu size={24} />
           </summary>
-          <Navigation active={active} mentor={mentor} />
+          <Navigation active={active} mentor={isMentor} />
         </details>
-        <Link href={mentor ? "/mentor/profile" : "/profile"} aria-label="Open profile">
+        <Link href={profileTarget} aria-label="Open profile">
           <Image src={avatar} alt={name} width={44} height={44} />
         </Link>
       </header>
@@ -107,7 +110,7 @@ export function AppShell({
           <Search size={18} />
           <input type="search" placeholder="Search courses" aria-label="Search courses" />
         </label>
-        <Link className={styles.profileBtn} href={mentor ? "/mentor/profile" : "/profile"} aria-label="Open profile">
+        <Link className={styles.profileBtn} href={profileTarget} aria-label="Open profile">
           <Image src={avatar} alt={name} width={46} height={46} priority />
         </Link>
       </header>
