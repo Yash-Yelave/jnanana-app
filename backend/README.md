@@ -18,3 +18,11 @@ uv run pytest
 
 OpenAPI is available at `http://127.0.0.1:8000/docs`. Never place the Supabase secret key or database password in frontend environment variables.
 
+## Documentation
+
+- [Architecture](./docs/ARCHITECTURE.md)
+- [Database and RLS](./docs/DATABASE.md)
+- [API contract](./docs/API.md)
+- [Setup and operations](./docs/OPERATIONS.md)
+
+The initial migration is ready under `supabase/migrations/`. It must be applied and advisor-checked against a connected non-production Supabase project before hosted integration is considered verified.

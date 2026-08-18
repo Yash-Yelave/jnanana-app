@@ -54,10 +54,8 @@
 ## Deferred external integrations
 
 - Payment processing and server-side verification
-- Authentication and persistent account creation
-- Live chat/community transport
 - Video meeting provider
-- Email/referral delivery and analytics
+- Transactional email delivery and analytics
 
 ## Quality gates
 
@@ -67,7 +65,7 @@
 - Responsive pass: CSS implemented at 1440, 1280, 1024, 768, 390 and 360 anchors; rendered pass pending
 - Lint: Pass
 - Typecheck: Pass
-- Tests: Not run / not present
+- Tests: Backend test suite passes (3 tests); no frontend test suite is configured
 - Production build: Pass
 
 ## Next action
@@ -76,12 +74,14 @@ Connect a browser backend for rendered pixel/console QA at the documented viewpo
 
 ## Backend implementation
 
-- Current phase: Backend documentation and production QA
+- Current phase: Backend implementation complete; hosted Supabase verification pending connection
 - Architecture: FastAPI under `backend/`, Supabase PostgreSQL/Auth/Storage/Realtime
 - Supabase connection: MCP not exposed in this session; hosted migration verification pending
 - Database schema: Initial migration authored with RLS, indexes, Storage policies, Realtime, and seed data; hosted apply pending Supabase connection
 - Backend APIs: Accounts, mentors, availability, bookings/offers/reviews, courses, community/chat, subscriptions, referrals, wallet, dashboards, and provider boundaries complete
-- Frontend integration: Supabase SSR clients, JWT API forwarding, session proxy, login, signup/onboarding, email confirmation, waiting states, and logout complete
+- Frontend integration: Supabase SSR clients, JWT API forwarding, session proxy, login, signup/onboarding, email confirmation, waiting states, logout, community membership, and Realtime chat complete
 - Frontend lint/typecheck/build: Pass / Pass / Pass (31 generated routes including auth confirmation)
 - Backend lint/typecheck/tests: Pass / Pass / Pass (3 tests)
-- Next backend task: Complete architecture/database/API/operations documentation and final QA
+- Backend documentation: Complete (architecture, database/RLS, API, operations, and project overview)
+- External providers: Payment, transactional email delivery, and hosted video intentionally unconfigured; endpoints fail explicitly
+- Remaining gate: Connect the development Supabase project, apply the migration, run SQL/RLS/Storage/Realtime integration tests and advisors

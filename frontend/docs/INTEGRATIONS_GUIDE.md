@@ -1,77 +1,48 @@
-# Backend & External Integrations Roadmap
+# Backend integration guide
 
-While all 28 frontend pages and UI workflows are 100% complete, the application currently uses mock front-end state. This guide provides a developer integration roadmap for connecting live backend APIs and external cloud services.
+The frontend uses Supabase Auth for identities/sessions and FastAPI for product data and business actions.
 
----
+## Environment
 
-## 🔐 1. Authentication & User Sessions
+Copy `frontend/.env.example` to `.env.local` and configure:
 
-### Routes Involved
-- `/login`, `/onboarding/student`, `/onboarding/mentor`, `/settings`
+```text
+NEXT_PUBLIC_SUPABASE_URL=https://PROJECT_REF.supabase.co
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_...
+NEXT_PUBLIC_API_URL=http://127.0.0.1:8000
+```
 
-### Recommended Providers
-- **NextAuth.js (Auth.js)**, **Supabase Auth**, or **Firebase Auth**
+Never expose the Supabase secret key, service-role credential, database password, or payment webhook secret through `NEXT_PUBLIC_*`.
 
-### Implementation Steps
-1. Add an Auth provider wrapper in `src/app/layout.tsx`.
-2. Replace static form submission in `src/components/onboarding-flow.tsx` with `signIn()` or API POST calls to `/api/auth/register`.
-3. Store JWT / session cookie to guard protected routes (e.g. `/dashboard/*`, `/profile/*`, `/mentor/*`) using Next.js Middleware (`middleware.ts`).
+## Authentication flow
 
----
+1. Login/signup uses the browser Supabase client.
+2. `src/proxy.ts` refreshes SSR cookies and performs optimistic protected-route redirects using verified claims.
+3. Email confirmation returns through `/auth/confirm` and exchanges the code/token for a session.
+4. `src/lib/api.ts` retrieves the current raw access token and forwards it to FastAPI as a Bearer token.
+5. FastAPI verifies the token again and authorizes every data operation against persisted roles and ownership.
 
-## 💳 2. Payment Gateway & Subscription Billing
+The proxy is not the security boundary; FastAPI and PostgreSQL enforce authorization.
 
-### Routes Involved
-- `/payment`, `/subscription`, `/lessons/book`
+## Product API
 
-### Recommended Providers
-- **Stripe Elements** or **Razorpay SDK**
+Use `apiFetch<T>(path, init)` from `src/lib/api.ts`. Paths are relative to `/api/v1`:
 
-### Implementation Steps
-1. Add server action / API route `/api/checkout/create-intent` to initialize payment intents.
-2. Embed Stripe CardElement / PaymentElement inside `/payment/page.tsx` and `/subscription/page.tsx`.
-3. Configure webhook endpoint `/api/webhooks/stripe` to handle successful payment events, session upgrades, and lesson booking confirmations.
+```ts
+const profile = await apiFetch<Profile>("/me");
+const bookings = await apiFetch<Page<Booking>>("/bookings");
+```
 
----
+Do not add Next.js API routes that merely proxy FastAPI. Add a server action/route only when a Next.js-specific cookie or rendering boundary requires it.
 
-## 💬 3. Real-Time Chat & Community Messaging
+## Realtime and Storage
 
-### Routes Involved
-- `/chat`, `/community`
+- Subscribe to `messages` through the browser Supabase client after the user joins the conversation. RLS filters unauthorized events.
+- Upload avatars below `USER_ID/...` in the `avatars` bucket.
+- Mentor documents and lesson resources remain backend-mediated private buckets.
 
-### Recommended Providers
-- **WebSockets (Socket.io)**, **Stream Chat API**, or **Ably Realtime**
+## Deferred providers
 
-### Implementation Steps
-1. Replace mock chat history state in `/chat/page.tsx` with a WebSocket hook (`useSocket`).
-2. Subscribe to room channels for 1:1 conversation IDs and open-mic community channels.
-3. Persist message logs in PostgreSQL / MongoDB database.
+Payment checkout and hosted meeting creation currently return `503 integration_not_configured`. Preserve that failure until a provider is implemented and verified; UI navigation alone is never proof of payment or meeting authorization.
 
----
-
-## 📹 4. Live 1:1 Video Conference
-
-### Routes Involved
-- `/meeting`
-
-### Recommended Providers
-- **Daily.co**, **Agora Video SDK**, or **Twilio Video / WebRTC**
-
-### Implementation Steps
-1. Integrate room creation API `/api/meeting/create-room`.
-2. Embed WebRTC video track elements inside the video grid containers in `/meeting/page.tsx`.
-3. Hook up microphone toggle, camera toggle, and screen share controls to WebRTC media stream state.
-
----
-
-## 📩 5. Referral & Email Notifications
-
-### Routes Involved
-- `/referrals`, `/waiting`
-
-### Recommended Providers
-- **Resend** / **SendGrid** for transactional email delivery.
-
-### Implementation Steps
-1. Implement referral code validation API `/api/referrals/verify`.
-2. Send automated welcome & tutor verification approval emails upon account status updates.
+See [backend API documentation](../../backend/docs/API.md) and [operations](../../backend/docs/OPERATIONS.md).
