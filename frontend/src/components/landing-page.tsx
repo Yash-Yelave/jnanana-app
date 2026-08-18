@@ -43,7 +43,7 @@ function PublicHeader() {
       <nav className={styles.desktopNav} aria-label="Primary navigation">
         <a href="#categories">Category</a>
         <a href="#about">About Us</a>
-        <Link href="/mentor">Upskillink Business</Link>
+        <Link href="/mentor">Jnanana Foundation Business</Link>
       </nav>
       <Link className={styles.signIn} href="/login">
         Sign Up <Arrow />
@@ -57,7 +57,7 @@ function PublicHeader() {
         <nav aria-label="Mobile navigation">
           <a href="#categories">Category</a>
           <a href="#about">About Us</a>
-          <Link href="/mentor">Upskillink Business</Link>
+          <Link href="/mentor">Jnanana Foundation Business</Link>
           <Link href="/login">Sign Up</Link>
         </nav>
       </details>

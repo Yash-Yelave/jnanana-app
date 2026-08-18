@@ -29,13 +29,13 @@ export function MentorMarketingPage() {
           <nav>
             <a href="#categories">Category</a>
             <a href="#about">About Us</a>
-            <a href="#business">Upskillink Business</a>
+            <a href="#business">Jnanana Foundation Business</a>
           </nav>
           <Link href="/login">
             Sign Up <ArrowRight size={16} />
           </Link>
         </header>
-        <span>WELCOME TO UPSKILLINK</span>
+        <span>WELCOME TO JNANANA FOUNDATION</span>
         <h1>
           Meet the Professional
           <br />
@@ -64,7 +64,7 @@ export function MentorMarketingPage() {
       </section>
 
       <section className={styles.mentorAbout} id="about">
-        <span>WHY UPSKILLINK</span>
+        <span>WHY JNANANA FOUNDATION</span>
         <h2>Turn your experience into impact</h2>
         <div>
           <article>

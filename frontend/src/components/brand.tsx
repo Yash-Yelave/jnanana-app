@@ -3,20 +3,27 @@ import Link from "next/link";
 
 export function Brand({ inverse = false }: { inverse?: boolean }) {
   return (
-    <Link className="inline-flex items-center gap-2.5" href="/" aria-label="Upskillink home">
+    <Link className="inline-flex items-center gap-3.5 shrink-0 py-1" href="/" aria-label="Jnanana Foundation home">
       <Image
-        src="/assets/landing/brand-mark.png"
-        alt=""
-        width={39}
-        height={42}
-        className="h-8 w-auto"
+        src="/assets/brand/logo-icon.png"
+        alt="Jnanana Logo"
+        width={60}
+        height={60}
+        className={`h-12 w-auto object-contain transition-transform ${
+          inverse ? "brightness-0 invert" : ""
+        }`}
         priority
       />
-      <span
-        className={`font-sans text-[22px] tracking-[-0.03em] ${inverse ? "text-white" : "text-black"}`}
-      >
-        upskillink
-      </span>
+      <Image
+        src="/assets/brand/logo-nameplate.png"
+        alt="Jnanana Foundation"
+        width={200}
+        height={60}
+        className={`h-10 w-auto object-contain ${
+          inverse ? "brightness-0 invert" : ""
+        }`}
+        priority
+      />
     </Link>
   );
 }

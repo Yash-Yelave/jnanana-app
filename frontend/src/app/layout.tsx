@@ -26,13 +26,13 @@ const handwritten = Sue_Ellen_Francisco({
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl()),
   title: {
-    default: "Upskillink | Learn with top mentors",
-    template: "%s | Upskillink",
+    default: "Jnanana Foundation | Learn with top mentors",
+    template: "%s | Jnanana Foundation",
   },
   description:
     "Connect, learn and grow with personalized mentoring and practical lessons from experienced professionals.",
   openGraph: {
-    title: "Upskillink | Learn with top mentors",
+    title: "Jnanana Foundation | Learn with top mentors",
     description:
       "Connect, learn and grow with personalized mentoring and practical lessons.",
     type: "website",
