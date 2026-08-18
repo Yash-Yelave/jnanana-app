@@ -156,6 +156,8 @@ export function MentorHomePage() {
 
 export function MentorBookingsPage() {
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [isCreating, setIsCreating] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [pending, setPending] = useState(false);
@@ -191,6 +193,36 @@ export function MentorBookingsPage() {
     }
   }
 
+  async function handleEditSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!request) return;
+    setPending(true);
+    setError("");
+    setMessage("");
+    const form = new FormData(event.currentTarget);
+    const title = String(form.get("title"));
+    const description = String(form.get("description"));
+    const amount = Number(form.get("amount"));
+
+    try {
+      await apiFetch(`/lesson-requests/${request.id}`, {
+        method: "PATCH",
+        body: JSON.stringify({
+          title,
+          description,
+          proposed_amount_minor: amount * 100,
+        }),
+      });
+      setIsEditing(false);
+      setMessage("Lesson request updated successfully!");
+      await reload();
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "Unable to update lesson request");
+    } finally {
+      setPending(false);
+    }
+  }
+
   async function handleCreateRequestSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setPending(true);
@@ -217,7 +249,8 @@ export function MentorBookingsPage() {
           requested_end: endDate.toISOString(),
         }),
       });
-      setMessage("Lesson request created successfully!");
+      setIsCreating(false);
+      setMessage("New lesson request created successfully!");
       await reload();
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : "Unable to create lesson request");
@@ -226,18 +259,47 @@ export function MentorBookingsPage() {
     }
   }
 
+  const showCreateForm = isCreating || requests.length === 0;
+
   return (
     <AppShell active="/mentor/bookings" mentor>
       <main className={styles.main}>
-        <PageTitle>Accept Lesson</PageTitle>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px" }}>
+          <PageTitle>Accept Lesson</PageTitle>
+
+          {requests.length > 0 && (
+            <div>
+              {showCreateForm ? (
+                <button
+                  type="button"
+                  onClick={() => setIsCreating(false)}
+                  style={{ padding: "10px 22px", borderRadius: "999px", border: "1px solid #ddd", background: "#fff", fontWeight: 700, cursor: "pointer" }}
+                >
+                  ← Back to Existing Requests
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsCreating(true);
+                    setIsEditing(false);
+                  }}
+                  style={{ padding: "10px 22px", borderRadius: "999px", border: 0, background: "#a3d95d", color: "#111", fontWeight: 800, cursor: "pointer" }}
+                >
+                  + Create New Request
+                </button>
+              )}
+            </div>
+          )}
+        </div>
 
         {message && <p className="data-state" style={{ color: "#5e9d26", fontWeight: "800", fontSize: "16px", marginBottom: "16px" }}>✓ {message}</p>}
         {error && <p className="data-state" role="alert" style={{ color: "#b42318", fontWeight: "800", fontSize: "16px", marginBottom: "16px" }}>⚠ {error}</p>}
 
-        {!request ? (
+        {showCreateForm ? (
           <section className={styles.panel} style={{ maxWidth: "720px", margin: "0 auto 40px", padding: "36px" }}>
-            <h2 style={{ fontSize: "24px", marginBottom: "12px" }}>Create Lesson Request</h2>
-            <p style={{ color: "#666", marginBottom: "24px" }}>No open requests found. Fill in details below to post a new lesson request.</p>
+            <h2 style={{ fontSize: "24px", marginBottom: "12px" }}>Create New Lesson Request</h2>
+            <p style={{ color: "#666", marginBottom: "24px" }}>Fill in the details below to publish a new lesson request onto the platform.</p>
 
             <form onSubmit={handleCreateRequestSubmit} style={{ display: "grid", gap: "20px" }}>
               <label style={{ display: "grid", gap: "8px", fontWeight: "700" }}>
@@ -274,25 +336,43 @@ export function MentorBookingsPage() {
                 />
               </label>
 
-              <button
-                type="submit"
-                disabled={pending}
-                className="button button-primary"
-                style={{
-                  height: "56px",
-                  padding: "0 32px",
-                  borderRadius: "999px",
-                  background: "#a3d95d",
-                  color: "#111",
-                  fontWeight: "800",
-                  fontSize: "16px",
-                  border: 0,
-                  cursor: "pointer",
-                  marginTop: "12px",
-                }}
-              >
-                {pending ? "Submitting…" : "Submit Lesson Request →"}
-              </button>
+              <div style={{ display: "flex", gap: "14px", marginTop: "12px" }}>
+                <button
+                  type="submit"
+                  disabled={pending}
+                  className="button button-primary"
+                  style={{
+                    height: "54px",
+                    flex: 1,
+                    borderRadius: "999px",
+                    background: "#a3d95d",
+                    color: "#111",
+                    fontWeight: "800",
+                    fontSize: "16px",
+                    border: 0,
+                    cursor: "pointer",
+                  }}
+                >
+                  {pending ? "Submitting…" : "Submit Lesson Request →"}
+                </button>
+                {requests.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setIsCreating(false)}
+                    style={{
+                      height: "54px",
+                      padding: "0 24px",
+                      borderRadius: "999px",
+                      border: "1px solid #ccc",
+                      background: "#f5f5f5",
+                      fontWeight: "700",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Cancel
+                  </button>
+                )}
+              </div>
             </form>
           </section>
         ) : (
@@ -300,10 +380,13 @@ export function MentorBookingsPage() {
             <article className={styles.panel}>
               {requests.length > 1 && (
                 <div style={{ marginBottom: "20px", display: "flex", alignItems: "center", gap: "12px" }}>
-                  <label style={{ fontWeight: "700", color: "#333" }}>Select Request:</label>
+                  <label style={{ fontWeight: "700", color: "#333" }}>Select Existing Request:</label>
                   <select
                     value={selectedIndex}
-                    onChange={(e) => setSelectedIndex(Number(e.target.value))}
+                    onChange={(e) => {
+                      setSelectedIndex(Number(e.target.value));
+                      setIsEditing(false);
+                    }}
                     style={{ padding: "10px 16px", borderRadius: "12px", border: "1px solid #d8d8d8", outline: "none", fontSize: "14px" }}
                   >
                     {requests.map((item, index) => (
@@ -315,21 +398,86 @@ export function MentorBookingsPage() {
                 </div>
               )}
 
-              <h2>{request.title}</h2>
-              <p className={styles.metaRow}>
-                <Calendar size={16} /> {new Date(request.requested_start).toLocaleDateString()} &nbsp;&nbsp;&nbsp;&nbsp;
-                <Clock size={16} /> {new Date(request.requested_start).toLocaleTimeString()}
-              </p>
-              <div>
-                <h3>Description</h3>
-                <p>{request.description}</p>
-              </div>
-              <div>
-                <h3>Status</h3>
-                <p>
-                  <b>{request.status}</b>
-                </p>
-              </div>
+              {isEditing ? (
+                <form onSubmit={handleEditSubmit} style={{ display: "grid", gap: "16px" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <h2 style={{ fontSize: "20px" }}>Edit Selected Request</h2>
+                    <button
+                      type="button"
+                      onClick={() => setIsEditing(false)}
+                      style={{ padding: "6px 16px", borderRadius: "999px", border: "1px solid #ccc", background: "#f5f5f5", cursor: "pointer", fontWeight: "700" }}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                  <label style={{ display: "grid", gap: "6px", fontWeight: "700" }}>
+                    Title
+                    <input
+                      name="title"
+                      defaultValue={request.title}
+                      required
+                      minLength={3}
+                      style={{ height: "46px", padding: "0 14px", borderRadius: "10px", border: "1px solid #ddd", fontSize: "15px" }}
+                    />
+                  </label>
+                  <label style={{ display: "grid", gap: "6px", fontWeight: "700" }}>
+                    Description
+                    <textarea
+                      name="description"
+                      defaultValue={request.description}
+                      required
+                      minLength={10}
+                      style={{ minHeight: "100px", padding: "12px", borderRadius: "10px", border: "1px solid #ddd", fontSize: "14px", fontFamily: "inherit" }}
+                    />
+                  </label>
+                  <label style={{ display: "grid", gap: "6px", fontWeight: "700" }}>
+                    Proposed Rate (INR)
+                    <input
+                      name="amount"
+                      type="number"
+                      defaultValue={request.proposed_amount_minor / 100}
+                      min="1"
+                      required
+                      style={{ height: "46px", padding: "0 14px", borderRadius: "10px", border: "1px solid #ddd", fontSize: "15px" }}
+                    />
+                  </label>
+                  <button
+                    type="submit"
+                    disabled={pending}
+                    className="button button-primary"
+                    style={{ height: "48px", borderRadius: "999px", background: "#a3d95d", border: 0, fontWeight: "800", cursor: "pointer", color: "#111" }}
+                  >
+                    {pending ? "Saving…" : "Save Changes →"}
+                  </button>
+                </form>
+              ) : (
+                <>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
+                    <h2 style={{ margin: 0 }}>{request.title}</h2>
+                    <button
+                      type="button"
+                      onClick={() => setIsEditing(true)}
+                      style={{ padding: "8px 18px", borderRadius: "999px", border: 0, background: "#111", color: "#fff", fontWeight: "700", cursor: "pointer", fontSize: "13px" }}
+                    >
+                      Edit Request ✏️
+                    </button>
+                  </div>
+                  <p className={styles.metaRow}>
+                    <Calendar size={16} /> {new Date(request.requested_start).toLocaleDateString()} &nbsp;&nbsp;&nbsp;&nbsp;
+                    <Clock size={16} /> {new Date(request.requested_start).toLocaleTimeString()}
+                  </p>
+                  <div>
+                    <h3>Description</h3>
+                    <p>{request.description}</p>
+                  </div>
+                  <div>
+                    <h3>Status</h3>
+                    <p>
+                      <b>{request.status}</b>
+                    </p>
+                  </div>
+                </>
+              )}
             </article>
 
             <aside className={styles.panel}>

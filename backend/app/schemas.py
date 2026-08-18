@@ -157,6 +157,13 @@ class LessonRequestRead(LessonRequestCreate):
     created_at: datetime
 
 
+class LessonRequestUpdate(BaseModel):
+    title: str | None = Field(default=None, min_length=3, max_length=160)
+    description: str | None = Field(default=None, min_length=10, max_length=5000)
+    proposed_amount_minor: int | None = Field(default=None, ge=0, le=100_000_000)
+    currency: str | None = Field(default=None, min_length=3, max_length=3)
+
+
 class OfferCreate(BaseModel):
     amount_minor: int = Field(ge=0, le=100_000_000)
     currency: str = Field(default="INR", min_length=3, max_length=3)

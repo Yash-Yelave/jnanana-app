@@ -15,6 +15,7 @@ from app.schemas import (
     BookingStatusInput,
     LessonRequestCreate,
     LessonRequestRead,
+    LessonRequestUpdate,
     OfferCreate,
     OfferRead,
     OfferStatusInput,
@@ -55,6 +56,27 @@ async def create_lesson_request(payload: LessonRequestCreate, db: Db, user: User
         currency=payload.currency.upper(),
     )
     db.add(request)
+    await db.commit()
+    await db.refresh(request)
+    return request
+
+
+@router.patch("/lesson-requests/{request_id}", response_model=LessonRequestRead)
+async def update_lesson_request(request_id: UUID, payload: LessonRequestUpdate, db: Db, user: User) -> LessonRequest:
+    request = await db.get(LessonRequest, request_id)
+    if request is None:
+        raise HTTPException(status_code=404, detail="lesson request not found")
+    if not user.is_admin and request.student_id != user.id:
+        raise HTTPException(status_code=403, detail="not authorized to edit this lesson request")
+    if payload.title is not None:
+        request.title = payload.title
+    if payload.description is not None:
+        request.description = payload.description
+    if payload.proposed_amount_minor is not None:
+        request.proposed_amount_minor = payload.proposed_amount_minor
+    if payload.currency is not None:
+        request.currency = payload.currency.upper()
+    request.updated_at = datetime.now(UTC)
     await db.commit()
     await db.refresh(request)
     return request
