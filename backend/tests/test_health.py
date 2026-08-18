@@ -11,3 +11,12 @@ def test_liveness_and_request_id() -> None:
     assert response.json() == {"status": "ok"}
     assert response.headers["X-Request-ID"] == "test-request"
 
+
+def test_openapi_and_auth_boundary() -> None:
+    with TestClient(app) as client:
+        schema = client.get("/openapi.json")
+        protected = client.get("/api/v1/me")
+
+    assert schema.status_code == 200
+    assert "/api/v1/offers/{offer_id}/accept" in schema.json()["paths"]
+    assert protected.status_code == 401

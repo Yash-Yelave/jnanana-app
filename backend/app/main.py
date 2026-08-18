@@ -8,6 +8,7 @@ from sqlalchemy import text
 
 from app.config import get_settings
 from app.db import SessionFactory, engine
+from app.routers import accounts, bookings, community, mentors, platform
 
 
 @asynccontextmanager
@@ -26,6 +27,8 @@ def create_app() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["Authorization", "Content-Type", "Idempotency-Key", "X-Request-ID"],
     )
+    for router in (accounts.router, mentors.router, bookings.router, community.router, platform.router):
+        app.include_router(router, prefix=settings.api_prefix)
 
     @app.middleware("http")
     async def request_id(request: Request, call_next):  # type: ignore[no-untyped-def]
@@ -50,4 +53,3 @@ def create_app() -> FastAPI:
 
 
 app = create_app()
-

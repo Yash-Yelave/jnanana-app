@@ -1,2 +1,1 @@
 """Upskillink backend package."""
-

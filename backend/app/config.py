@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     supabase_url: str = "http://127.0.0.1:54321"
     supabase_publishable_key: str = ""
     supabase_secret_key: SecretStr | None = None
+    supabase_jwt_audience: str = "authenticated"
     frontend_url: str = "http://localhost:3000"
     cors_origins: str = "http://localhost:3000"
 
@@ -25,4 +26,3 @@ class Settings(BaseSettings):
 @lru_cache
 def get_settings() -> Settings:
     return Settings()
-
