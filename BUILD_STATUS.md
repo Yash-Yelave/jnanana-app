@@ -73,3 +73,12 @@
 ## Next action
 
 Connect a browser backend for rendered pixel/console QA at the documented viewport matrix; implementation and static/runtime validation are complete.
+
+## Backend implementation
+
+- Current phase: FastAPI foundation
+- Architecture: FastAPI under `backend/`, Supabase PostgreSQL/Auth/Storage/Realtime
+- Supabase connection: MCP not exposed in this session; hosted migration verification pending
+- Database schema: Not yet applied
+- Backend lint/typecheck/tests: Pending dependency installation
+- Next backend task: Validate the foundation, then add the Supabase schema and authentication

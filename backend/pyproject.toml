@@ -1,0 +1,39 @@
+[project]
+name = "upskillink-backend"
+version = "0.1.0"
+description = "FastAPI backend for the Upskillink mentorship platform"
+readme = "README.md"
+requires-python = ">=3.13,<3.14"
+dependencies = [
+  "fastapi",
+  "pydantic-settings",
+  "pyjwt[crypto]",
+  "psycopg[binary,pool]",
+  "sqlalchemy",
+  "uvicorn",
+]
+
+[dependency-groups]
+dev = [
+  "httpx",
+  "mypy",
+  "pytest",
+  "pytest-asyncio",
+  "ruff",
+]
+
+[tool.pytest.ini_options]
+addopts = "-q"
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py313"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.mypy]
+python_version = "3.13"
+strict = true
+plugins = ["pydantic.mypy"]
