@@ -21,11 +21,18 @@ export function LoginForm() {
     const data = new FormData(event.currentTarget);
     try {
       const supabase = createClient();
-      const { error: authError } = await supabase.auth.signInWithPassword({
+      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
         email: String(data.get("email")),
         password: String(data.get("password")),
       });
       if (authError) throw authError;
+
+      const isAdmin = authData.user?.app_metadata?.role === "admin";
+      if (isAdmin) {
+        router.replace("/admin");
+        router.refresh();
+        return;
+      }
 
       let profile: Profile;
       try {
