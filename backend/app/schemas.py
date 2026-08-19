@@ -334,3 +334,88 @@ class InvoiceRead(ORMModel):
 class RoleChangeInput(BaseModel):
     role: Literal["student", "mentor"]
     reason: str = Field(min_length=3, max_length=1000)
+
+
+class EventCreate(BaseModel):
+    slug: str = Field(min_length=3, max_length=80)
+    name: str = Field(min_length=3, max_length=160)
+    description: str = Field(min_length=10, max_length=5000)
+    event_date: datetime
+    location: str = Field(default="Online / Hybrid", max_length=200)
+    image_path: str | None = None
+    status: Literal["draft", "published", "completed"] = "published"
+
+
+class EventRead(ORMModel):
+    id: UUID
+    slug: str
+    name: str
+    description: str
+    event_date: datetime
+    location: str
+    image_path: str | None
+    status: str
+    created_at: datetime
+    participating_mentors: list[MentorRead] = Field(default_factory=list)
+
+
+class JuleWalletRead(BaseModel):
+    user_id: UUID
+    balance: int
+    updated_at: datetime
+
+
+class JuleTransactionRead(ORMModel):
+    id: UUID
+    user_id: UUID
+    event_id: UUID | None
+    amount: int
+    transaction_type: str
+    related_mentor_id: UUID | None
+    notes: str | None
+    created_at: datetime
+
+
+class TokenAdjustInput(BaseModel):
+    user_id: UUID
+    amount: int
+    notes: str = Field(default="Admin Adjustment", max_length=500)
+
+
+class MentorshipRequestCreate(BaseModel):
+    mentor_id: UUID
+    event_id: UUID | None = None
+    tokens_used: int = Field(default=10, ge=1, le=100)
+    note: str | None = Field(default=None, max_length=2000)
+
+
+class MentorshipRequestRead(ORMModel):
+    id: UUID
+    mentee_id: UUID
+    mentor_id: UUID
+    event_id: UUID | None
+    tokens_used: int
+    status: str
+    note: str | None
+    created_at: datetime
+    updated_at: datetime
+    mentee_name: str | None = None
+    mentor_name: str | None = None
+    mentor_avatar: str | None = None
+    mentor_headline: str | None = None
+
+
+class MentorshipRequestActionInput(BaseModel):
+    action: Literal["accept", "reject", "complete", "cancel"]
+    reason: str | None = Field(default=None, max_length=1000)
+
+
+class CreateMentorInput(BaseModel):
+    email: str
+    first_name: str
+    last_name: str
+    headline: str | None = None
+    bio: str | None = None
+    professions: list[str] = Field(default_factory=list)
+    companies: list[str] = Field(default_factory=list)
+

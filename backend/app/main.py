@@ -8,11 +8,15 @@ from sqlalchemy import text
 
 from app.config import get_settings
 from app.db import SessionFactory, engine
-from app.routers import accounts, bookings, community, mentors, platform
+from app.routers import accounts, admin, bookings, community, events, jule, mentors, mentorship_requests, platform
+
 
 
 @asynccontextmanager
 async def lifespan(_: FastAPI) -> AsyncIterator[None]:
+    from app.models import Base
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
     yield
     await engine.dispose()
 
@@ -62,7 +66,17 @@ def create_app() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
-    for router in (accounts.router, mentors.router, bookings.router, community.router, platform.router):
+    for router in (
+        accounts.router,
+        admin.router,
+        bookings.router,
+        community.router,
+        events.router,
+        jule.router,
+        mentors.router,
+        mentorship_requests.router,
+        platform.router,
+    ):
         app.include_router(router, prefix=settings.api_prefix)
 
     @app.get("/health/live", tags=["health"])

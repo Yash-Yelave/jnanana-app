@@ -64,3 +64,8 @@ def require_admin(user: Annotated[CurrentUser, Depends(get_current_user)]) -> Cu
     if not user.is_admin:
         raise HTTPException(status_code=403, detail="admin access required")
     return user
+
+
+async def get_current_user_id(user: Annotated[CurrentUser, Depends(get_current_user)]) -> UUID:
+    return user.id
+

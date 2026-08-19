@@ -329,3 +329,74 @@ class AuditEvent(Base):
     entity_id: Mapped[UUID | None]
     data: Mapped[dict[str, object]] = mapped_column(JSONB, default=dict)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class Event(Base):
+    __tablename__ = "events"
+
+    id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
+    slug: Mapped[str] = mapped_column(unique=True)
+    name: Mapped[str]
+    description: Mapped[str] = mapped_column(Text)
+    event_date: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    location: Mapped[str] = mapped_column(default="Online / Hybrid")
+    image_path: Mapped[str | None]
+    status: Mapped[str] = mapped_column(default="published")
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class EventMentor(Base):
+    __tablename__ = "event_mentors"
+
+    event_id: Mapped[UUID] = mapped_column(ForeignKey("events.id", ondelete="CASCADE"), primary_key=True)
+    mentor_id: Mapped[UUID] = mapped_column(ForeignKey("mentor_profiles.profile_id", ondelete="CASCADE"), primary_key=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class EventParticipant(Base):
+    __tablename__ = "event_participants"
+    __table_args__ = (UniqueConstraint("event_id", "user_id"),)
+
+    id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
+    event_id: Mapped[UUID] = mapped_column(ForeignKey("events.id", ondelete="CASCADE"))
+    user_id: Mapped[UUID] = mapped_column(ForeignKey("profiles.id", ondelete="CASCADE"))
+    registration_status: Mapped[str] = mapped_column(default="registered")
+    checkin_status: Mapped[str] = mapped_column(default="pending")
+    tokens_allocated: Mapped[bool] = mapped_column(Boolean, default=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class JuleWallet(Base):
+    __tablename__ = "jule_wallets"
+
+    user_id: Mapped[UUID] = mapped_column(ForeignKey("profiles.id", ondelete="CASCADE"), primary_key=True)
+    balance: Mapped[int] = mapped_column(Integer, default=0)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class JuleTransaction(Base):
+    __tablename__ = "jule_transactions"
+
+    id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
+    user_id: Mapped[UUID] = mapped_column(ForeignKey("profiles.id", ondelete="CASCADE"))
+    event_id: Mapped[UUID | None] = mapped_column(ForeignKey("events.id", ondelete="SET NULL"))
+    amount: Mapped[int] = mapped_column(Integer)
+    transaction_type: Mapped[str]
+    related_mentor_id: Mapped[UUID | None] = mapped_column(ForeignKey("mentor_profiles.profile_id", ondelete="SET NULL"))
+    notes: Mapped[str | None] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class MentorshipRequest(Base):
+    __tablename__ = "mentorship_requests"
+
+    id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
+    mentee_id: Mapped[UUID] = mapped_column(ForeignKey("profiles.id", ondelete="CASCADE"))
+    mentor_id: Mapped[UUID] = mapped_column(ForeignKey("mentor_profiles.profile_id", ondelete="CASCADE"))
+    event_id: Mapped[UUID | None] = mapped_column(ForeignKey("events.id", ondelete="SET NULL"))
+    tokens_used: Mapped[int] = mapped_column(Integer, default=10)
+    status: Mapped[str] = mapped_column(default="pending")
+    note: Mapped[str | None] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+

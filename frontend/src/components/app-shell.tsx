@@ -98,11 +98,29 @@ export function AppShell({
       <header className={styles.topbarHeader}>
         <label className={styles.searchBox}>
           <Search size={18} />
-          <input type="search" placeholder="Search courses" aria-label="Search courses" />
+          <input type="search" placeholder="Search mentors, events..." aria-label="Search mentors, events" />
         </label>
-        <Link className={styles.profileBtn} href={profileTarget} aria-label="Open profile">
-          <Image src={avatar} alt={name} width={46} height={46} priority />
-        </Link>
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          <Link href="/dashboard" style={{ textDecoration: "none" }}>
+            <span style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "6px",
+              padding: "6px 14px",
+              borderRadius: "9999px",
+              background: "linear-gradient(135deg, #FFB800 0%, #FF8A00 100%)",
+              color: "#000",
+              fontWeight: "700",
+              fontSize: "0.875rem",
+              boxShadow: "0 2px 8px rgba(255, 184, 0, 0.3)"
+            }}>
+              ⚡ Jule Tokens
+            </span>
+          </Link>
+          <Link className={styles.profileBtn} href={profileTarget} aria-label="Open profile">
+            <Image src={avatar} alt={name} width={46} height={46} priority />
+          </Link>
+        </div>
       </header>
 
       <section className={styles.content}>{children}</section>

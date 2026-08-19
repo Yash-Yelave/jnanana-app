@@ -166,10 +166,10 @@ export function MentorDirectory() {
                   <b>Mentorship</b>
                   <b>Tutorials</b>
                   <span>
-                    Starting from<strong>₹{price}</strong>per lesson
+                    Mentorship Fee<strong>⚡ 10 Jule Tokens</strong>
                   </span>
-                  <Link className={styles.button} href={`/lessons/book?mentor=${mentor.id}`}>
-                    Book a lesson <ArrowUpRight size={16} />
+                  <Link className={styles.button} href={`/mentors/${mentor.id}`}>
+                    Request Mentorship <ArrowUpRight size={16} />
                   </Link>
                 </aside>
               </article>
@@ -192,16 +192,159 @@ const tabs = [
 export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = false, mentorId }: { mode?: "about" | "lessons" | "feedback"; mentorDetail?: boolean; mentorApp?: boolean; mentorId?: string }) {
   const active = mentorDetail ? "/mentors" : mentorApp ? "/mentor/profile" : "/profile";
   const { data, error, loading } = useApi<Profile | Mentor>(mentorDetail && mentorId ? `/mentors/${mentorId}` : "/me");
-  
+  const { data: walletData } = useApi<{ balance: number }>("/jule/wallet");
+
+  const [showJuleModal, setShowJuleModal] = useState(false);
+  const [requestNote, setRequestNote] = useState("");
+  const [submittingRequest, setSubmittingRequest] = useState(false);
+  const [requestMsg, setRequestMsg] = useState("");
+  const [requestError, setRequestError] = useState("");
+
   const rawFirstName = data?.first_name || "";
   const rawLastName = data?.last_name || "";
   const formattedName = (rawFirstName || rawLastName) ? `${rawFirstName} ${rawLastName}`.trim() : "";
   const avatar = publicAsset("avatars", data?.avatar_path) ?? "/assets/app/mentor-1.png";
   const mentor = data && "headline" in data ? data : data?.mentor;
 
+  const currentBalance = walletData?.balance ?? 50;
+
+  const handleConfirmRequest = async () => {
+    if (!mentorId) return;
+    setSubmittingRequest(true);
+    setRequestError("");
+    setRequestMsg("");
+    try {
+      await apiFetch("/mentorship-requests", {
+        method: "POST",
+        body: JSON.stringify({
+          mentor_id: mentorId,
+          tokens_used: 10,
+          note: requestNote || "Requesting mentorship session",
+        }),
+      });
+      clearApiCache();
+      setRequestMsg("🎉 Mentorship request submitted! 10 Jule Tokens deducted from your wallet.");
+      setTimeout(() => setShowJuleModal(false), 2000);
+    } catch (err: any) {
+      setRequestError(err.message || "Failed to submit mentorship request");
+    } finally {
+      setSubmittingRequest(false);
+    }
+  };
+
   return (
     <AppShell active={active} mentor={mentorApp}>
       <main className={styles.main}>
+        {/* JULE TOKEN REQUEST MODAL */}
+        {showJuleModal && (
+          <div style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: "rgba(0,0,0,0.8)",
+            zIndex: 9999,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "20px"
+          }}>
+            <div style={{
+              background: "#1E293B",
+              borderRadius: "20px",
+              padding: "32px",
+              maxWidth: "500px",
+              width: "100%",
+              border: "1px solid rgba(255, 184, 0, 0.3)",
+              color: "#fff"
+            }}>
+              <h2 style={{ fontSize: "1.5rem", fontWeight: "700", marginBottom: "12px" }}>
+                ⚡ Request Mentorship
+              </h2>
+              <p style={{ color: "#94A3B8", marginBottom: "20px", lineHeight: 1.5 }}>
+                Use <strong>10 Jule Tokens</strong> to request a mentorship connection with <strong>{formattedName || "Mentor"}</strong>?
+              </p>
+
+              <div style={{
+                background: "rgba(255, 184, 0, 0.1)",
+                border: "1px solid rgba(255, 184, 0, 0.2)",
+                borderRadius: "12px",
+                padding: "16px",
+                marginBottom: "20px",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center"
+              }}>
+                <span style={{ fontSize: "0.9rem", color: "#E2E8F0" }}>Your Jule Wallet Balance:</span>
+                <strong style={{ fontSize: "1.2rem", color: "#FFB800" }}>⚡ {currentBalance} Jule</strong>
+              </div>
+
+              {currentBalance < 10 ? (
+                <div style={{ padding: "12px", borderRadius: "8px", background: "rgba(239, 68, 68, 0.2)", border: "1px solid #EF4444", color: "#EF4444", marginBottom: "20px" }}>
+                  ⚠️ Insufficient Jule Tokens. You have {currentBalance} Jule Tokens, but 10 are required. Check into an event to claim 50 Jule Tokens!
+                </div>
+              ) : (
+                <div style={{ marginBottom: "20px" }}>
+                  <label style={{ display: "block", marginBottom: "8px", fontSize: "0.9rem", color: "#CBD5E1" }}>
+                    Add a note for {formattedName} (Optional):
+                  </label>
+                  <textarea
+                    rows={3}
+                    placeholder="Describe what you want to learn or get advice on..."
+                    value={requestNote}
+                    onChange={(e) => setRequestNote(e.target.value)}
+                    style={{
+                      width: "100%",
+                      padding: "10px",
+                      borderRadius: "8px",
+                      background: "#0F172A",
+                      border: "1px solid #334155",
+                      color: "#fff"
+                    }}
+                  />
+                </div>
+              )}
+
+              {requestMsg && <div style={{ color: "#48BB78", marginBottom: "16px", fontWeight: "600" }}>{requestMsg}</div>}
+              {requestError && <div style={{ color: "#EF4444", marginBottom: "16px" }}>{requestError}</div>}
+
+              <div style={{ display: "flex", gap: "12px", justifyContent: "flex-end" }}>
+                <button
+                  onClick={() => setShowJuleModal(false)}
+                  style={{
+                    padding: "10px 20px",
+                    borderRadius: "10px",
+                    background: "#334155",
+                    color: "#fff",
+                    border: "none",
+                    cursor: "pointer"
+                  }}
+                >
+                  Cancel
+                </button>
+                {currentBalance >= 10 && (
+                  <button
+                    onClick={handleConfirmRequest}
+                    disabled={submittingRequest}
+                    style={{
+                      padding: "10px 24px",
+                      borderRadius: "10px",
+                      background: "linear-gradient(135deg, #FFB800 0%, #FF8A00 100%)",
+                      color: "#000",
+                      fontWeight: "700",
+                      border: "none",
+                      cursor: submittingRequest ? "not-allowed" : "pointer"
+                    }}
+                  >
+                    {submittingRequest ? "Submitting..." : "Confirm (Spend 10 Jule)"}
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className={styles.titleRow}>
           <PageTitle>{mentorDetail ? "Mentorship" : "Profile"}</PageTitle>
         </div>
@@ -222,6 +365,29 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
                   {mentor?.headline && <span style={{ color: "#555", fontWeight: "600" }}>• {mentor.headline}</span>}
                 </p>
               </div>
+              {mentorDetail && (
+                <div style={{ marginLeft: "auto", display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
+                  <button
+                    onClick={() => setShowJuleModal(true)}
+                    style={{
+                      padding: "12px 24px",
+                      borderRadius: "12px",
+                      background: "linear-gradient(135deg, #FFB800 0%, #FF8A00 100%)",
+                      color: "#000",
+                      fontWeight: 700,
+                      fontSize: "1rem",
+                      border: "none",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                      boxShadow: "0 4px 14px rgba(255, 184, 0, 0.4)",
+                    }}
+                  >
+                    ⚡ Request Mentorship (10 Jule)
+                  </button>
+                </div>
+              )}
               {!mentorDetail && (
                 <Link className={styles.primary} href="/profile/edit" style={{ marginLeft: "auto" }}>
                   Edit Profile

@@ -1,0 +1,849 @@
+Jnanana  
+Technical  Product  Flow  &  MVP  Requirements  
+Document  Purpose:  
+This
+ 
+document
+ 
+is
+ 
+the
+ 
+single
+ 
+source
+ 
+of
+ 
+truth
+ 
+for
+ 
+the
+ 
+initial
+ 
+Jnanana
+ 
+MVP.
+ 
+The  technology  team  should  use  this  document  to  understand  the  exact  product  flow,  screens,  
+roles,
+ 
+functionality,
+ 
+and
+ 
+boundaries
+ 
+of
+ 
+the
+ 
+first
+ 
+release.
+ 
+The  objective  is  to  eliminate  ambiguity  between  the  product,  design,  and  development  teams.  
+ 
+1.  PRODUCT  DIRECTION  
+Core  Positioning  
+Jnanana  is  being  positioned  as:  
+Building  the  World's  Largest  Mentorship  Program  
+The  first  version  of  Jnanana  is  not  a  community  platform .  
+The  core  product  experience  is:  
+User  →  Discover  Mentor  →  View  Mentor  Profile  →  Use  Jule  Tokens  →  
+Request
+ 
+Mentorship
+ 
+→
+ 
+Connect
+ 
+Everything  developed  in  Phase  1  should  support  this  core  experience.  
+ 
+2.  PHASE  1  OBJECTIVE  
+The  objective  of  Phase  1  is  to  build  a  simple,  stable,  deployable  MVP  that  can  be  used  during  
+a
+ 
+real
+ 
+event.
+ 
+The  system  must  be:  
+--- PAGE ---
+●  Simple  ●  Fast  ●  Lightweight  ●  Easy  to  understand  ●  Mobile-friendly  ●  Easy  to  operate  from  the  admin  side  ●  Deployable  to  production  ●  Stable  enough  for  live  event  usage  
+We  should  NOT  attempt  to  build  the  complete  long-term  Jnanana  ecosystem  in  Phase  1.  
+ 
+3.  IMPORTANT  DEVELOPMENT  
+PRINCIPLE
+ 
+Build  →  Deploy  →  Test  Live  →  Observe  →  Improve  
+The  first  version  must  be  deployed  and  tested  with  real  users.  
+The  technology  team  should  avoid  spending  excessive  development  time  on  features  that  have  
+not
+ 
+yet
+ 
+been
+ 
+validated.
+ 
+If  a  feature  is  not  explicitly  included  in  Phase  1  of  this  document,  it  should  not  be  added  to  the  
+MVP
+ 
+unless
+ 
+approved
+ 
+separately.
+ 
+ 
+4.  PLATFORM  STRUCTURE  
+The  initial  Jnanana  ecosystem  consists  of:  
+A.  Public  Website  
+Purpose:  
+●  Explain  Jnanana  ●  Explain  the  mentorship  program  ●  Showcase  mentors  ●  Showcase  events  
+--- PAGE ---
+●  Allow  registration  ●  Allow  login  ●  Promote  the  app  
+ 
+B.  Mobile  Application  
+Purpose:  
+●  User  login  ●  User  profile  ●  Mentor  discovery  ●  Mentor  profiles  ●  Jule  Token  balance  ●  Mentorship  requests  ●  Event  participation  ●  Mentor  account  access  
+ 
+C.  Admin  Panel  
+Purpose:  
+●  Manage  users  ●  Manage  mentors  ●  Manage  events  ●  Manage  participants  ●  Allocate  Jule  Tokens  ●  Manage  mentor  profiles  ●  Manage  mentorship  requests  ●  Manage  user  roles  
+ 
+5.  USER  ROLES  
+The  system  must  support  the  following  roles.  
+Role  1  —  Mentee  /  Student  
+A  person  who  wants  to  discover  and  connect  with  mentors.  
+--- PAGE ---
+Capabilities:  
+●  Register  ●  Login  ●  Create/update  profile  ●  View  mentors  ●  View  mentor  profiles  ●  View  Jule  Token  balance  ●  Use  Jule  Tokens  ●  Request  mentorship  ●  View  mentorship  requests  ●  View  event  information  
+ 
+Role  2  —  Mentor  
+A  person  providing  mentorship.  
+Capabilities:  
+●  Login  ●  View  profile  ●  Update  profile  ●  View  mentorship  requests  ●  Accept/reject  requests  ●  Manage  relevant  profile  information  ●  Eventually  manage  availability  
+For  Phase  1,  mentor  accounts  can  be  created  by  the  admin  team.  
+ 
+Role  3  —  Admin  
+The  Jnanana  team  managing  the  platform.  
+Capabilities:  
+●  Create  users  ●  Create  mentors  ●  Create  events  ●  Add  participants  ●  Allocate  Jule  Tokens  
+--- PAGE ---
+●  Manage  mentor  profiles  ●  Manage  user  profiles  ●  Manage  mentorship  requests  ●  View  event  participation  ●  Manage  platform  data  
+ 
+6.  AUTHENTICATION  FLOW  
+The  authentication  system  must  clearly  distinguish  between:  
+Login  
+●  Login  as  Mentee  ●  Login  as  Mentor  
+Registration  
+●  Register  as  Mentee  ●  Register  as  Mentor  —  only  if  enabled  by  admin/product  configuration  
+For  the  initial  event,  mentor  accounts  may  be  created  manually  by  the  admin.  
+ 
+7.  MENTOR  ACCOUNT  CREATION  
+For  the  first  event,  the  Jnanana  team  will  create  mentor  accounts  beforehand.  
+Example:  
+Mentor:  JA  Sir  
+Role:
+ 
+Mentor
+ 
+Login:
+ 
+Created
+ 
+by
+ 
+Admin
+ 
+Temporary
+ 
+Password:
+ 
+Created
+ 
+by
+ 
+Admin
+ 
+The  mentor  receives  the  login  credentials.  
+On  first  login,  the  mentor  should  be  able  to  update  their  profile.  
+ 
+--- PAGE ---
+8.  MENTOR  PROFILE  
+Every  mentor  must  have  a  profile.  
+Required  fields:  
+●  Profile  photo  ●  Full  name  ●  Designation  ●  Company  /  Organization  ●  Professional  background  ●  Short  biography  ●  Areas  of  expertise  ●  Mentorship  areas  ●  Experience  ●  Availability  ●  Email  ●  Phone  number  
+Additional  fields  can  be  added  later.  
+ 
+9.  PREDEFINED  EVENT  MENTORS  
+For  Phase  1,  mentors  participating  in  an  event  will  be  predefined  by  the  Admin .  
+Example:  
+●  JA  Sir  ●  Siddharth  Sir  ●  PadmaTej  ●  Charan  ●  Smitesh  ●  Other  confirmed  mentors  
+ 
+10.  EVENT  CREATION  
+Admin  must  be  able  to  create  an  event.  
+--- PAGE ---
+Required  event  fields:  
+●  Event  name  ●  Event  description  ●  Date  ●  Time  ●  Location  ●  Event  image/banner  ●  Participating  mentors  ●  Registration  information  ●  Event  status  
+Event  status  should  support:  
+●  Draft  ●  Published  ●  Completed  
+ 
+11.  EVENT  PARTICIPANT  MANAGEMENT  
+Admin  should  be  able  to  see  the  list  of  people  attending  an  event.  
+For  each  participant:  
+●  Name  ●  Email  ●  Phone  ●  Role  ●  Registration  status  ●  Check-in  status  ●  Jule  Token  balance  
+Admin  should  be  able  to  mark  a  user  as:  
+Checked  In  
+ 
+12.  EVENT-DAY  USER  FLOW  
+This  is  the  most  important  Phase  1  flow.  
+--- PAGE ---
+STEP  1  —  User  Arrives  at  Event  
+The  event  screen  displays:  
+Welcome  to  Jnanana  
+and  a  QR  code  /  URL:  
+Open  Jnanana.com  
+ 
+STEP  2  —  User  Opens  Website  
+The  user  lands  on  the  Jnanana  landing  page.  
+The  page  must  immediately  communicate:  
+Jnanana  —  Building  the  World's  Largest  Mentorship  Program  
+The  current  event  should  also  be  visible.  
+ 
+STEP  3  —  User  Downloads  /  Opens  App  
+The  website  provides:  
+Download  the  Jnanana  App  
+The  user  scans  the  QR  code  or  follows  the  download  link.  
+ 
+STEP  4  —  User  Registers  /  Logs  In  
+The  user  selects:  
+Login  
+or  
+Register  
+Then:  
+--- PAGE ---
+Continue  as  Mentee  
+or  
+Continue  as  Mentor  
+For  normal  event  participants,  the  default  role  will  be  Mentee .  
+ 
+STEP  5  —  Profile  
+After  successful  authentication:  
+Home  /  Dashboard  
+The  user  should  see:  
+●  Name  ●  Profile  ●  Jule  Token  balance  ●  Current  event  ●  Available  mentors  ●  Mentorship  requests  
+ 
+13.  JULE  TOKEN  SYSTEM  
+Jule  Tokens  are  the  initial  mechanism  for  mentorship  transactions.  
+The  system  must  maintain  a  token  balance  for  every  participating  user.  
+Example:  
+Jule  Balance:  50  
+ 
+14.  INITIAL  TOKEN  ALLOCATION  
+For  every  confirmed  event  participant:  
+--- PAGE ---
+Base  Allocation  
+50  Jule  Tokens  
+are  allocated  to  the  participant.  
+The  Admin  should  be  able  to  perform  this  allocation  automatically  or  manually.  
+ 
+15.  ADDITIONAL  TOKEN  POOL  
+An  additional:  
+50  Jule  Tokens  
+may  be  distributed  through  event  activities,  professional  engagement,  participation,  or  other  
+approved
+ 
+activities.
+ 
+This  should  be  controlled  by  the  Admin.  
+The  Admin  must  be  able  to:  
+Add  Tokens  
+and  
+Deduct  Tokens  
+from  a  user.  
+ 
+16.  TOKEN  TRANSACTION  LOG  
+Every  token  movement  should  be  recorded.  
+Example:  
+Transaction  Tokens  
+Balance  
+Event  Allocation  +50  50  
+--- PAGE ---
+Activity  Reward  +10  60  
+Mentor  Request  -10  50  
+The  system  should  maintain  a  transaction  history.  
+Required  information:  
+●  User  ●  Transaction  type  ●  Amount  ●  Date/time  ●  Related  event  ●  Related  mentor,  if  applicable  ●  Created  by  /  source  
+ 
+17.  MENTOR  DISCOVERY  
+After  login,  the  mentee  should  be  able  to  see:  
+Mentors  at  this  Event  
+Only  mentors  assigned  to  the  relevant  event  should  be  shown  in  the  event-specific  mentor  list.  
+ 
+18.  MENTOR  CARD  
+Each  mentor  card  should  contain:  
+●  Profile  photo  ●  Name  ●  Designation  ●  Company  ●  Expertise  ●  Short  description  
+CTA:  
+View  Profile  
+--- PAGE ---
+ 
+19.  MENTOR  PROFILE  PAGE  
+When  the  user  opens  a  mentor:  
+Display:  
+Basic  Information  
+●  Photo  ●  Name  ●  Designation  ●  Company  
+Professional  Information  
+●  Biography  ●  Experience  ●  Expertise  ●  Mentorship  areas  
+Availability  
+●  Availability  information,  if  available  
+Action  
+Request  Mentorship  
+ 
+20.  REQUEST  MENTORSHIP  FLOW  
+When  a  mentee  selects:  
+Request  Mentorship  
+the  system  must:  
+Step  1  
+--- PAGE ---
+Check  the  user's  Jule  Token  balance.  
+If  insufficient:  
+Insufficient  Jule  Tokens  
+Do  not  create  the  request.  
+ 
+Step  2  
+If  sufficient  tokens  exist:  
+Display  confirmation:  
+Use  X  Jule  Tokens  to  request  mentorship  with  [Mentor  Name]?  
+Buttons:  
+Confirm  
+Cancel  
+ 
+Step  3  
+After  confirmation:  
+●  Deduct  the  required  token  amount  ●  Create  mentorship  request  ●  Associate  request  with  mentor  ●  Associate  request  with  mentee  ●  Record  transaction  ●  Notify  mentor  /  Admin  
+ 
+21.  MENTORSHIP  REQUEST  STATUS  
+Every  request  must  have  a  status.  
+Initial  statuses:  
+--- PAGE ---
+●  Pending  ●  Accepted  ●  Rejected  ●  Completed  ●  Cancelled  
+The  status  must  be  visible  to  the  relevant  users.  
+ 
+22.  MENTOR  FLOW  
+Mentor  logs  in.  
+Mentor  dashboard  displays:  
+Mentorship  Requests  
+Example:  
+PadmaTej  requested  mentorship  
+Status:  
+Pending  
+Mentor  actions:  
+●  Accept  ●  Reject  
+ 
+23.  INITIAL  CONNECTION  PROCESS  
+For  Phase  1,  mentorship  scheduling  does  NOT  need  to  be  fully  automated.  
+Once  a  request  is  accepted:  
+The  Jnanana  team  can  coordinate  the  actual  connection  based  on  mentor  
+availability.
+ 
+The  system  should  record  the  request  and  its  status.  
+--- PAGE ---
+Later,  this  can  evolve  into:  
+●  Calendar  integration  ●  Availability  management  ●  Automated  scheduling  ●  Notifications  ●  Video  calls  ●  Automated  matching  
+These  are  not  Phase  1  requirements .  
+ 
+24.  MENTOR  PROFILE  UPDATE  
+Mentors  should  be  able  to  update  their  own  profile  after  login.  
+Editable  fields:  
+●  Email  ●  Phone  ●  Profile  photo  ●  Bio  ●  Company  ●  Designation  ●  Experience  ●  Expertise  ●  Mentorship  areas  ●  Availability  
+Admin  should  retain  the  ability  to  edit  these  fields  as  well.  
+ 
+25.  MENTEE  PROFILE  
+Mentee  profile  should  initially  contain:  
+●  Name  ●  Profile  photo  ●  Email  ●  Phone  
+--- PAGE ---
+●  College  /  Organization  ●  Course  /  Designation  ●  Areas  of  interest  ●  Short  bio  
+Additional  fields  can  be  added  later.  
+ 
+26.  WEBSITE  STRUCTURE  
+The  new  Jnanana  website  should  be  rebuilt  around  the  new  positioning.  
+The  old  website  structure  should  not  be  carried  forward  as-is .  
+The  website  should  be  simple  and  focused.  
+ 
+Website  Navigation  
+Recommended  primary  navigation:  
+1.  Home  2.  Mentors  3.  Programs  4.  Events  5.  About  6.  Login  7.  Register  
+Primary  CTA:  
+Join  Jnanana  
+ 
+27.  WEBSITE  HOME  PAGE  
+Section  1  —  Hero  
+--- PAGE ---
+Jnanana  
+Building  the  World's  Largest  Mentorship  Program  
+Supporting  text  explaining  that  Jnanana  connects  students  and  individuals  with  experienced  
+mentors.
+ 
+Primary  CTA:  
+Join  Jnanana  
+Secondary  CTA:  
+Explore  Mentors  
+ 
+Section  2  —  Vision  
+Explain  the  long-term  vision  of  making  meaningful  mentorship  accessible  at  scale.  
+ 
+Section  3  —  How  It  Works  
+Display:  
+01  —  Join  
+Create  your  profile.  
+02  —  Discover  
+Find  relevant  mentors.  
+03  —  Connect  
+Use  Jule  Tokens  to  request  mentorship.  
+04  —  Grow  
+Learn,  connect,  and  grow  through  mentorship.  
+ 
+--- PAGE ---
+28.  WEBSITE  —  MENTORS  SECTION  
+Display  selected  mentors.  
+Each  card:  
+●  Photo  ●  Name  ●  Designation  ●  Company  ●  Expertise  
+CTA:  
+View  Profile  
+ 
+29.  WEBSITE  —  PROGRAMS  SECTION  
+Explain  Jnanana's  mentorship  programs.  
+The  language  should  focus  on:  
+Mentorship  Programs  
+NOT:  
+Community  Platform  
+The  primary  product  identity  must  remain  mentorship.  
+ 
+30.  WEBSITE  —  EVENTS  SECTION  
+Display  upcoming  and  active  events.  
+Each  event  should  contain:  
+●  Event  image  ●  Name  
+--- PAGE ---
+●  Date  ●  Location  ●  Description  ●  Participating  mentors  ●  Registration  CTA  
+ 
+31.  WEBSITE  —  APP  SECTION  
+Introduce  the  application.  
+Example:  
+Experience  Jnanana  on  the  App  
+Explain  that  users  can  use  the  app  to:  
+●  Manage  their  profile  ●  Discover  mentors  ●  Manage  Jule  Tokens  ●  Request  mentorship  ●  Participate  in  events  
+CTA:  
+Download  the  App  
+ 
+32.  WEBSITE  —  AUTHENTICATION  
+Website  must  provide:  
+Login  
+●  Login  as  Mentor  ●  Login  as  Mentee  
+Registration  
+●  Register  as  Mentee  ●  Register  as  Mentor,  if  enabled  
+--- PAGE ---
+ 
+33.  ADMIN  PANEL  
+The  admin  panel  is  critical  for  Phase  1  because  several  operations  will  initially  be  manually  
+managed.
+ 
+ 
+Admin  Dashboard  
+Display:  
+●  Total  users  ●  Total  mentors  ●  Active  events  ●  Event  participants  ●  Pending  mentorship  requests  ●  Jule  Tokens  issued  ●  Jule  Tokens  used  
+ 
+34.  ADMIN  —  USER  MANAGEMENT  
+Admin  actions:  
+●  Create  user  ●  Edit  user  ●  View  user  ●  Disable  user  ●  Assign  role  ●  View  token  balance  ●  Add  tokens  ●  Deduct  tokens  ●  View  transaction  history  
+ 
+35.  ADMIN  —  MENTOR  MANAGEMENT  
+--- PAGE ---
+Admin  actions:  
+●  Create  mentor  ●  Edit  mentor  ●  Assign  mentor  to  event  ●  Remove  mentor  from  event  ●  Create  login  credentials  ●  View  profile  ●  Update  profile  ●  Enable  /  disable  mentor  
+ 
+36.  ADMIN  —  EVENT  MANAGEMENT  
+Admin  actions:  
+●  Create  event  ●  Edit  event  ●  Publish  event  ●  Unpublish  event  ●  Add  mentors  ●  View  participants  ●  Mark  check-in  ●  Allocate  tokens  ●  View  mentorship  requests  
+ 
+37.  ADMIN  —  MENTORSHIP  REQUESTS  
+Admin  should  be  able  to  see:  
+Mentee  Mentor  Event  Tokens  
+Status  
+Date  
+Admin  should  be  able  to  intervene  if  required.  
+ 
+--- PAGE ---
+38.  NOTIFICATION  REQUIREMENT  
+Phase  1  should  support  basic  notifications  for  important  actions.  
+At  minimum:  
+Mentee  
+When:  
+●  Mentorship  request  is  submitted  ●  Request  is  accepted  ●  Request  is  rejected  
+Mentor  
+When:  
+●  New  mentorship  request  is  received  
+The  exact  notification  channel  can  initially  be:  
+●  In-app  notification  ●  Email  
+SMS  /  WhatsApp  automation  is  not  required  for  the  first  version  unless  separately  approved.  
+ 
+39.  SECURITY  /  ACCESS  CONTROL  
+The  system  must  enforce  role-based  access.  
+Mentee  
+Cannot  access:  
+●  Admin  panel  ●  Other  users'  private  information  ●  Mentor  management  functions  
+Mentor  
+--- PAGE ---
+Cannot  access:  
+●  Admin  panel  ●  Other  mentors'  private  account  controls  ●  Administrative  functions  
+Admin  
+Has  management  access  according  to  admin  permissions.  
+Passwords  must  never  be  displayed  in  plain  text  after  account  creation.  
+ 
+40.  MOBILE  RESPONSIVENESS  
+The  website  must  work  properly  on:  
+●  Mobile  ●  Tablet  ●  Desktop  
+The  event-day  experience  will  primarily  be  mobile-driven.  
+Therefore:  
+Mobile  UX  is  a  priority.  
+The  most  important  flows  must  be  usable  comfortably  on  a  phone.  
+ 
+41.  ERROR  /  EMPTY  STATES  
+The  application  must  not  leave  users  at  a  dead  end.  
+Examples:  
+No  Mentors  
+No  mentors  are  currently  available  for  this  event.  
+No  Tokens  
+--- PAGE ---
+You  currently  have  no  Jule  Tokens  available.  
+No  Requests  
+You  haven't  made  any  mentorship  requests  yet.  
+Failed  Login  
+Incorrect  email  or  password.  Please  try  again.  
+Failed  Request  
+We  couldn't  submit  your  mentorship  request.  Please  try  again.  
+ 
+42.  DATA  MODEL  —  MINIMUM  ENTITIES  
+The  initial  backend  should  support  at  least  the  following  entities.  
+User  
+●  ID  ●  Name  ●  Email  ●  Phone  ●  Password/auth  reference  ●  Role  ●  Profile  photo  ●  Bio  ●  Organization  ●  Designation  ●  Interests  ●  Created  date  ●  Updated  date  ●  Status  
+ 
+Mentor  Profile  
+●  Mentor  ID  ●  User  ID  
+--- PAGE ---
+●  Expertise  ●  Mentorship  areas  ●  Experience  ●  Availability  ●  Profile  status  
+ 
+Event  
+●  Event  ID  ●  Name  ●  Description  ●  Date  ●  Time  ●  Location  ●  Image  ●  Status  
+ 
+Event  Mentor  
+Relationship  between:  
+Event  ↔  Mentor  
+ 
+Event  Participant  
+Relationship  between:  
+Event  ↔  User  
+Fields:  
+●  Registration  status  ●  Check-in  status  ●  Token  allocation  
+ 
+Jule  Wallet  
+●  User  ID  
+--- PAGE ---
+●  Current  balance  
+ 
+Jule  Transaction  
+●  Transaction  ID  ●  User  ID  ●  Event  ID  ●  Amount  ●  Transaction  type  ●  Related  mentor  ●  Timestamp  ●  Source  
+ 
+Mentorship  Request  
+●  Request  ID  ●  Mentee  ID  ●  Mentor  ID  ●  Event  ID  ●  Tokens  used  ●  Status  ●  Created  date  ●  Updated  date  
+ 
+43.  PHASE  1  —  WHAT  MUST  BE  BUILT  
+The  following  are  IN  SCOPE :  
+Website  
+●  New  Jnanana  landing  page  ●  Jnanana  positioning  ●  Mentors  section  ●  Programs  section  ●  Events  section  ●  About  /  Vision  /  Mission  ●  App  CTA  
+--- PAGE ---
+●  Login  ●  Registration  
+Application  
+●  Authentication  ●  Mentor  login  ●  Mentee  login  ●  User  profile  ●  Mentor  profile  ●  Mentor  discovery  ●  Event-specific  mentor  listing  ●  Jule  Token  balance  ●  Token  transactions  ●  Mentorship  request  ●  Request  status  ●  Basic  notifications  
+Admin  
+●  User  management  ●  Mentor  management  ●  Event  management  ●  Participant  management  ●  Token  management  ●  Mentorship  request  management  
+ 
+44.  PHASE  1  —  NOT  IN  SCOPE  
+The  following  should  NOT  be  developed  unless  separately  approved:  
+●  Full  social  community  ●  Social  feed  ●  Chat  platform  ●  Complex  mentor  marketplace  ●  Automated  mentor  matching  ●  AI  mentor  matching  ●  Calendar  integrations  ●  Automated  scheduling  ●  Video  calling  infrastructure  ●  Advanced  analytics  
+--- PAGE ---
+●  Gamification  beyond  Jule  Tokens  ●  Complex  recommendation  engine  ●  Multiple  unrelated  Jnanana  programs  ●  Large-scale  ecosystem  features  
+These  may  become  future  phases.  
+ 
+45.  CRITICAL  PRODUCT  RULES  
+Rule  1  
+Do  not  build  unnecessary  features.  
+If  it  does  not  contribute  to  the  core  mentorship  flow,  it  should  not  be  part  of  the  MVP.  
+ 
+Rule  2  
+Mentorship  is  the  primary  product.  
+Do  not  position  or  architect  the  first  version  primarily  as  a  community  platform.  
+ 
+Rule  3  
+Event  is  the  first  real-world  validation  environment.  
+The  product  must  be  ready  to  be  used  by  actual  attendees.  
+ 
+Rule  4  
+Mentors  are  initially  curated.  
+The  Admin  assigns  mentors  to  events.  
+ 
+--- PAGE ---
+Rule  5  
+Mentor  profiles  are  initially  created  by  Admin.  
+Mentors  can  subsequently  update  their  information.  
+ 
+Rule  6  
+Jule  Tokens  must  be  traceable.  
+Every  addition  and  deduction  must  have  a  transaction  record.  
+ 
+Rule  7  
+The  first  version  should  remain  lightweight.  
+Do  not  introduce  automation  where  manual  operations  are  sufficient  for  MVP  validation.  
+ 
+46.  END-TO-END  TECHNICAL  FLOW  
+A.  Admin  Setup  
+Admin  logs  in.  
+↓  
+Creates  Event.  
+↓  
+Adds  participating  Mentors.  
+↓  
+Creates  /  verifies  Mentor  profiles.  
+↓  
+--- PAGE ---
+Creates  Mentor  login  credentials.  
+↓  
+Adds  expected  participants  /  enables  registration.  
+↓  
+Configures  Jule  Token  allocation.  
+↓  
+Publishes  Event.  
+ 
+B.  User  Event  Flow  
+User  arrives  at  event.  
+↓  
+Scans  QR  /  opens  Jnanana.com.  
+↓  
+Views  Jnanana  landing  page.  
+↓  
+Downloads  /  opens  app.  
+↓  
+Registers  /  logs  in.  
+↓  
+Selects  Mentee.  
+↓  
+Creates  /  confirms  profile.  
+↓  
+User  is  associated  with  event.  
+--- PAGE ---
+↓  
+Admin  confirms  /  system  records  check-in.  
+↓  
+User  receives  50  Jule  Tokens.  
+↓  
+User  sees  Jule  Token  balance.  
+↓  
+User  sees  participating  mentors.  
+↓  
+User  opens  mentor  profile.  
+↓  
+User  selects  Request  Mentorship .  
+↓  
+System  checks  token  balance.  
+↓  
+System  displays  token  confirmation.  
+↓  
+User  confirms.  
+↓  
+Tokens  are  deducted.  
+↓  
+Mentorship  Request  is  created.  
+↓  
+Mentor  receives  notification.  
+--- PAGE ---
+↓  
+Mentor  accepts  /  rejects.  
+↓  
+Request  status  updates.  
+↓  
+Jnanana  team  coordinates  connection  if  accepted.  
+ 
+47.  MENTOR  FLOW  
+Mentor  receives  credentials.  
+↓  
+Mentor  logs  in.  
+↓  
+System  identifies  role  =  Mentor.  
+↓  
+Mentor  sees  Mentor  Dashboard.  
+↓  
+Mentor  views  profile.  
+↓  
+Mentor  updates  profile  information.  
+↓  
+Mentor  sees  incoming  mentorship  requests.  
+↓  
+Mentor  opens  request.  
+--- PAGE ---
+↓  
+Mentor  accepts  /  rejects.  
+↓  
+System  updates  request  status.  
+↓  
+Mentee  is  notified.  
+ 
+48.  TOKEN  FLOW  
+Initial  
+Event  participant:  
++50  Jule  
+ 
+Activity  
+Admin:  
++X  Jule  
+ 
+Mentorship  Request  
+Mentee:  
+-X  Jule  
+ 
+Transaction  Record  
+Every  transaction:  
+User  +  Event  +  Amount  +  Type  +  Timestamp  +  Reference  
+--- PAGE ---
+must  be  stored.  
+ 
+49.  ACCEPTANCE  CRITERIA  
+The  MVP  should  not  be  considered  complete  until  the  following  complete  flow  works  
+successfully.
+ 
+Test  Scenario  
+A  new  participant  arrives  at  the  event.  
+They:  
+1.  Scan  the  QR  code.  2.  Open  Jnanana.  3.  Understand  what  Jnanana  is.  4.  Download/open  the  application.  5.  Register.  6.  Login.  7.  See  their  profile.  8.  See  their  Jule  Token  balance.  9.  See  mentors  participating  in  the  event.  10.  Open  a  mentor  profile.  11.  Understand  the  mentor's  background.  12.  Select  Request  Mentorship.  13.  See  the  token  cost.  14.  Confirm  the  request.  15.  See  the  token  deduction.  16.  See  the  request  status.  17.  Mentor  receives  the  request.  18.  Mentor  logs  in.  19.  Mentor  accepts  the  request.  20.  Mentee  receives  the  updated  status.  
+If  this  complete  journey  works  smoothly  on  a  real  device  in  the  live  event  environment,  Phase  1  
+has
+ 
+achieved
+ 
+its
+ 
+primary
+ 
+objective.
+ 
+ 
+50.  FINAL  DEVELOPMENT  PRIORITY  
+--- PAGE ---
+The  development  priority  should  be:  
+Priority  1  —  Authentication  
+Login  /  Registration  /  Roles  
+↓  
+Priority  2  —  Profiles  
+Mentee  /  Mentor  
+↓  
+Priority  3  —  Events  
+Event  +  Participants  +  Mentors  
+↓  
+Priority  4  —  Jule  Tokens  
+Wallet  +  Allocation  +  Transactions  
+↓  
+Priority  5  —  Mentorship  
+Mentor  Discovery  +  Profile  +  Request  
+↓  
+Priority  6  —  Admin  
+Management  +  Controls  
+↓  
+Priority  7  —  Website  
+New  Jnanana  positioning  +  Event  +  Mentors  +  Registration  
+↓  
+Priority  8  —  Deployment  
+--- PAGE ---
+Production  deployment  
+↓  
+Priority  9  —  Live  Testing  
+Real  event  usage  
+↓  
+Priority  10  —  Iteration  
+Improve  based  on  real  user  behaviour.  
+ 
+51.  DEFINITION  OF  DONE  
+The  first  version  of  Jnanana  is  considered  ready  when:  
+A  real  event  participant  can  discover  Jnanana,  register,  log  in,  receive  Jule  Tokens,  
+discover
+ 
+an
+ 
+event
+ 
+mentor,
+ 
+understand
+ 
+the
+ 
+mentor's
+ 
+profile,
+ 
+spend
+ 
+Jule
+ 
+Tokens
+ 
+to
+ 
+request
+ 
+mentorship,
+ 
+and
+ 
+have
+ 
+that
+ 
+request
+ 
+received
+ 
+and
+ 
+actioned
+ 
+by
+ 
+the
+ 
+mentor.
+ 
+That  is  the  core  product  loop .  
+Everything  else  can  come  after  this  loop  is  working.  
+ 
+52.  ONE-LINE  PRODUCT  LOOP  
+Discover  →  Register  →  Receive  Jule  →  Discover  Mentor  
+→
+ 
+Request
+ 
+→
+ 
+Connect
+ 
+→
+ 
+Get
+ 
+Mentored
+ 
+This  is  the  primary  flow  the  entire  Phase  1  product  should  be  built  around.  
+ 

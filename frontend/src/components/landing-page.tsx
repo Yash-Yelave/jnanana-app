@@ -179,11 +179,11 @@ export function LandingPage() {
       <section className={styles.hero}>
         <PublicHeader />
         <div className={styles.heroHeading}>
-          <span className="eyebrow">Welcome to Upskillink</span>
+          <span className="eyebrow">Welcome to Jnanana Foundation</span>
           <h1>
-            Meet the Professional
+            Building the World's Largest
             <br />
-            Mentor
+            Mentorship Program
           </h1>
         </div>
         <div className={styles.heroStage}>
