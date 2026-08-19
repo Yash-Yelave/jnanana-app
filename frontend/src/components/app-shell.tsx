@@ -25,23 +25,18 @@ import { publicAsset } from "@/lib/supabase/client";
 import styles from "./app-shell.module.css";
 
 const studentNav = [
-  { label: "Home", href: "/dashboard/home", icon: Home },
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { label: "Jools Wallet", href: "/jule/transactions", icon: Sparkles },
-  { label: "Mentorship", href: "/mentors", icon: GraduationCap },
-  { label: "Chat Room", href: "/chat", icon: MessageSquare },
-  { label: "Open Mic", href: "/community", icon: Mic },
+  { label: "Events", href: "/events", icon: Calendar },
   { label: "Settings", href: "/settings", icon: Settings },
 ] as const;
 
 const mentorNav = [
-  { label: "Home", href: "/mentor/home", icon: Home },
   { label: "Dashboard", href: "/mentor/dashboard", icon: LayoutDashboard },
   { label: "Jools Wallet", href: "/jule/transactions", icon: Sparkles },
   { label: "Bookings", href: "/mentor/bookings", icon: GraduationCap },
   { label: "Lessons", href: "/mentor/lessons", icon: BookOpen },
-  { label: "Chat Room", href: "/chat", icon: MessageSquare },
-  { label: "Community", href: "/community", icon: Mic },
+  { label: "Events", href: "/events", icon: Calendar },
   { label: "Settings", href: "/settings", icon: Settings },
 ] as const;
 
