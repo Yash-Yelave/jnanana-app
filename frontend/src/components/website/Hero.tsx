@@ -76,11 +76,11 @@ export function Hero() {
 
         <Reveal delay={460} variant="scale-up">
           <div className="flex flex-col justify-center gap-3.5 sm:flex-row sm:flex-wrap">
+            <Button href="/onboarding/student" variant="magenta" className="transition-transform duration-200 hover:scale-[1.03]">
+              Join as a Mentee
+            </Button>
             <Button href="/onboarding/mentor" className="transition-transform duration-200 hover:scale-[1.03]">
               Become a Mentor
-            </Button>
-            <Button href="/mentors" variant="magenta" className="transition-transform duration-200 hover:scale-[1.03]">
-              Find Your Mentor
             </Button>
           </div>
         </Reveal>

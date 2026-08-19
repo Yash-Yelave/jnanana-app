@@ -94,9 +94,14 @@ export function Nav() {
               </Link>
             </div>
           ) : (
-            <Button href="/login" variant="magenta" size="sm" className="transition-transform duration-200 hover:scale-105">
-              Join / Login
-            </Button>
+            <div className="flex items-center gap-2.5">
+              <Button href="/login" variant="ghost" size="sm" className="transition-transform duration-200 hover:scale-105">
+                Sign In
+              </Button>
+              <Button href="/onboarding/student" variant="magenta" size="sm" className="transition-transform duration-200 hover:scale-105">
+                Join as Mentee
+              </Button>
+            </div>
           )}
         </div>
 
