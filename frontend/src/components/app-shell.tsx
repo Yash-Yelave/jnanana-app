@@ -90,6 +90,7 @@ export function AppShell({
   const avatar = publicAsset("avatars", profile?.avatar_path) ?? "/assets/app/mentor-1.png";
   const name = profile ? `${profile.first_name} ${profile.last_name}` : "Profile";
   const profileTarget = isMentor ? "/mentor/profile" : "/profile";
+  const brandHref = isMentor ? "/mentor/dashboard" : "/dashboard";
   const juleBalance = wallet?.balance ?? 50;
 
   const handleJuleClick = (e: React.MouseEvent) => {
@@ -100,12 +101,12 @@ export function AppShell({
   return (
     <div className={`${styles.shell} ${rightRail ? "" : styles.withoutRail}`}>
       <aside className={styles.sidebar}>
-        <Brand inverse />
+        <Brand inverse href={brandHref} />
         <Navigation active={active} mentor={isMentor} />
       </aside>
 
       <header className={styles.mobileHeader}>
-        <Brand inverse />
+        <Brand inverse href={brandHref} />
         <button
           type="button"
           onClick={handleJuleClick}

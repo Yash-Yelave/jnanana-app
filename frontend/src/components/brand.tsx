@@ -1,9 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
 
-export function Brand({ inverse = false }: { inverse?: boolean }) {
+export function Brand({ inverse = false, href = "/dashboard" }: { inverse?: boolean; href?: string }) {
   return (
-    <Link className="inline-flex items-center gap-4 shrink-0 py-1" href="/" aria-label="Jnanana Foundation home">
+    <Link className="inline-flex items-center gap-4 shrink-0 py-1" href={href} aria-label="Jnanana Foundation home">
       <Image
         src="/assets/brand/logo-icon.png"
         alt="Jnanana Logo"
