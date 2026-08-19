@@ -191,6 +191,7 @@ const tabs = [
 ] as const;
 
 export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = false, mentorId }: { mode?: "about" | "lessons" | "feedback"; mentorDetail?: boolean; mentorApp?: boolean; mentorId?: string }) {
+  const router = useRouter();
   const active = mentorDetail ? "/mentors" : mentorApp ? "/mentor/profile" : "/profile";
   const { data, error, loading } = useApi<Profile | Mentor>(mentorDetail && mentorId ? `/mentors/${mentorId}` : "/me");
   const { data: walletData } = useApi<{ balance: number }>("/jule/wallet");
