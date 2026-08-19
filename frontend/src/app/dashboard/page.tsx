@@ -3,88 +3,175 @@
 import Image from "next/image";
 import Link from "next/link";
 import { AppShell } from "@/components/app-shell";
-import type { Booking, Mentor } from "@/lib/types";
+import type { Mentor } from "@/lib/types";
 import { useApi } from "@/lib/use-api";
-import styles from "./page.module.css";
+import { publicAsset } from "@/lib/supabase/client";
 
-const courseFixtures = [
-  ["DESIGN", "UI/UX Design", "course-design.png"],
-  ["DATA", "DSA With C++", "course-data.png"],
-  ["UI/UX", "Tailwind CSS", "course-css.png"],
-] as const;
-
-function Section({ title, children, href }: { title: string; children: React.ReactNode; href?: string }) {
-  return <section className={styles.panel}><header><h2>{title}</h2>{href && <Link href={href}>View All</Link>}</header>{children}</section>;
-}
-
-function RightRail({ bookings, completed }: { bookings: Booking[]; completed: number }) {
-  return <div className={styles.rail}>
-    <Section title="Achievement"><div className={styles.achievement}><strong>{completed}</strong><div><b>Completed lessons</b><span>Your verified learning history</span></div></div><Link className={styles.linkRow} href="/profile/lessons">View lessons ›</Link></Section>
-    <Section title="Schedule" href="/schedule"><div className={styles.scheduleList}>{bookings.slice(0, 2).map((booking) => <article key={booking.id}><h3>Mentoring session</h3><small>{new Date(booking.starts_at).toLocaleString()}</small><div><span>{booking.status.replaceAll("_", " ")}</span><Link href="/schedule">View</Link></div></article>)}{bookings.length === 0 && <p className="data-state">No scheduled lessons.</p>}</div></Section>
-  </div>;
-}
+const mentorFixtures = [
+  {
+    id: "m1",
+    name: "Emery Aminoff",
+    headline: "Senior UI/UX Designer & Product Lead",
+    rating: 4.9,
+    reviews: 128,
+    bio: "Passionate about building scalable design systems, user-centric products, and mentoring early-stage designers to accelerate their careers.",
+    tags: ["UI/UX", "Figma", "Design Systems", "Product Strategy"],
+    image: "mentor-1.png",
+  },
+  {
+    id: "m2",
+    name: "Kristin Watson",
+    headline: "Staff Software Engineer @ Google",
+    rating: 4.8,
+    reviews: 94,
+    bio: "Helping students master System Design, Data Structures, Algorithms, and technical interview preparation for tier-1 tech companies.",
+    tags: ["System Design", "Python", "DSA", "Backend Architecture"],
+    image: "mentor-2.png",
+  },
+  {
+    id: "m3",
+    name: "Jaxson Torff",
+    headline: "Head of Marketing & Brand Growth",
+    rating: 5.0,
+    reviews: 156,
+    bio: "Specializing in growth loops, personal branding, go-to-market strategies, and content monetization for creators and tech founders.",
+    tags: ["Brand Growth", "GTM Strategy", "Marketing", "SEO"],
+    image: "mentor-3.png",
+  },
+  {
+    id: "m4",
+    name: "Kaisya Dias",
+    headline: "Lead Fullstack Architect @ Microsoft",
+    rating: 4.9,
+    reviews: 82,
+    bio: "10+ years architecting enterprise cloud applications. Dedicated to guiding developers through React, Next.js, Node.js, and Cloud DevOps.",
+    tags: ["React", "Next.js", "Node.js", "AWS Cloud"],
+    image: "mentor-4.png",
+  },
+];
 
 export default function DashboardPage() {
-  const { data: courseData } = useApi<Array<{ id: string; title: string }>>("/courses");
-  const { data: mentorData } = useApi<{ items: Mentor[] }>("/mentors?limit=4");
-  const { data: bookingData } = useApi<{ items: Booking[] }>("/bookings");
-  const { data: dashboard } = useApi<{ completed_bookings: number; active_courses: number }>("/dashboard/student");
-  const courses = (courseData ?? []).slice(0, 3).map((course, index) => ["COURSE", course.title, courseFixtures[index]?.[2] ?? "course-design.png"] as const);
-  const mentors = (mentorData?.items ?? []).map((mentor, index) => [mentor.headline ?? "Mentor", `mentor-${(index % 4) + 1}.png`, `${mentor.first_name} ${mentor.last_name}`, mentor.id] as const).slice(0, 4);
+  const { data: mentorData, loading } = useApi<{ items: Mentor[] }>("/mentors");
+
+  const mentorsList = (mentorData?.items && mentorData.items.length > 0)
+    ? mentorData.items.map((m, index) => ({
+        id: m.id,
+        name: `${m.first_name} ${m.last_name}`,
+        headline: m.headline || "Verified Mentor",
+        rating: m.average_rating || 4.9,
+        reviews: m.review_count || 12,
+        bio: m.bio || "Experienced industry mentor helping students build real-world skills and advance their tech careers.",
+        tags: m.professions && m.professions.length > 0 ? m.professions : ["Mentorship", "Career Advice"],
+        image: publicAsset("avatars", m.avatar_path) ?? `/assets/app/mentor-${(index % 4) + 1}.png`,
+      }))
+    : mentorFixtures;
 
   return (
-    <AppShell active="/dashboard" rightRail={<RightRail bookings={bookingData?.items ?? []} completed={dashboard?.completed_bookings ?? 0} />}>
-      <div className={styles.stack}>
-        <section className={styles.learning}>
-          <h2>What You Want To Learn Today</h2>
-          <form>
-            <span aria-hidden="true">⌕</span>
-            <input aria-label="What do you want to learn?" defaultValue="Basics of JavaScript" />
-            <button aria-label="Search">➤</button>
-          </form>
-          <div className={styles.tags}>
-            {["React Basics", "UI/UX Design", "Fullstack Web", "Python & AI", "System Design"].map((tag, index) => (
-              <span key={index}>⌘ {tag} <b>2K+</b></span>
-            ))}
-          </div>
-        </section>
-        <Section title="Popular Courses" href="/events">
-          <div className={styles.courseGrid}>
-            {courses.map(([type, title, image]) => (
-              <article className={styles.course} key={title}>
-                <div><Image src={`/assets/app/${image}`} alt="" fill sizes="(max-width:767px) 30vw, 220px" /></div>
-                <small>{type}</small>
-                <h3>{title}</h3>
-                <p>Published course</p>
-              </article>
-            ))}
-            {courses.length === 0 && <p className="data-state">No published courses yet.</p>}
-          </div>
-        </Section>
-        <Section title="Top Mentors" href="/events">
-          <div className={styles.mentorGrid}>
-            {mentors.map(([role, image, name, id]) => (
-              <article key={id}>
-                <Image src={`/assets/app/${image}`} alt={name} width={62} height={62} />
-                <div>
-                  <h3>{name}</h3>
-                  <p>♛ Verified <span>{role}</span></p>
+    <AppShell active="/dashboard">
+      <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "16px 0", color: "#141210" }}>
+        {/* Page Header */}
+        <div style={{ marginBottom: "28px" }}>
+          <h1 style={{ fontSize: "2rem", fontWeight: 800, margin: 0, color: "#141210" }}>
+            Explore Verified Mentors
+          </h1>
+          <p style={{ color: "#6A675F", margin: "6px 0 0", fontSize: "1rem" }}>
+            Connect 1-on-1 with industry leaders to accelerate your skills using your Jools Tokens.
+          </p>
+        </div>
+
+        {/* Mentor Cards Grid */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(340px, 1fr))",
+            gap: "24px",
+          }}
+        >
+          {mentorsList.map((m) => (
+            <article
+              key={m.id}
+              style={{
+                background: "#FFFFFF",
+                borderRadius: "20px",
+                padding: "24px",
+                border: "1.5px solid #141210",
+                boxShadow: "4px 4px 0 #141210",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+              }}
+            >
+              <div>
+                {/* Avatar & Title Row */}
+                <div style={{ display: "flex", gap: "16px", alignItems: "center", marginBottom: "16px" }}>
+                  <Image
+                    src={m.image}
+                    alt={m.name}
+                    width={72}
+                    height={72}
+                    style={{ borderRadius: "50%", objectFit: "cover", border: "2px solid #0B6B44" }}
+                  />
+                  <div>
+                    <h3 style={{ fontSize: "1.2rem", fontWeight: 800, margin: 0, color: "#141210" }}>
+                      {m.name}
+                    </h3>
+                    <span style={{ fontSize: "0.85rem", color: "#D6206A", fontWeight: 700, display: "block", marginTop: "2px" }}>
+                      ♛ {m.headline}
+                    </span>
+                    <div style={{ display: "flex", alignItems: "center", gap: "4px", marginTop: "4px", fontSize: "0.85rem", color: "#F5B921", fontWeight: 700 }}>
+                      ★ {m.rating} <span style={{ color: "#6A675F", fontWeight: 400 }}>({m.reviews} reviews)</span>
+                    </div>
+                  </div>
                 </div>
-                <Link href={`/events`} aria-label={`View ${name}, ${role}`}>♟</Link>
-              </article>
-            ))}
-            {mentors.length === 0 && <p className="data-state">No approved mentors yet.</p>}
-          </div>
-        </Section>
-        <Section title="Trending Workshops">
-          <Link className={styles.workshop} href="/events">
-            <Image src="/assets/app/workshop.png" alt="Portrait workshop with Kristin Watson" width={770} height={390} />
-            <div>
-              <span><b>Portrait Workshop</b><small>by Kristin Watson</small></span>
-              <span><b>Design</b><small>Live on @24May at 9:00 PM</small></span>
-            </div>
-          </Link>
-        </Section>
+
+                {/* Description / Bio */}
+                <p style={{ fontSize: "0.925rem", color: "#333", lineHeight: 1.5, marginBottom: "18px" }}>
+                  {m.bio}
+                </p>
+
+                {/* Skill Chips */}
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "20px" }}>
+                  {m.tags.map((tag) => (
+                    <span
+                      key={tag}
+                      style={{
+                        padding: "4px 10px",
+                        borderRadius: "99px",
+                        border: "1px solid #141210",
+                        background: "#F6EBDB",
+                        fontSize: "0.75rem",
+                        fontWeight: 600,
+                        color: "#141210",
+                      }}
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Action Button */}
+              <Link
+                href={`/mentors/${m.id}`}
+                style={{
+                  padding: "12px 20px",
+                  borderRadius: "12px",
+                  background: "#0B6B44",
+                  color: "#FFF",
+                  fontWeight: 700,
+                  textDecoration: "none",
+                  textAlign: "center",
+                  fontSize: "0.95rem",
+                  boxShadow: "3px 3px 0 #141210",
+                  border: "1.5px solid #141210",
+                  display: "block",
+                }}
+              >
+                ⚡ Request Mentorship (10 Jools)
+              </Link>
+            </article>
+          ))}
+        </div>
       </div>
     </AppShell>
   );

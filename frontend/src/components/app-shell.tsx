@@ -42,14 +42,32 @@ const mentorNav = [
 
 function Navigation({ active, mentor = false }: { active: string; mentor?: boolean }) {
   const links = mentor ? mentorNav : studentNav;
+  const mainLinks = links.filter((item) => item.href !== "/settings");
+  const settingsItem = links.find((item) => item.href === "/settings");
+
   return (
     <nav className={styles.nav} aria-label={`${mentor ? "Mentor" : "Student"} navigation`}>
-      {links.map(({ label, href, icon: Icon }) => (
-        <Link className={active === href ? styles.active : ""} href={href} key={href}>
-          <Icon className={styles.navIcon} size={22} />
-          <span>{label}</span>
-        </Link>
-      ))}
+      <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+        {mainLinks.map(({ label, href, icon: Icon }) => (
+          <Link className={active === href ? styles.active : ""} href={href} key={href}>
+            <Icon className={styles.navIcon} size={22} />
+            <span>{label}</span>
+          </Link>
+        ))}
+      </div>
+
+      {settingsItem && (
+        <div style={{ marginTop: "auto", paddingTop: "24px" }}>
+          <Link
+            className={active === settingsItem.href ? styles.active : ""}
+            href={settingsItem.href}
+            key={settingsItem.href}
+          >
+            <settingsItem.icon className={styles.navIcon} size={22} />
+            <span>{settingsItem.label}</span>
+          </Link>
+        </div>
+      )}
     </nav>
   );
 }
