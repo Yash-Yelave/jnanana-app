@@ -54,7 +54,7 @@ export function OnboardingFlow({ role }: { role: "student" | "mentor" }) {
         email,
         password,
         options: {
-          emailRedirectTo: `${siteUrl()}/auth/confirm?next=${role === "mentor" ? "/waiting" : "/dashboard/home"}`,
+          emailRedirectTo: `${siteUrl()}/auth/confirm?next=${role === "mentor" ? "/waiting" : "/dashboard"}`,
           data: {
             role,
             first_name: firstName,
@@ -91,7 +91,7 @@ export function OnboardingFlow({ role }: { role: "student" | "mentor" }) {
           });
         }
       }
-      router.push(!data.session ? "/waiting?verify=email" : role === "mentor" ? "/waiting" : "/dashboard/home");
+      router.push(!data.session ? "/waiting?verify=email" : role === "mentor" ? "/waiting" : "/dashboard");
     } catch (submitError) {
       setError(submitError instanceof Error ? submitError.message : "Unable to create your account");
     } finally {

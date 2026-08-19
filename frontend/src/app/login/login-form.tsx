@@ -66,7 +66,7 @@ export function LoginForm() {
           ? "/waiting"
           : profile.role === "mentor"
             ? "/mentor/home"
-            : "/dashboard/home";
+            : "/dashboard";
       router.replace(destination);
       router.refresh();
     } catch (loginError) {

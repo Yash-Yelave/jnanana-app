@@ -24,7 +24,7 @@ export default async function WaitingPage({ searchParams }: { searchParams: Prom
               </div>
               <h1>Thank you for your precious feedback!</h1>
               <p>It will help us to improve the experience next time</p>
-              <Link href="/dashboard/home">Back to home →</Link>
+              <Link href="/dashboard">Back to dashboard →</Link>
             </>
           ) : verifyEmail ? (
             <>
