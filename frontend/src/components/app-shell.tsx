@@ -157,7 +157,7 @@ export function AppShell({
               cursor: "pointer"
             }}
           >
-            ⚡ {juleBalance} Jools Tokens
+            ⚡ {juleBalance} Jools
           </button>
           <Link className={styles.profileBtn} href={profileTarget} aria-label="Open profile">
             <Image src={avatar} alt={name} width={46} height={46} priority />

@@ -225,7 +225,7 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
         }),
       });
       clearApiCache();
-      setRequestMsg("🎉 Mentorship request submitted! 10 Jule Tokens deducted from your wallet.");
+      setRequestMsg("🎉 Mentorship request submitted! 10 Jools deducted from your wallet.");
       setTimeout(() => setShowJuleModal(false), 2000);
     } catch (err: any) {
       setRequestError(err.message || "Failed to submit mentorship request");
@@ -265,7 +265,7 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
                 ⚡ Request Mentorship
               </h2>
               <p style={{ color: "#94A3B8", marginBottom: "20px", lineHeight: 1.5 }}>
-                Use <strong>10 Jools Tokens</strong> to request a mentorship connection with <strong>{formattedName || "Mentor"}</strong>?
+                Use <strong>10 Jools</strong> to request a mentorship connection with <strong>{formattedName || "Mentor"}</strong>?
               </p>
 
               <div style={{
@@ -284,7 +284,7 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
 
               {currentBalance < 10 ? (
                 <div style={{ padding: "12px", borderRadius: "8px", background: "rgba(239, 68, 68, 0.2)", border: "1px solid #EF4444", color: "#EF4444", marginBottom: "20px" }}>
-                  ⚠️ Insufficient Jools Tokens. You have {currentBalance} Jools Tokens, but 10 are required. Check into an event to claim 50 Jools Tokens!
+                  ⚠️ Insufficient Jools. You have {currentBalance} Jools, but 10 are required. Check into an event to claim 50 Jools!
                 </div>
               ) : (
                 <div style={{ marginBottom: "20px" }}>

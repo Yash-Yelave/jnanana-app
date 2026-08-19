@@ -75,7 +75,7 @@ export default function JuleTransactionsPage() {
             <div style={{ display: "flex", alignItems: "center", gap: "10px", marginTop: "4px" }}>
               <Sparkles size={28} color="#FFB800" />
               <strong style={{ fontSize: "2.5rem", fontWeight: 800, color: "#FFB800" }}>
-                {wallet?.balance ?? 50} Jools Tokens
+                {wallet?.balance ?? 50} Jools
               </strong>
             </div>
           </div>
@@ -123,8 +123,8 @@ export default function JuleTransactionsPage() {
             }}
           >
             <Clock size={36} color="#64748B" style={{ marginBottom: "12px" }} />
-            <p style={{ margin: 0, fontSize: "1rem" }}>No Jools token transactions recorded yet.</p>
-            <small style={{ color: "#64748B" }}>Check in to live events to claim 50 Jools Tokens!</small>
+            <p style={{ margin: 0, fontSize: "1rem" }}>No Jools transactions recorded yet.</p>
+            <small style={{ color: "#64748B" }}>Check in to live events to claim 50 Jools!</small>
           </div>
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
