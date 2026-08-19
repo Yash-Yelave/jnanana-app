@@ -16,7 +16,7 @@ const mentorFixtures = [
     reviews: 128,
     bio: "Passionate about building scalable design systems, user-centric products, and mentoring early-stage designers to accelerate their careers.",
     tags: ["UI/UX", "Figma", "Design Systems", "Product Strategy"],
-    image: "mentor-1.png",
+    image: "/assets/app/mentor-1.png",
   },
   {
     id: "m2",
@@ -26,7 +26,7 @@ const mentorFixtures = [
     reviews: 94,
     bio: "Helping students master System Design, Data Structures, Algorithms, and technical interview preparation for tier-1 tech companies.",
     tags: ["System Design", "Python", "DSA", "Backend Architecture"],
-    image: "mentor-2.png",
+    image: "/assets/app/mentor-2.png",
   },
   {
     id: "m3",
@@ -36,7 +36,7 @@ const mentorFixtures = [
     reviews: 156,
     bio: "Specializing in growth loops, personal branding, go-to-market strategies, and content monetization for creators and tech founders.",
     tags: ["Brand Growth", "GTM Strategy", "Marketing", "SEO"],
-    image: "mentor-3.png",
+    image: "/assets/app/mentor-3.png",
   },
   {
     id: "m4",
@@ -46,7 +46,7 @@ const mentorFixtures = [
     reviews: 82,
     bio: "10+ years architecting enterprise cloud applications. Dedicated to guiding developers through React, Next.js, Node.js, and Cloud DevOps.",
     tags: ["React", "Next.js", "Node.js", "AWS Cloud"],
-    image: "mentor-4.png",
+    image: "/assets/app/mentor-4.png",
   },
 ];
 
