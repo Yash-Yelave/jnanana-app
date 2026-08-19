@@ -128,7 +128,7 @@ export default function EventDetailPage() {
                 <strong style={{ fontSize: "1.1rem", display: "block" }}>{checkinMessage}</strong>
                 {tokensGranted && tokensGranted > 0 ? (
                   <span style={{ fontSize: "0.95rem", color: "#E2E8F0" }}>
-                    🎉 <strong>+{tokensGranted} Jule Tokens</strong> have been added to your wallet balance!
+                    🎉 <strong>+{tokensGranted} Jools Tokens</strong> have been added to your wallet balance!
                   </span>
                 ) : (
                   <span style={{ fontSize: "0.95rem", color: "#E2E8F0" }}>
@@ -157,7 +157,7 @@ export default function EventDetailPage() {
               }}
             >
               <Sparkles size={20} />
-              {checkingIn ? "Checking In..." : "Check In & Claim 50 Jule Tokens"}
+              {checkingIn ? "Checking In..." : "Check In & Claim 50 Jools Tokens"}
             </button>
           )}
         </div>

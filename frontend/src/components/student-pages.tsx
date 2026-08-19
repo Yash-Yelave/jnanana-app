@@ -263,7 +263,7 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
                 ⚡ Request Mentorship
               </h2>
               <p style={{ color: "#94A3B8", marginBottom: "20px", lineHeight: 1.5 }}>
-                Use <strong>10 Jule Tokens</strong> to request a mentorship connection with <strong>{formattedName || "Mentor"}</strong>?
+                Use <strong>10 Jools Tokens</strong> to request a mentorship connection with <strong>{formattedName || "Mentor"}</strong>?
               </p>
 
               <div style={{
@@ -276,13 +276,13 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
                 justifyContent: "space-between",
                 alignItems: "center"
               }}>
-                <span style={{ fontSize: "0.9rem", color: "#E2E8F0" }}>Your Jule Wallet Balance:</span>
-                <strong style={{ fontSize: "1.2rem", color: "#FFB800" }}>⚡ {currentBalance} Jule</strong>
+                <span style={{ fontSize: "0.9rem", color: "#E2E8F0" }}>Your Jools Wallet Balance:</span>
+                <strong style={{ fontSize: "1.2rem", color: "#FFB800" }}>⚡ {currentBalance} Jools</strong>
               </div>
 
               {currentBalance < 10 ? (
                 <div style={{ padding: "12px", borderRadius: "8px", background: "rgba(239, 68, 68, 0.2)", border: "1px solid #EF4444", color: "#EF4444", marginBottom: "20px" }}>
-                  ⚠️ Insufficient Jule Tokens. You have {currentBalance} Jule Tokens, but 10 are required. Check into an event to claim 50 Jule Tokens!
+                  ⚠️ Insufficient Jools Tokens. You have {currentBalance} Jools Tokens, but 10 are required. Check into an event to claim 50 Jools Tokens!
                 </div>
               ) : (
                 <div style={{ marginBottom: "20px" }}>
@@ -337,7 +337,7 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
                       cursor: submittingRequest ? "not-allowed" : "pointer"
                     }}
                   >
-                    {submittingRequest ? "Submitting..." : "Confirm (Spend 10 Jule)"}
+                    {submittingRequest ? "Submitting..." : "Confirm (Spend 10 Jools)"}
                   </button>
                 )}
               </div>
@@ -384,7 +384,7 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
                       boxShadow: "0 4px 14px rgba(255, 184, 0, 0.4)",
                     }}
                   >
-                    ⚡ Request Mentorship (10 Jule)
+                    ⚡ Request Mentorship (10 Jools)
                   </button>
                 </div>
               )}
