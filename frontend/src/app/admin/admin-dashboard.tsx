@@ -179,8 +179,8 @@ export function AdminDashboard() {
               { label: "Active Events", val: metrics?.active_events ?? 0, color: "#F59E0B" },
               { label: "Event Participants", val: metrics?.event_participants ?? 0, color: "#8B5CF6" },
               { label: "Pending Requests", val: metrics?.pending_requests ?? 0, color: "#EC4899" },
-              { label: "Jule Tokens Issued", val: metrics?.jule_tokens_issued ?? 0, color: "#EAB308" },
-              { label: "Jule Tokens Spent", val: metrics?.jule_tokens_spent ?? 0, color: "#6366F1" },
+              { label: "Jools Tokens Issued", val: metrics?.jule_tokens_issued ?? 0, color: "#EAB308" },
+              { label: "Jools Tokens Spent", val: metrics?.jule_tokens_spent ?? 0, color: "#6366F1" },
             ].map((m) => (
               <div
                 key={m.label}
@@ -278,7 +278,7 @@ export function AdminDashboard() {
       {/* TAB 3: TOKEN ALLOCATION CONTROLS */}
       {activeTab === "tokens" && (
         <section style={{ maxWidth: "600px", background: "#1E293B", padding: "24px", borderRadius: "12px" }}>
-          <h2 style={{ fontSize: "1.25rem", marginBottom: "16px" }}>Grant / Deduct Jule Tokens</h2>
+          <h2 style={{ fontSize: "1.25rem", marginBottom: "16px" }}>Grant / Deduct Jools Tokens</h2>
           <form onSubmit={handleAdjustTokens} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
             <div>
               <label style={{ display: "block", marginBottom: "6px", fontSize: "0.875rem" }}>Select User</label>
