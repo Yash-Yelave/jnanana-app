@@ -152,7 +152,7 @@ export default function DashboardPage() {
 
               {/* Action Button */}
               <Link
-                href={`/mentors/${m.id}`}
+                href={`/mentors/${m.id}?request=true`}
                 style={{
                   padding: "12px 20px",
                   borderRadius: "12px",

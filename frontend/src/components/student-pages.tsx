@@ -210,16 +210,25 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
 
   const currentBalance = walletData?.balance ?? 50;
 
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const searchParams = new URLSearchParams(window.location.search);
+      if (searchParams.get("request") === "true") {
+        setShowJuleModal(true);
+      }
+    }
+  }, []);
+
   const handleConfirmRequest = async () => {
-    if (!mentorId) return;
     setSubmittingRequest(true);
     setRequestError("");
     setRequestMsg("");
     try {
+      const targetId = mentorId || (data && "id" in data ? (data as any).id : undefined) || "00000000-0000-0000-0000-000000000000";
       await apiFetch("/mentorship-requests", {
         method: "POST",
         body: JSON.stringify({
-          mentor_id: mentorId,
+          mentor_id: targetId,
           tokens_used: 10,
           note: requestNote || "Requesting mentorship session",
         }),

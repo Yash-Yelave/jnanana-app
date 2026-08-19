@@ -29,4 +29,4 @@ The initial migration under `supabase/migrations/` has been applied to the confi
 
 cd D:\J_Intern\jnanana-app\backend                                                                             
   uv sync                                                                                                        
-  uv run uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload             
+  uv run uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
