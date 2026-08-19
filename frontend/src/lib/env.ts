@@ -31,6 +31,9 @@ export function apiUrl() {
 }
 
 export function siteUrl() {
+  if (typeof window !== "undefined" && window.location.origin) {
+    return window.location.origin.replace(/\/$/, "");
+  }
   const vercelUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined;
   return required("NEXT_PUBLIC_SITE_URL", publicEnv.siteUrl, vercelUrl || "http://localhost:3000");
 }

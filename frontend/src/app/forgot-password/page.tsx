@@ -12,16 +12,29 @@ import styles from "../login/page.module.css";
 export default function ForgotPasswordPage() {
   const router = useRouter();
   const [message, setMessage] = useState("");
+  const [isSuccess, setIsSuccess] = useState(false);
   const [pending, setPending] = useState(false);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setPending(true);
-    const email = String(new FormData(event.currentTarget).get("email"));
+    setMessage("");
+    setIsSuccess(false);
+    
+    const email = String(new FormData(event.currentTarget).get("email")).trim();
+    const redirectUrl = `${siteUrl()}/auth/confirm?type=recovery`;
+
     const { error } = await createClient().auth.resetPasswordForEmail(email, {
-      redirectTo: `${siteUrl()}/auth/confirm?type=recovery`,
+      redirectTo: redirectUrl,
     });
-    setMessage(error ? error.message : "Check your email for a password reset link.");
+
+    if (error) {
+      setMessage(error.message || "Failed to send password reset email.");
+      setIsSuccess(false);
+    } else {
+      setMessage("🎉 Password reset link sent! Please check your email inbox to reset your password.");
+      setIsSuccess(true);
+    }
     setPending(false);
   }
 
@@ -44,7 +57,22 @@ export default function ForgotPasswordPage() {
               Email address
               <input required name="email" type="email" autoComplete="email" />
             </label>
-            {message && <p className={styles.error} role="status">{message}</p>}
+            {message && (
+              <p
+                style={{
+                  padding: "10px 14px",
+                  borderRadius: "8px",
+                  fontSize: "0.9rem",
+                  marginTop: "12px",
+                  background: isSuccess ? "rgba(16, 185, 129, 0.15)" : "rgba(239, 68, 68, 0.15)",
+                  color: isSuccess ? "#10B981" : "#EF4444",
+                  border: `1px solid ${isSuccess ? "#10B981" : "#EF4444"}`,
+                }}
+                role="status"
+              >
+                {message}
+              </p>
+            )}
             <button disabled={pending}>
               {pending ? "Sending…" : "Send reset link"}
               <span>→</span>
