@@ -83,7 +83,7 @@ export function AppShell({
 
       <header className={styles.mobileHeader}>
         <Brand inverse />
-        <Link href="/dashboard" style={{ textDecoration: "none" }}>
+        <Link href="/jule/transactions" style={{ textDecoration: "none" }}>
           <span style={{
             padding: "4px 10px",
             borderRadius: "9999px",
@@ -112,7 +112,7 @@ export function AppShell({
           <input type="search" placeholder="Search mentors, events..." aria-label="Search mentors, events" />
         </label>
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <Link href="/dashboard" style={{ textDecoration: "none" }}>
+          <Link href="/jule/transactions" style={{ textDecoration: "none" }}>
             <span style={{
               display: "inline-flex",
               alignItems: "center",
