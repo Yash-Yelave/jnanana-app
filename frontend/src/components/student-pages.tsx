@@ -792,16 +792,6 @@ export function SettingsPage() {
               <input type="checkbox" checked={settings?.[key as keyof Pick<Settings, "notify_activity" | "weekly_digest" | "notify_collaborations">] ?? true} onChange={(event) => void save({ [key]: event.target.checked })} />
             </label>
           ))}
-          <Link href="/referrals">
-            <b>Referral</b>
-            <small>Refer and Earn</small>
-            <ChevronRight size={18} />
-          </Link>
-          <Link href="/payment">
-            <b>Payment</b>
-            <small>Check your payment history and settings</small>
-            <ChevronRight size={18} />
-          </Link>
           <details>
             <summary>
               <b>Logout</b>
@@ -813,21 +803,6 @@ export function SettingsPage() {
               <button className={styles.button} type="button" onClick={logout}>Log out</button>
             </div>
           </details>
-        </section>
-        <section className={styles.settings}>
-          <h2>Theme</h2>
-          <p>Colour Mode</p>
-          <div className={styles.theme}>
-            <button type="button" onClick={() => void save({ theme: "light" })} aria-pressed={settings?.theme === "light"}>
-              <Sun size={16} /> Light mode
-            </button>
-            <button type="button" onClick={() => void save({ theme: "dark" })} aria-pressed={settings?.theme === "dark"}>
-              <Moon size={16} /> Dark mode
-            </button>
-            <button type="button" onClick={() => void save({ theme: "system" })} aria-pressed={settings?.theme === "system"}>
-              <Monitor size={16} /> System
-            </button>
-          </div>
         </section>
       </main>
     </AppShell>
