@@ -152,3 +152,16 @@ export function adjustUserTokens(data: { user_id: string; amount: number; notes?
   });
 }
 
+export function approveMentor(mentorId: string) {
+  return apiFetch<{ message: string }>(`/admin/mentors/${mentorId}/approve`, {
+    method: "POST",
+  });
+}
+
+export function rejectMentor(mentorId: string, reason?: string) {
+  return apiFetch<{ message: string }>(`/admin/mentors/${mentorId}/reject`, {
+    method: "POST",
+    body: JSON.stringify({ reason }),
+  });
+}
+
