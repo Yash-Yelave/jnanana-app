@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import {
   Home,
@@ -15,6 +16,7 @@ import {
   Search,
   Menu,
   Calendar,
+  Sparkles,
 } from "lucide-react";
 import { Brand } from "@/components/brand";
 import type { Profile } from "@/lib/types";
@@ -26,6 +28,7 @@ const studentNav = [
   { label: "Home", href: "/dashboard/home", icon: Home },
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { label: "Mentorship", href: "/mentors", icon: GraduationCap },
+  { label: "Jule Wallet", href: "/jule/transactions", icon: Sparkles },
   { label: "Chat Room", href: "/chat", icon: MessageSquare },
   { label: "Open Mic", href: "/community", icon: Mic },
   { label: "Settings", href: "/settings", icon: Settings },
@@ -36,6 +39,7 @@ const mentorNav = [
   { label: "Dashboard", href: "/mentor/dashboard", icon: LayoutDashboard },
   { label: "Bookings", href: "/mentor/bookings", icon: GraduationCap },
   { label: "Lessons", href: "/mentor/lessons", icon: BookOpen },
+  { label: "Jule Wallet", href: "/jule/transactions", icon: Sparkles },
   { label: "Chat Room", href: "/chat", icon: MessageSquare },
   { label: "Community", href: "/community", icon: Mic },
   { label: "Settings", href: "/settings", icon: Settings },
@@ -66,6 +70,7 @@ export function AppShell({
   rightRail?: ReactNode;
   mentor?: boolean;
 }) {
+  const router = useRouter();
   const { data: profile } = useApi<Profile>("/me");
   const { data: wallet } = useApi<{ balance: number }>("/jule/wallet");
   const isMentor = mentor || profile?.role === "mentor";
@@ -73,6 +78,11 @@ export function AppShell({
   const name = profile ? `${profile.first_name} ${profile.last_name}` : "Profile";
   const profileTarget = isMentor ? "/mentor/profile" : "/profile";
   const juleBalance = wallet?.balance ?? 50;
+
+  const handleJuleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    router.push("/jule/transactions");
+  };
 
   return (
     <div className={`${styles.shell} ${rightRail ? "" : styles.withoutRail}`}>
@@ -83,18 +93,22 @@ export function AppShell({
 
       <header className={styles.mobileHeader}>
         <Brand inverse />
-        <Link href="/jule/transactions" style={{ textDecoration: "none" }}>
-          <span style={{
+        <button
+          type="button"
+          onClick={handleJuleClick}
+          style={{
             padding: "4px 10px",
             borderRadius: "9999px",
             background: "linear-gradient(135deg, #FFB800 0%, #FF8A00 100%)",
             color: "#000",
             fontWeight: "700",
-            fontSize: "0.75rem"
-          }}>
-            ⚡ {juleBalance} Jule
-          </span>
-        </Link>
+            fontSize: "0.75rem",
+            border: "none",
+            cursor: "pointer"
+          }}
+        >
+          ⚡ {juleBalance} Jule
+        </button>
         <details>
           <summary aria-label="Open menu">
             <Menu size={24} />
@@ -112,8 +126,10 @@ export function AppShell({
           <input type="search" placeholder="Search mentors, events..." aria-label="Search mentors, events" />
         </label>
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <Link href="/jule/transactions" style={{ textDecoration: "none" }}>
-            <span style={{
+          <button
+            type="button"
+            onClick={handleJuleClick}
+            style={{
               display: "inline-flex",
               alignItems: "center",
               gap: "6px",
@@ -123,12 +139,13 @@ export function AppShell({
               color: "#000",
               fontWeight: "700",
               fontSize: "0.875rem",
+              border: "none",
               boxShadow: "0 2px 8px rgba(255, 184, 0, 0.3)",
               cursor: "pointer"
-            }}>
-              ⚡ {juleBalance} Jule Tokens
-            </span>
-          </Link>
+            }}
+          >
+            ⚡ {juleBalance} Jule Tokens
+          </button>
           <Link className={styles.profileBtn} href={profileTarget} aria-label="Open profile">
             <Image src={avatar} alt={name} width={46} height={46} priority />
           </Link>
