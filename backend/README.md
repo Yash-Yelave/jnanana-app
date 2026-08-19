@@ -26,3 +26,7 @@ OpenAPI is available at `http://127.0.0.1:8000/docs`. Never place the Supabase s
 - [Setup and operations](./docs/OPERATIONS.md)
 
 The initial migration under `supabase/migrations/` has been applied to the configured development project. Repeat migration, RLS, Storage, Realtime, and advisor checks for every staging/production project.
+
+cd D:\J_Intern\jnanana-app\backend                                                                             
+  uv sync                                                                                                        
+  uv run uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload             
