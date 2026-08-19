@@ -67,10 +67,12 @@ export function AppShell({
   mentor?: boolean;
 }) {
   const { data: profile } = useApi<Profile>("/me");
+  const { data: wallet } = useApi<{ balance: number }>("/jule/wallet");
   const isMentor = mentor || profile?.role === "mentor";
   const avatar = publicAsset("avatars", profile?.avatar_path) ?? "/assets/app/mentor-1.png";
   const name = profile ? `${profile.first_name} ${profile.last_name}` : "Profile";
   const profileTarget = isMentor ? "/mentor/profile" : "/profile";
+  const juleBalance = wallet?.balance ?? 50;
 
   return (
     <div className={`${styles.shell} ${rightRail ? "" : styles.withoutRail}`}>
@@ -81,8 +83,17 @@ export function AppShell({
 
       <header className={styles.mobileHeader}>
         <Brand inverse />
-        <Link href="/schedule" aria-label="Open schedule">
-          <Calendar size={22} />
+        <Link href="/dashboard" style={{ textDecoration: "none" }}>
+          <span style={{
+            padding: "4px 10px",
+            borderRadius: "9999px",
+            background: "linear-gradient(135deg, #FFB800 0%, #FF8A00 100%)",
+            color: "#000",
+            fontWeight: "700",
+            fontSize: "0.75rem"
+          }}>
+            ⚡ {juleBalance} Jule
+          </span>
         </Link>
         <details>
           <summary aria-label="Open menu">
@@ -112,9 +123,10 @@ export function AppShell({
               color: "#000",
               fontWeight: "700",
               fontSize: "0.875rem",
-              boxShadow: "0 2px 8px rgba(255, 184, 0, 0.3)"
+              boxShadow: "0 2px 8px rgba(255, 184, 0, 0.3)",
+              cursor: "pointer"
             }}>
-              ⚡ Jule Tokens
+              ⚡ {juleBalance} Jule Tokens
             </span>
           </Link>
           <Link className={styles.profileBtn} href={profileTarget} aria-label="Open profile">
