@@ -100,3 +100,61 @@ async def adjust_user_tokens(payload: TokenAdjustInput, db: AsyncSession = Depen
     db.add(txn)
     await db.commit()
     return {"message": "Tokens adjusted", "new_balance": wallet.balance}
+
+
+@router.get("/mentors")
+async def list_admin_mentors(status: str | None = None, db: AsyncSession = Depends(get_db_session)):
+    stmt = select(MentorProfile, Profile).join(Profile, Profile.id == MentorProfile.profile_id)
+    if status:
+        stmt = stmt.where(MentorProfile.approval_status == status)
+    res = await db.execute(stmt)
+    rows = res.all()
+    items = []
+    for mp, p in rows:
+        items.append({
+            "profile_id": str(mp.profile_id),
+            "first_name": p.first_name,
+            "last_name": p.last_name,
+            "headline": mp.headline,
+            "bio": mp.bio,
+            "approval_status": mp.approval_status,
+            "rejection_reason": mp.rejection_reason,
+            "professions": mp.professions or [],
+            "approved_at": mp.approved_at.isoformat() if mp.approved_at else None,
+            "created_at": mp.created_at.isoformat() if mp.created_at else None,
+        })
+    return {"items": items}
+
+
+@router.post("/mentors/{mentor_id}/approve")
+async def approve_mentor(mentor_id: UUID, db: AsyncSession = Depends(get_db_session)):
+    mp_stmt = select(MentorProfile).where(MentorProfile.profile_id == mentor_id)
+    mp = (await db.execute(mp_stmt)).scalar_one_or_none()
+    if not mp:
+        raise HTTPException(status_code=404, detail="Mentor profile not found")
+
+    mp.approval_status = "approved"
+    mp.approved_at = datetime.utcnow()
+
+    p_stmt = select(Profile).where(Profile.id == mentor_id)
+    p = (await db.execute(p_stmt)).scalar_one_or_none()
+    if p:
+        p.onboarding_status = "complete"
+
+    await db.commit()
+    return {"message": "Mentor profile approved successfully"}
+
+
+@router.post("/mentors/{mentor_id}/reject")
+async def reject_mentor(mentor_id: UUID, payload: dict | None = None, db: AsyncSession = Depends(get_db_session)):
+    mp_stmt = select(MentorProfile).where(MentorProfile.profile_id == mentor_id)
+    mp = (await db.execute(mp_stmt)).scalar_one_or_none()
+    if not mp:
+        raise HTTPException(status_code=404, detail="Mentor profile not found")
+
+    reason = payload.get("reason", "Application does not meet criteria") if payload else "Application does not meet criteria"
+    mp.approval_status = "rejected"
+    mp.rejection_reason = reason
+
+    await db.commit()
+    return {"message": "Mentor profile rejected"}
