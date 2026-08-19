@@ -21,10 +21,10 @@ function Figure({ learner = false }: { learner?: boolean }) {
 
 function Fields({ mentor = false }: { mentor?: boolean }) {
   return <div className={styles.fields}>
-    <label>First Name<input required name="first_name" autoComplete="given-name" placeholder="Kavita" /></label>
-    <label>Last Name<input required name="last_name" autoComplete="family-name" placeholder="Patil" /></label>
+    <label>First Name<input required name="first_name" autoComplete="given-name" placeholder="Enter first name" /></label>
+    <label>Last Name<input required name="last_name" autoComplete="family-name" placeholder="Enter last name" /></label>
     <label>Mobile Number<div className={styles.phone}><span>+91</span><input required name="phone" autoComplete="tel" inputMode="tel" placeholder="98765 43210" /></div></label>
-    <label>Email<input required name="email" autoComplete="email" type="email" placeholder="kavitapatil@gmail.com" /></label>
+    <label>Email<input required name="email" autoComplete="email" type="email" placeholder="you@example.com" /></label>
     <label>Password<input required name="password" autoComplete="new-password" type="password" minLength={8} placeholder="••••••••" /></label>
     <label className={styles.code}>{mentor ? "Referral" : "Access"} Code<div><input name="referral_code" placeholder={mentor ? "FIRST100" : "AF89f908"} /><span>✓</span></div></label>
   </div>;

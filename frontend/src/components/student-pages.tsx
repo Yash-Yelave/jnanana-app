@@ -18,6 +18,7 @@ import {
   Moon,
   Monitor,
   Banknote,
+  LogOut,
 } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { apiFetch } from "@/lib/api";
@@ -406,6 +407,39 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
               ))}
             </nav>
             {mode === "about" ? <About profile={data} mentor={mentor} /> : mode === "lessons" ? <Lessons mentorId={mentorId} /> : <Feedback mentorId={mentorId} />}
+            
+            {/* Logout Button */}
+            {!mentorDetail && (
+              <div style={{ marginTop: "40px", paddingTop: "24px", borderTop: "1px solid #E2E8F0", textAlign: "center" }}>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    const supabase = createClient();
+                    await supabase.auth.signOut();
+                    router.push("/login?force=true");
+                    router.refresh();
+                  }}
+                  style={{
+                    padding: "12px 32px",
+                    borderRadius: "12px",
+                    background: "#EF4444",
+                    color: "#FFFFFF",
+                    fontWeight: 700,
+                    fontSize: "1rem",
+                    border: "none",
+                    cursor: "pointer",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    boxShadow: "0 4px 14px rgba(239, 68, 68, 0.3)",
+                    transition: "transform 0.15s ease",
+                  }}
+                >
+                  <LogOut size={20} />
+                  Log Out
+                </button>
+              </div>
+            )}
           </>
         )}
       </main>
