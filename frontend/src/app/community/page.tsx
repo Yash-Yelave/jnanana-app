@@ -1,2 +1,5 @@
-import { CommunityPage } from "@/components/utility-pages";
-export default function Community(){ return <CommunityPage/>; }
+import EventsPage from "@/app/events/page";
+
+export default function Community() {
+  return <EventsPage />;
+}
