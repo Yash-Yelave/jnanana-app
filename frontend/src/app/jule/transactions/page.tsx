@@ -70,7 +70,7 @@ export default function JuleTransactionsPage() {
         >
           <div>
             <span style={{ fontSize: "0.875rem", color: "#94A3B8", textTransform: "uppercase", letterSpacing: "1px" }}>
-              Current Jools Wallet Balance
+              Current Wallet Balance
             </span>
             <div style={{ display: "flex", alignItems: "center", gap: "10px", marginTop: "4px" }}>
               <Sparkles size={28} color="#FFB800" />

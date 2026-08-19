@@ -26,14 +26,14 @@ import styles from "./app-shell.module.css";
 
 const studentNav = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { label: "Jools Wallet", href: "/jule/transactions", icon: Sparkles },
+  { label: "Wallet", href: "/jule/transactions", icon: Sparkles },
   { label: "Events", href: "/events", icon: Calendar },
   { label: "Settings", href: "/settings", icon: Settings },
 ] as const;
 
 const mentorNav = [
   { label: "Dashboard", href: "/mentor/dashboard", icon: LayoutDashboard },
-  { label: "Jools Wallet", href: "/jule/transactions", icon: Sparkles },
+  { label: "Wallet", href: "/jule/transactions", icon: Sparkles },
   { label: "Bookings", href: "/mentor/bookings", icon: GraduationCap },
   { label: "Lessons", href: "/mentor/lessons", icon: BookOpen },
   { label: "Events", href: "/events", icon: Calendar },
