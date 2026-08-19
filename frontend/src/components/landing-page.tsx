@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -9,6 +12,9 @@ import {
   BookOpen,
 } from "lucide-react";
 import { Brand } from "@/components/brand";
+import { apiFetch } from "@/lib/api";
+import { createClient, publicAsset } from "@/lib/supabase/client";
+import type { Profile } from "@/lib/types";
 import styles from "./landing-page.module.css";
 
 function SocialFacebook() {
@@ -37,6 +43,25 @@ function Arrow() {
 }
 
 function PublicHeader() {
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session?.access_token) {
+        setIsLoggedIn(true);
+        apiFetch<Profile>("/me")
+          .then(setProfile)
+          .catch(() => null);
+      }
+    });
+  }, []);
+
+  const target = profile?.role === "mentor" ? "/mentor/home" : "/dashboard";
+  const avatar = publicAsset("avatars", profile?.avatar_path) ?? "/assets/app/mentor-1.png";
+  const name = profile ? `${profile.first_name} ${profile.last_name}` : "Profile";
+
   return (
     <header className={styles.header}>
       <Brand />
@@ -45,9 +70,42 @@ function PublicHeader() {
         <a href="#about">About Us</a>
         <Link href="/mentor">Jnanana Foundation Business</Link>
       </nav>
-      <Link className={styles.signIn} href="/login">
-        Sign Up <Arrow />
-      </Link>
+
+      {isLoggedIn ? (
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          <Link
+            href={target}
+            style={{
+              padding: "8px 18px",
+              borderRadius: "9999px",
+              background: "linear-gradient(135deg, #FFB800 0%, #FF8A00 100%)",
+              color: "#000",
+              fontWeight: 700,
+              textDecoration: "none",
+              fontSize: "0.875rem",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "6px",
+            }}
+          >
+            Dashboard <Arrow />
+          </Link>
+          <Link href={target} aria-label="Go to profile">
+            <Image
+              src={avatar}
+              alt={name}
+              width={42}
+              height={42}
+              style={{ borderRadius: "50%", objectFit: "cover", border: "2px solid #FFB800" }}
+            />
+          </Link>
+        </div>
+      ) : (
+        <Link className={styles.signIn} href="/login">
+          Sign Up <Arrow />
+        </Link>
+      )}
+
       <details className={styles.mobileNav}>
         <summary aria-label="Open navigation">
           <span />
@@ -58,7 +116,11 @@ function PublicHeader() {
           <a href="#categories">Category</a>
           <a href="#about">About Us</a>
           <Link href="/mentor">Jnanana Foundation Business</Link>
-          <Link href="/login">Sign Up</Link>
+          {isLoggedIn ? (
+            <Link href={target}>Go to Dashboard</Link>
+          ) : (
+            <Link href="/login">Sign Up</Link>
+          )}
         </nav>
       </details>
     </header>
