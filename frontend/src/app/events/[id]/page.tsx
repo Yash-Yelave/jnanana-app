@@ -110,56 +110,6 @@ export default function EventDetailPage() {
             {event.description}
           </p>
 
-          {checkinMessage ? (
-            <div
-              style={{
-                background: "rgba(72, 187, 120, 0.15)",
-                border: "1px solid #48BB78",
-                borderRadius: "12px",
-                padding: "16px 24px",
-                display: "flex",
-                alignItems: "center",
-                gap: "12px",
-                color: "#48BB78",
-              }}
-            >
-              <CheckCircle size={24} />
-              <div>
-                <strong style={{ fontSize: "1.1rem", display: "block" }}>{checkinMessage}</strong>
-                {tokensGranted && tokensGranted > 0 ? (
-                  <span style={{ fontSize: "0.95rem", color: "#E2E8F0" }}>
-                    🎉 <strong>+{tokensGranted} Jools</strong> have been added to your wallet balance!
-                  </span>
-                ) : (
-                  <span style={{ fontSize: "0.95rem", color: "#E2E8F0" }}>
-                    You are checked in for this event. Explore available mentors below!
-                  </span>
-                )}
-              </div>
-            </div>
-          ) : (
-            <button
-              onClick={handleCheckin}
-              disabled={checkingIn}
-              style={{
-                padding: "14px 32px",
-                borderRadius: "12px",
-                background: "linear-gradient(135deg, #FFB800 0%, #FF8A00 100%)",
-                color: "#000",
-                fontWeight: "700",
-                fontSize: "1.1rem",
-                border: "none",
-                cursor: checkingIn ? "not-allowed" : "pointer",
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "10px",
-                boxShadow: "0 4px 14px rgba(255, 184, 0, 0.4)",
-              }}
-            >
-              <Sparkles size={20} />
-              {checkingIn ? "Checking In..." : "Check In & Claim 50 Jools"}
-            </button>
-          )}
         </div>
 
         {/* Participating Mentors List */}

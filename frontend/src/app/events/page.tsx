@@ -3,9 +3,8 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Calendar, MapPin, Clock, Sparkles, User, ExternalLink, CheckCircle2, Award } from "lucide-react";
+import { Calendar, MapPin, Clock, ExternalLink, CheckCircle2, Award } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
-import { checkinEvent } from "@/lib/api";
 
 type EventDetail = {
   id: string;
@@ -13,8 +12,8 @@ type EventDetail = {
   title: string;
   subtitle: string;
   edition: string;
-  date: string; // ISO date or readable date
-  targetDate: string; // ISO date for countdown
+  date: string;
+  targetDate: string;
   time: string;
   location: string;
   description: string;
@@ -134,21 +133,6 @@ function CountdownTimer({ targetDate }: { targetDate: string }) {
 }
 
 export default function EventsPage() {
-  const [checkinState, setCheckinState] = useState<Record<string, boolean>>({});
-  const [checkinMsgs, setCheckinMsgs] = useState<Record<string, string>>({});
-
-  const handleCheckin = async (eventId: string) => {
-    setCheckinState((prev) => ({ ...prev, [eventId]: true }));
-    try {
-      const res = await checkinEvent(eventId);
-      setCheckinMsgs((prev) => ({ ...prev, [eventId]: res.message || "🎉 Successfully checked in! 50 Jools added to your balance." }));
-    } catch {
-      setCheckinMsgs((prev) => ({ ...prev, [eventId]: "🎉 Successfully checked in! 50 Jools added to your balance." }));
-    } finally {
-      setCheckinState((prev) => ({ ...prev, [eventId]: false }));
-    }
-  };
-
   return (
     <AppShell active="/events">
       <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "16px 0", color: "#141210" }}>
@@ -174,7 +158,7 @@ export default function EventsPage() {
             Upcoming Innovation Events
           </h1>
           <p style={{ color: "#6A675F", margin: "6px 0 0", fontSize: "1rem" }}>
-            Attend live pitching conclaves, connect with venture chairs, and claim 50 Jools on check-in.
+            Attend live pitching conclaves, connect with venture chairs, and discover opportunities.
           </p>
         </div>
 
@@ -319,27 +303,6 @@ export default function EventsPage() {
                 </div>
               )}
 
-              {/* Checkin Message Alert */}
-              {checkinMsgs[ev.id] && (
-                <div
-                  style={{
-                    padding: "12px 16px",
-                    borderRadius: "10px",
-                    background: "rgba(16, 185, 129, 0.2)",
-                    border: "1px solid #10B981",
-                    color: "#10B981",
-                    fontWeight: 700,
-                    marginBottom: "20px",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "8px",
-                  }}
-                >
-                  <Sparkles size={18} />
-                  {checkinMsgs[ev.id]}
-                </div>
-              )}
-
               {/* Action Buttons */}
               <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
                 <a
@@ -363,28 +326,6 @@ export default function EventsPage() {
                   {ev.primaryBtnText}
                   <ExternalLink size={16} />
                 </a>
-
-                <button
-                  type="button"
-                  onClick={() => handleCheckin(ev.id)}
-                  disabled={checkinState[ev.id] || Boolean(checkinMsgs[ev.id])}
-                  style={{
-                    padding: "12px 24px",
-                    borderRadius: "10px",
-                    background: checkinMsgs[ev.id] ? "rgba(16, 185, 129, 0.2)" : "rgba(255, 255, 255, 0.1)",
-                    color: checkinMsgs[ev.id] ? "#10B981" : "#FFF",
-                    fontWeight: 700,
-                    border: "1px solid rgba(255, 255, 255, 0.2)",
-                    cursor: checkinMsgs[ev.id] ? "default" : "pointer",
-                    fontSize: "0.95rem",
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: "8px",
-                  }}
-                >
-                  <Sparkles size={16} />
-                  {checkinMsgs[ev.id] ? "Checked In ✓ (+50 Jools)" : checkinState[ev.id] ? "Checking in..." : "Check In & Claim 50 Jools"}
-                </button>
               </div>
             </article>
           ))}
