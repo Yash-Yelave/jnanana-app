@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { getAdminRequests, overrideRequestStatus, type AdminRequest } from "@/lib/api";
+import { getAdminRequests, overrideRequestStatus, type AdminRequest, friendlyError } from "@/lib/api";
 
 const STATUSES = ["pending", "accepted", "rejected", "completed", "cancelled"] as const;
 
@@ -25,7 +25,7 @@ export function RequestsTab() {
       getAdminRequests()
         .then(setRequests)
         .catch((err: unknown) =>
-          setError(err instanceof Error ? err.message : "Couldn't load mentorship requests"),
+          setError(friendlyError(err, "Couldn't load mentorship requests")),
         ),
     [],
   );
@@ -43,7 +43,7 @@ export function RequestsTab() {
       setNote(res.message);
       await load();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Couldn't change the request status");
+      setError(friendlyError(err, "Couldn't change the request status"));
     } finally {
       setBusyId(null);
     }

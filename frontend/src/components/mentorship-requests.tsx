@@ -7,8 +7,7 @@ import { Check, X, Clock, Sparkles } from "lucide-react";
 import {
   getMyMentorshipRequests,
   actionMentorshipRequest,
-  type MentorshipRequestItem,
-} from "@/lib/api";
+  type MentorshipRequestItem, friendlyError } from "@/lib/api";
 import { AppShell } from "@/components/app-shell";
 import { useApi } from "@/lib/use-api";
 import { publicAsset } from "@/lib/supabase/client";
@@ -40,7 +39,7 @@ export function MentorshipRequestsPage() {
       getMyMentorshipRequests()
         .then(setRequests)
         .catch((err: unknown) =>
-          setError(err instanceof Error ? err.message : "Unable to load your mentorship requests"),
+          setError(friendlyError(err, "Unable to load your mentorship requests")),
         ),
     [],
   );
@@ -61,7 +60,7 @@ export function MentorshipRequestsPage() {
       setLoggingId(null);
       await load();
     } catch (err) {
-      setActionError(err instanceof Error ? err.message : "That action didn't go through. Please try again.");
+      setActionError(friendlyError(err, "That action didn't go through. Please try again."));
     } finally {
       setBusyId(null);
     }

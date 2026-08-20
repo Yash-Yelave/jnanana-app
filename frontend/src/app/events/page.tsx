@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Calendar, MapPin, ArrowRight } from "lucide-react";
-import { getEvents, type EventItem } from "@/lib/api";
+import { getEvents, type EventItem, friendlyError } from "@/lib/api";
 import { AppShell } from "@/components/app-shell";
 import styles from "./page.module.css";
 
@@ -14,7 +14,7 @@ export default function EventsPage() {
   useEffect(() => {
     getEvents()
       .then(setEvents)
-      .catch((err) => setError(err instanceof Error ? err.message : "Unable to load events"));
+      .catch((err) => setError(friendlyError(err, "Unable to load events")));
   }, []);
 
   return (

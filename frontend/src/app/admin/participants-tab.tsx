@@ -7,8 +7,7 @@ import {
   adminCheckinParticipant,
   setEventPublished,
   type EventItem,
-  type Participant,
-} from "@/lib/api";
+  type Participant, friendlyError } from "@/lib/api";
 
 /**
  * SRS §11 / §36 — the admin's primary job on event day: see who is present and
@@ -28,7 +27,7 @@ export function ParticipantsTab() {
         setEvents(rows);
         if (rows.length > 0) setEventId((current) => current || rows[0].id);
       })
-      .catch((err: unknown) => setError(err instanceof Error ? err.message : "Couldn't load events"));
+      .catch((err: unknown) => setError(friendlyError(err, "Couldn't load events")));
   }, []);
 
   const loadParticipants = useCallback(() => {
@@ -36,7 +35,7 @@ export function ParticipantsTab() {
     return getEventParticipants(eventId)
       .then(setParticipants)
       .catch((err: unknown) =>
-        setError(err instanceof Error ? err.message : "Couldn't load participants"),
+        setError(friendlyError(err, "Couldn't load participants")),
       );
   }, [eventId]);
 
@@ -57,7 +56,7 @@ export function ParticipantsTab() {
       );
       await loadParticipants();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Check-in failed");
+      setError(friendlyError(err, "Check-in failed"));
     } finally {
       setBusyId(null);
     }
@@ -70,7 +69,7 @@ export function ParticipantsTab() {
       setEvents(await getAdminEvents());
       setNote(published ? "Event published — it is now visible to users." : "Event unpublished.");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Couldn't change event status");
+      setError(friendlyError(err, "Couldn't change event status"));
     }
   };
 

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
-import { ApiError, apiFetch } from "@/lib/api";
+import { ApiError, apiFetch, friendlyError } from "@/lib/api";
 import { createClient } from "@/lib/supabase/client";
 import styles from "./page.module.css";
 
@@ -57,7 +57,7 @@ export function LoginForm() {
       router.replace(destination);
       router.refresh();
     } catch (loginError) {
-      setError(loginError instanceof Error ? loginError.message : "Unable to sign in. Please check your credentials.");
+      setError(friendlyError(loginError, "Unable to sign in. Please check your credentials."));
     } finally {
       setPending(false);
     }

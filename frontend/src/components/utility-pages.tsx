@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import { AppShell } from "@/components/app-shell";
 import { PageTitle } from "@/components/student-pages";
-import { apiFetch } from "@/lib/api";
+import { apiFetch, friendlyError } from "@/lib/api";
 import { createClient, publicAsset } from "@/lib/supabase/client";
 import type { Profile } from "@/lib/types";
 import { useApi } from "@/lib/use-api";
@@ -57,7 +57,7 @@ export function EditProfilePage() {
       setMessage("✓ Profile saved successfully!");
       await reload();
     } catch (reason) {
-      setMessage(reason instanceof Error ? reason.message : "Unable to save profile");
+      setMessage(friendlyError(reason, "Unable to save profile"));
     }
   }
 

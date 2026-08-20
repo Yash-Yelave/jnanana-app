@@ -21,7 +21,7 @@ import {
   LogOut,
 } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
-import { apiFetch } from "@/lib/api";
+import { apiFetch, friendlyError } from "@/lib/api";
 import { createClient, publicAsset } from "@/lib/supabase/client";
 import type { Booking, LessonRequest, Mentor, MentorProfile, Offer, Profile, Review } from "@/lib/types";
 import { useApi, clearApiCache } from "@/lib/use-api";
@@ -561,7 +561,7 @@ function Lessons({ mentorId }: { mentorId?: string }) {
       setActionMsg("Offer accepted! Booking confirmed. Opening chat...");
       await Promise.all([reloadBookings(), reloadRequests(), reloadOffers()]);
     } catch (reason) {
-      alert(reason instanceof Error ? reason.message : "Unable to accept offer");
+      alert(friendlyError(reason, "Unable to accept offer"));
     } finally {
       setActingOfferId(undefined);
     }
@@ -575,7 +575,7 @@ function Lessons({ mentorId }: { mentorId?: string }) {
       await apiFetch(`/bookings/${booking.id}/reviews`, { method: "POST", body: JSON.stringify({ rating, comment }) });
       await reloadBookings();
     } catch (reason) {
-      window.alert(reason instanceof Error ? reason.message : "Unable to save review");
+      window.alert(friendlyError(reason, "Unable to save review"));
     }
   }
 

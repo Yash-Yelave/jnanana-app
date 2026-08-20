@@ -10,6 +10,26 @@ export class ApiError extends Error {
   }
 }
 
+/**
+ * The message to actually show a person.
+ *
+ * Every call site used to write `err instanceof Error ? err.message : "..."`,
+ * which reads as a safe fallback but never fires: a failed fetch rejects with a
+ * TypeError, that *is* an Error, so the humane sentence was skipped and the
+ * browser's own wording reached the screen — "Failed to fetch" in Chrome,
+ * "Load failed" in Safari, "NetworkError when attempting to fetch a resource"
+ * in Firefox. None of it means anything to a user.
+ */
+export function friendlyError(reason: unknown, fallback: string): string {
+  // Server-authored messages are written for people; keep them.
+  if (reason instanceof ApiError) return reason.message;
+  if (reason instanceof TypeError) {
+    return "We couldn't reach Jnanana. Check your connection and try again.";
+  }
+  if (reason instanceof Error && reason.message.trim()) return reason.message;
+  return fallback;
+}
+
 export async function apiFetch<T>(path: string, init: RequestInit = {}): Promise<T> {
   const supabase = createClient();
   const { data } = await supabase.auth.getSession();

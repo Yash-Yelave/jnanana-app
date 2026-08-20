@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { Brand } from "@/components/brand";
-import { ApiError, apiFetch } from "@/lib/api";
+import { ApiError, apiFetch, friendlyError } from "@/lib/api";
 import { siteUrl } from "@/lib/env";
 import { createClient } from "@/lib/supabase/client";
 import styles from "./onboarding-flow.module.css";
@@ -93,7 +93,7 @@ export function OnboardingFlow({ role }: { role: "student" | "mentor" }) {
       }
       router.push(!data.session ? "/waiting?verify=email" : role === "mentor" ? "/waiting" : "/dashboard");
     } catch (submitError) {
-      setError(submitError instanceof Error ? submitError.message : "Unable to create your account");
+      setError(friendlyError(submitError, "Unable to create your account"));
     } finally {
       setPending(false);
     }

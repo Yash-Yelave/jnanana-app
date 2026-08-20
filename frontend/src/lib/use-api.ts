@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { apiFetch } from "@/lib/api";
+import { apiFetch, friendlyError } from "@/lib/api";
 
 const apiCache = new Map<string, any>();
 
@@ -27,7 +27,7 @@ export function useApi<T>(path: string) {
       setData(result);
       setError("");
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : "Unable to load data");
+      setError(friendlyError(reason, "Unable to load data"));
     } finally {
       setLoading(false);
     }
@@ -48,7 +48,7 @@ export function useApi<T>(path: string) {
       })
       .catch((reason: unknown) => {
         if (active && !apiCache.has(path)) {
-          setError(reason instanceof Error ? reason.message : "Unable to load data");
+          setError(friendlyError(reason, "Unable to load data"));
         }
       })
       .finally(() => {

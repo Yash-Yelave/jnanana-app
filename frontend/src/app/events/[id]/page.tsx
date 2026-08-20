@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { Calendar, MapPin, CheckCircle, Sparkles, ArrowRight } from "lucide-react";
-import { getEvent, getMyParticipation, checkinEvent, type EventItem } from "@/lib/api";
+import { getEvent, getMyParticipation, checkinEvent, type EventItem, friendlyError } from "@/lib/api";
 import { AppShell } from "@/components/app-shell";
 import styles from "./page.module.css";
 
@@ -26,7 +26,7 @@ export default function EventDetailPage() {
           setCheckedIn(participation?.checkin_status === "checked_in");
         })
         .catch((err: unknown) =>
-          setError(err instanceof Error ? err.message : "Unable to load this event"),
+          setError(friendlyError(err, "Unable to load this event")),
         )
         .finally(() => setLoading(false)),
     [id],
@@ -45,7 +45,7 @@ export default function EventDetailPage() {
       setCheckedIn(true);
       setTokensGranted(res.tokens_granted);
     } catch (err) {
-      setActionError(err instanceof Error ? err.message : "Check-in failed. Please try again.");
+      setActionError(friendlyError(err, "Check-in failed. Please try again."));
     } finally {
       setCheckingIn(false);
     }
