@@ -1,23 +1,150 @@
-.page { min-height: 100vh; padding: 28px; background: #eee; color: #111; }
-.panel { min-height: calc(100vh - 56px); padding: 42px; border-radius: 32px; background: #fff; }
-.panel > a { display: flex; justify-content: center; }
-.content { display: flex; max-width: 850px; margin: 5vh auto 0; align-items: center; flex-direction: column; text-align: center; }
-.content img { width: min(560px, 80vw); height: min(48vh, 500px); object-fit: contain; }
-.content h1 { margin: 22px 0 8px; font: 800 clamp(29px, 3vw, 48px) var(--font-manrope); }
-.content p { max-width: 700px; margin: 0; color: #777; font-size: 20px; line-height: 1.5; }
-.content > a { margin-top: 26px; padding: 16px 28px; border-radius: 999px; background: #a3d95d; font-weight: 800; }
-.stars { color: #a3d95d; font-size: 46px; letter-spacing: 10px; }
-.resend { position: relative; display: flex; width: min(100%, 480px); margin-top: 24px; gap: 10px; align-items: end; }
-.resend label { display: grid; flex: 1; gap: 6px; text-align: left; font-weight: 700; }
-.resend input { height: 48px; padding: 0 14px; border: 1px solid #d8d8d8; border-radius: 10px; }
-.resend button { height: 48px; padding: 0 18px; border: 0; border-radius: 999px; background: #a3d95d; font-weight: 800; cursor: pointer; }
-.resend span { position: absolute; top: 100%; margin-top: 6px; color: #555; font-size: 13px; }
+.page {
+  min-height: 100vh;
+  padding: 28px;
+  background-color: var(--color-paper, #FBF3E7);
+  color: var(--color-ink, #141210);
+  background-image:
+    linear-gradient(rgba(11, 107, 68, 0.09) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(11, 107, 68, 0.09) 1px, transparent 1px);
+  background-size: 38px 38px;
+}
+
+.panel {
+  min-height: calc(100vh - 56px);
+  padding: 42px;
+  border-radius: 32px;
+  background: #FFFFFF;
+  border: 1.5px solid #141210;
+  box-shadow: 6px 6px 0 #141210;
+}
+
+.panel > a {
+  display: flex;
+  justify-content: center;
+}
+
+.content {
+  display: flex;
+  max-width: 850px;
+  margin: 5vh auto 0;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
+}
+
+.content img {
+  width: min(560px, 80vw);
+  height: min(44vh, 480px);
+  object-fit: contain;
+}
+
+.content h1 {
+  margin: 22px 0 8px;
+  font: 800 clamp(29px, 3vw, 48px) var(--font-manrope, sans-serif);
+  color: #0B6B44;
+}
+
+.content p {
+  max-width: 700px;
+  margin: 0;
+  color: #6A675F;
+  font-size: 1.15rem;
+  line-height: 1.5;
+}
+
+.content > a {
+  margin-top: 26px;
+  padding: 14px 32px;
+  border-radius: 999px;
+  border: 1.5px solid #141210;
+  background: linear-gradient(135deg, #FFB800 0%, #FF8A00 100%);
+  color: #000000;
+  font-weight: 800;
+  text-decoration: none;
+  box-shadow: 3px 3px 0 #141210;
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.content > a:hover {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 #141210;
+}
+
+.stars {
+  color: #F5B921;
+  font-size: 46px;
+  letter-spacing: 10px;
+}
+
+.resend {
+  position: relative;
+  display: flex;
+  width: min(100%, 480px);
+  margin-top: 24px;
+  gap: 10px;
+  align-items: flex-end;
+}
+
+.resend label {
+  display: grid;
+  flex: 1;
+  gap: 6px;
+  text-align: left;
+  font-weight: 700;
+  color: #141210;
+}
+
+.resend input {
+  height: 48px;
+  padding: 0 14px;
+  border: 1.5px solid #141210;
+  border-radius: 10px;
+  background: #FAFAFA;
+}
+
+.resend button {
+  height: 48px;
+  padding: 0 20px;
+  border: 1.5px solid #141210;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #FFB800 0%, #FF8A00 100%);
+  color: #000000;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 #141210;
+}
+
+.resend span {
+  position: absolute;
+  top: 100%;
+  margin-top: 6px;
+  color: #6A675F;
+  font-size: 13px;
+}
 
 @media (max-width: 600px) {
-  .page { padding: 0; }
-  .panel { min-height: 100vh; padding: 26px 20px; border-radius: 0; }
-  .content { margin-top: 10vh; }
-  .content p { font-size: 16px; }
-  .stars { font-size: 33px; letter-spacing: 6px; }
-  .resend { align-items: stretch; flex-direction: column; }
+  .page {
+    padding: 0;
+  }
+  .panel {
+    min-height: 100vh;
+    padding: 26px 20px;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+  }
+  .content {
+    margin-top: 8vh;
+  }
+  .content p {
+    font-size: 16px;
+  }
+  .stars {
+    font-size: 33px;
+    letter-spacing: 6px;
+  }
+  .resend {
+    align-items: stretch;
+    flex-direction: column;
+  }
 }

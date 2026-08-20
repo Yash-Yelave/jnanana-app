@@ -1,9 +1,76 @@
-.page { min-height: 100vh; padding: clamp(24px, 5vw, 72px); background: #f0f0f0; color: #111; }
-.page > header { display: flex; margin-bottom: 40px; align-items: center; justify-content: space-between; }
-.page h1 { font-size: clamp(32px, 5vw, 64px); }
-.page section { max-width: 1100px; margin: 24px auto; padding: 24px; border-radius: 20px; background: #fff; }
-.page article { display: flex; padding: 14px 0; gap: 12px; align-items: center; border-bottom: 1px solid #e5e5e5; }
-.page article span { display: grid; flex: 1; gap: 4px; }
-.page small { color: #666; }
-.page button { padding: 10px 16px; border: 0; border-radius: 999px; background: #a3d95d; font-weight: 800; cursor: pointer; }
-@media (max-width: 640px) { .page article { align-items: stretch; flex-direction: column; } }
+.page {
+  min-height: 100vh;
+  padding: clamp(24px, 5vw, 72px);
+  background-color: var(--color-paper, #FBF3E7);
+  color: var(--color-ink, #141210);
+  background-image:
+    linear-gradient(rgba(11, 107, 68, 0.09) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(11, 107, 68, 0.09) 1px, transparent 1px);
+  background-size: 38px 38px;
+}
+
+.page > header {
+  display: flex;
+  margin-bottom: 36px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.page h1 {
+  font-size: clamp(32px, 5vw, 56px);
+  font-weight: 800;
+  color: #0B6B44;
+}
+
+.page section {
+  max-width: 1100px;
+  margin: 24px auto;
+  padding: 32px;
+  border-radius: 24px;
+  background: #FFFFFF;
+  border: 1.5px solid #141210;
+  box-shadow: 6px 6px 0 #141210;
+}
+
+.page article {
+  display: flex;
+  padding: 16px 0;
+  gap: 16px;
+  align-items: center;
+  border-bottom: 1.5px solid #E2E8F0;
+}
+
+.page article span {
+  display: grid;
+  flex: 1;
+  gap: 4px;
+}
+
+.page small {
+  color: #6A675F;
+  font-size: 0.875rem;
+}
+
+.page button {
+  padding: 10px 20px;
+  border: 1.5px solid #141210;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #FFB800 0%, #FF8A00 100%);
+  color: #000000;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 #141210;
+  transition: transform 140ms ease, box-shadow 140ms ease;
+}
+
+.page button:hover {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 #141210;
+}
+
+@media (max-width: 640px) {
+  .page article {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
