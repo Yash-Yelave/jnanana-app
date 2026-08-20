@@ -14,6 +14,8 @@ import {
 import { createClient } from "@/lib/supabase/client";
 import type { Profile } from "@/lib/types";
 import { useApi } from "@/lib/use-api";
+import { ParticipantsTab } from "./participants-tab";
+import { RequestsTab } from "./requests-tab";
 import styles from "./page.module.css";
 
 type AdminMentor = {
@@ -28,48 +30,14 @@ type AdminMentor = {
   created_at: string | null;
 };
 
-const mentorFixtures: AdminMentor[] = [
-  {
-    profile_id: "m1",
-    first_name: "Emery",
-    last_name: "Aminoff",
-    headline: "Senior UI/UX Designer & Product Lead",
-    bio: "Passionate about building scalable design systems and user-centric products.",
-    approval_status: "approved",
-    rejection_reason: null,
-    professions: ["UI/UX", "Figma", "Design Systems"],
-    created_at: "2026-08-15T10:00:00Z",
-  },
-  {
-    profile_id: "m2",
-    first_name: "Kristin",
-    last_name: "Watson",
-    headline: "Staff Software Engineer @ Google",
-    bio: "Helping students master System Design, Data Structures, and Algorithms.",
-    approval_status: "pending",
-    rejection_reason: null,
-    professions: ["System Design", "Python", "DSA"],
-    created_at: "2026-08-18T14:30:00Z",
-  },
-  {
-    profile_id: "m3",
-    first_name: "Jaxson",
-    last_name: "Torff",
-    headline: "Head of Marketing & Brand Growth",
-    bio: "Specializing in growth loops, personal branding, and go-to-market strategies.",
-    approval_status: "pending",
-    rejection_reason: null,
-    professions: ["Brand Growth", "GTM Strategy", "Marketing"],
-    created_at: "2026-08-19T09:15:00Z",
-  },
-];
-
 export function AdminDashboard() {
   const users = useApi<{ items: Profile[] }>("/admin/users");
   const mentorsApi = useApi<{ items: AdminMentor[] }>("/admin/mentors");
   const [metrics, setMetrics] = useState<Record<string, number> | null>(null);
   const [message, setMessage] = useState("");
-  const [activeTab, setActiveTab] = useState<"overview" | "mentors" | "events" | "tokens" | "users">("overview");
+  const [activeTab, setActiveTab] = useState<
+    "overview" | "mentors" | "events" | "participants" | "requests" | "tokens" | "users"
+  >("overview");
   const [mentorFilter, setMentorFilter] = useState<"all" | "pending" | "approved" | "rejected">("pending");
   const [processingId, setProcessingId] = useState<string | null>(null);
 
@@ -168,7 +136,7 @@ export function AdminDashboard() {
         amount: Number(tokenAmount),
         notes: tokenNotes,
       });
-      setMessage(`Tokens adjusted successfully! New balance: ${res.new_balance} Jools Tokens`);
+      setMessage(`Tokens adjusted successfully! New balance: ${res.new_balance} Jule Tokens`);
       const m = await getAdminMetrics();
       setMetrics(m);
     } catch (err: any) {
@@ -187,7 +155,7 @@ export function AdminDashboard() {
 
   const allMentors = (mentorsApi.data?.items && mentorsApi.data.items.length > 0)
     ? mentorsApi.data.items
-    : mentorFixtures;
+    : [];
 
   const filteredMentors = mentorFilter === "all"
     ? allMentors
@@ -243,8 +211,8 @@ export function AdminDashboard() {
       )}
 
       {/* Admin Tab Navigation */}
-      <div style={{ display: "flex", gap: "12px", marginBottom: "24px" }}>
-        {(["overview", "mentors", "events", "tokens", "users"] as const).map((tab) => (
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "12px", marginBottom: "24px" }}>
+        {(["overview", "mentors", "events", "participants", "requests", "tokens", "users"] as const).map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
@@ -267,6 +235,10 @@ export function AdminDashboard() {
         ))}
       </div>
 
+      {activeTab === "participants" && <ParticipantsTab />}
+
+      {activeTab === "requests" && <RequestsTab />}
+
       {/* TAB 1: OVERVIEW METRICS */}
       {activeTab === "overview" && (
         <section>
@@ -278,8 +250,8 @@ export function AdminDashboard() {
               { label: "Active Events", val: metrics?.active_events ?? 0, color: "#F59E0B" },
               { label: "Event Participants", val: metrics?.event_participants ?? 0, color: "#8B5CF6" },
               { label: "Pending Requests", val: metrics?.pending_requests ?? 0, color: "#EC4899" },
-              { label: "Jools Tokens Issued", val: metrics?.jule_tokens_issued ?? 0, color: "#EAB308" },
-              { label: "Jools Tokens Spent", val: metrics?.jule_tokens_spent ?? 0, color: "#6366F1" },
+              { label: "Jule Tokens Issued", val: metrics?.jule_tokens_issued ?? 0, color: "#EAB308" },
+              { label: "Jule Tokens Spent", val: metrics?.jule_tokens_spent ?? 0, color: "#6366F1" },
             ].map((m) => (
               <div
                 key={m.label}
@@ -539,7 +511,7 @@ export function AdminDashboard() {
       {/* TAB 4: TOKEN ALLOCATION CONTROLS */}
       {activeTab === "tokens" && (
         <section style={{ maxWidth: "600px", background: "#1E293B", padding: "24px", borderRadius: "12px" }}>
-          <h2 style={{ fontSize: "1.25rem", marginBottom: "16px" }}>Grant / Deduct Jools Tokens</h2>
+          <h2 style={{ fontSize: "1.25rem", marginBottom: "16px" }}>Grant / Deduct Jule Tokens</h2>
           <form onSubmit={handleAdjustTokens} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
             <div>
               <label style={{ display: "block", marginBottom: "6px", fontSize: "0.875rem" }}>Select User</label>

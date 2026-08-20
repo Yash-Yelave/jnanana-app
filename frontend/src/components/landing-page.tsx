@@ -11,6 +11,7 @@ import { Philosophy } from "@/components/website/Philosophy";
 import { Tracks } from "@/components/website/Tracks";
 import { Faculty } from "@/components/website/Faculty";
 import { Statement } from "@/components/website/Statement";
+import { Events, AppCta } from "@/components/website/Events";
 import { Join } from "@/components/website/Join";
 import { Footer } from "@/components/website/Footer";
 
@@ -31,6 +32,8 @@ export function LandingPage() {
         <Philosophy />
         <Tracks />
         <Faculty />
+        <Events />
+        <AppCta />
         <Statement />
         <Join />
       </main>

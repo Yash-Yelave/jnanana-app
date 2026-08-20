@@ -9,13 +9,13 @@ import {
   Clock,
   Calendar,
   UploadCloud,
-  Banknote,
   BookOpen,
+  CheckCircle2,
 } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { Brand } from "@/components/brand";
 import { PageTitle, ProfileView, StarRating } from "@/components/student-pages";
-import { apiFetch } from "@/lib/api";
+import { apiFetch, type MentorshipRequestItem } from "@/lib/api";
 import type { Booking, LessonRequest, Mentor } from "@/lib/types";
 import { useApi, clearApiCache } from "@/lib/use-api";
 import styles from "./mentor-pages.module.css";
@@ -96,32 +96,42 @@ export function MentorMarketingPage() {
 }
 
 export function MentorHomePage() {
-  const { data: requestData, error } = useApi<{ items: LessonRequest[] }>("/lesson-requests");
+  const { data: requests, error } = useApi<MentorshipRequestItem[]>("/mentorship-requests/my");
   const { data: mentorData } = useApi<{ items: Mentor[] }>("/mentors?limit=4");
-  const { data: bookingData } = useApi<{ items: Booking[] }>("/bookings");
+
+  const pending = requests?.filter((request) => request.status === "pending") ?? [];
+  const accepted = requests?.filter((request) => request.status === "accepted") ?? [];
+
   return (
     <AppShell active="/mentor/home" mentor>
       <main className={styles.main}>
         <section className={styles.homeGrid}>
           <article className={styles.panel}>
-            <h2>Lesson Requests</h2>
+            <h2>Mentorship Requests</h2>
             {error && <p className="data-state" role="alert">{error}</p>}
-            {requestData?.items.length === 0 && <p className="data-state">No open lesson requests.</p>}
-            {requestData?.items.slice(0, 6).map((request) => (
-              <Link href="/mentor/bookings" key={request.id}>
+            {requests && pending.length === 0 && <p className="data-state">No pending mentorship requests.</p>}
+            {pending.slice(0, 6).map((request) => (
+              <Link href="/mentor/requests" key={request.id}>
                 <span className={styles.timeDot}><Clock size={16} /></span>
                 <b>
-                  {request.title}
-                  <small>{new Date(request.requested_start).toLocaleString()}</small>
+                  {request.mentee_name ?? "A mentee"}
+                  <small>{new Date(request.created_at).toLocaleString()}</small>
                 </b>
-                <strong>{request.currency} {(request.proposed_amount_minor / 100).toLocaleString()}</strong>
+                <strong>{request.tokens_used} Jule</strong>
               </Link>
             ))}
           </article>
           <aside className={styles.panel}>
-            <h2>Schedule</h2>
-            {bookingData?.items.slice(0, 3).map((booking) => <article key={booking.id}><b>Mentoring session</b><small>{new Date(booking.starts_at).toLocaleString()}</small>{booking.status === "confirmed" && <Link href="/meeting">View</Link>}</article>)}
-            {bookingData?.items.length === 0 && <p className="data-state">No scheduled lessons.</p>}
+            <h2>Accepted</h2>
+            {accepted.slice(0, 3).map((request) => (
+              <article key={request.id}>
+                <b>{request.mentee_name ?? "A mentee"}</b>
+                <small>{new Date(request.updated_at).toLocaleString()}</small>
+              </article>
+            ))}
+            {requests && accepted.length === 0 && (
+              <p className="data-state">Nothing accepted yet. The Jnanana team coordinates each connection.</p>
+            )}
           </aside>
         </section>
 
@@ -590,44 +600,48 @@ export function MentorProfilePage() {
 }
 
 export function MentorDashboardPage() {
-  const { data: dashboard } = useApi<{ completed_bookings: number; earnings_minor: number }>("/dashboard/mentor");
-  const { data: wallet } = useApi<{ currency: string; balance_minor: number }>("/wallet");
+  const { data: requests } = useApi<MentorshipRequestItem[]>("/mentorship-requests/my");
+
+  const count = (status: string) => requests?.filter((request) => request.status === status).length ?? 0;
+  const pending = count("pending");
+
   return (
     <AppShell active="/mentor/dashboard" mentor>
       <main className={styles.main}>
         <PageTitle>Dashboard</PageTitle>
         <section className={styles.summary}>
           <div>
-            <Banknote size={24} color="var(--lime)" /> INR {((dashboard?.earnings_minor ?? 0) / 100).toLocaleString()}<small>Total Earning</small>
+            <Clock size={24} color="var(--lime)" /> {pending}<small>Pending requests</small>
           </div>
           <div>
-            <Clock size={24} color="var(--lime)" /> {dashboard?.completed_bookings ?? 0}<small>Completed sessions</small>
+            <CheckCircle2 size={24} color="var(--lime)" /> {count("accepted")}<small>Accepted</small>
           </div>
           <div>
-            <BookOpen size={24} color="var(--lime)" /> {dashboard?.completed_bookings ?? 0}<small>Total lessons</small>
+            <BookOpen size={24} color="var(--lime)" /> {count("completed")}<small>Completed</small>
           </div>
         </section>
         <section className={styles.dashboard}>
           <article className={styles.panel}>
-            <h2>Hours Sent</h2>
-            <p className="data-state">Detailed activity analytics appear as lessons are completed.</p>
+            <h2>Mentorship Requests</h2>
+            {pending > 0 ? (
+              <>
+                <p>
+                  {pending} {pending === 1 ? "mentee is" : "mentees are"} waiting on your response.
+                </p>
+                <Link className="button button-primary" href="/mentor/requests">
+                  Review requests <ArrowUpRight size={16} />
+                </Link>
+              </>
+            ) : (
+              <p className="data-state">No pending requests right now.</p>
+            )}
           </article>
           <aside className={styles.panel}>
-            <h2>Available Credit</h2>
-            <strong>{wallet?.currency ?? "INR"} {((wallet?.balance_minor ?? 0) / 100).toLocaleString()}</strong>
-            <p>Your current balance</p>
-            <Link className="button button-primary" href="/payment">
-              Add Credits <ArrowUpRight size={16} />
+            <h2>Your profile</h2>
+            <p>Keep your expertise and mentorship areas current so mentees can find you.</p>
+            <Link className="button button-primary" href="/mentor/profile">
+              Edit profile <ArrowUpRight size={16} />
             </Link>
-          </aside>
-          <article className={styles.panel}>
-            <h2>Leader Board</h2>
-            <p className="data-state">Leaderboard data is not available yet.</p>
-          </article>
-          <aside className={styles.panel}>
-            <h2>Credit score</h2>
-            <strong className={styles.score}>0</strong>
-            <p>Reputation points</p>
           </aside>
         </section>
       </main>

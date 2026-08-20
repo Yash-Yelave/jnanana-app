@@ -9,49 +9,6 @@ import type { Mentor } from "@/lib/types";
 import { useApi } from "@/lib/use-api";
 import { publicAsset } from "@/lib/supabase/client";
 
-const mentorFixtures = [
-  {
-    id: "m1",
-    name: "Emery Aminoff",
-    headline: "Senior UI/UX Designer & Product Lead",
-    rating: 4.9,
-    reviews: 128,
-    bio: "Passionate about building scalable design systems, user-centric products, and mentoring early-stage designers to accelerate their careers.",
-    tags: ["UI/UX", "Figma", "Design Systems", "Product Strategy"],
-    image: "/assets/app/mentor-1.png",
-  },
-  {
-    id: "m2",
-    name: "Kristin Watson",
-    headline: "Staff Software Engineer @ Google",
-    rating: 4.8,
-    reviews: 94,
-    bio: "Helping students master System Design, Data Structures, Algorithms, and technical interview preparation for tier-1 tech companies.",
-    tags: ["System Design", "Python", "DSA", "Backend Architecture"],
-    image: "/assets/app/mentor-2.png",
-  },
-  {
-    id: "m3",
-    name: "Jaxson Torff",
-    headline: "Head of Marketing & Brand Growth",
-    rating: 5.0,
-    reviews: 156,
-    bio: "Specializing in growth loops, personal branding, go-to-market strategies, and content monetization for creators and tech founders.",
-    tags: ["Brand Growth", "GTM Strategy", "Marketing", "SEO"],
-    image: "/assets/app/mentor-3.png",
-  },
-  {
-    id: "m4",
-    name: "Kaisya Dias",
-    headline: "Lead Fullstack Architect @ Microsoft",
-    rating: 4.9,
-    reviews: 82,
-    bio: "10+ years architecting enterprise cloud applications. Dedicated to guiding developers through React, Next.js, Node.js, and Cloud DevOps.",
-    tags: ["React", "Next.js", "Node.js", "AWS Cloud"],
-    image: "/assets/app/mentor-4.png",
-  },
-];
-
 const categoryFilters = [
   { label: "All", id: "All" },
   { label: "Design & UI/UX", id: "Design" },
@@ -78,7 +35,7 @@ export default function DashboardPage() {
         tags: m.professions && m.professions.length > 0 ? m.professions : ["Mentorship", "Career Advice"],
         image: publicAsset("avatars", m.avatar_path) ?? `/assets/app/mentor-${(index % 4) + 1}.png`,
       }))
-    : mentorFixtures;
+    : [];
 
   const filteredMentors = mentorsList.filter((m) => {
     // 1. Search Query
@@ -121,7 +78,7 @@ export default function DashboardPage() {
             Explore Verified Mentors
           </h1>
           <p style={{ color: "#6A675F", margin: "6px 0 0", fontSize: "1rem" }}>
-            Connect 1-on-1 with industry leaders to accelerate your skills using your Jools.
+            Connect 1-on-1 with industry leaders to accelerate your skills using your Jule Tokens.
           </p>
         </div>
 
@@ -388,7 +345,7 @@ export default function DashboardPage() {
                     display: "block",
                   }}
                 >
-                  ⚡ Request Mentorship (10 Jools)
+                  ⚡ Request Mentorship (10 Jule Tokens)
                 </Link>
               </article>
             ))}

@@ -4,11 +4,11 @@
  */
 
 export const nav = [
-  { label: "The Gap", href: "#gap" },
   { label: "How It Works", href: "#how" },
-  { label: "J-Spotlight", href: "#spotlight" },
-  { label: "Tracks", href: "#tracks" },
-  { label: "Faculty", href: "#faculty" },
+  { label: "Mentors", href: "#faculty" },
+  { label: "Programs", href: "#tracks" },
+  { label: "Events", href: "#events" },
+  { label: "About", href: "#gap" },
 ];
 
 export const ticker = [
@@ -50,24 +50,24 @@ export const gaps = [
 
 export const steps = [
   {
-    n: "01 / Apply",
-    title: "Apply",
-    body: "Mentors are admitted for what they have actually built. Mentees say where they are and where they intend to go.",
+    n: "01 / Join",
+    title: "Join",
+    body: "Create your profile as a mentee or a mentor. Mentors are reviewed before they appear in discovery.",
   },
   {
-    n: "02 / Match",
-    title: "Match",
-    body: "Paired by domain, stage and ambition — reviewed by a human, never left to an algorithm alone.",
+    n: "02 / Discover",
+    title: "Discover",
+    body: "Browse mentors by domain, stage and ambition, and read the background behind each one.",
   },
   {
-    n: "03 / Meet",
-    title: "Meet",
-    body: "A fixed rhythm of sessions, a shared plan, prepared agendas, and commitments recorded between them.",
+    n: "03 / Connect",
+    title: "Connect",
+    body: "Spend Jule Tokens to request mentorship. The mentor accepts, and Jnanana coordinates the connection.",
   },
   {
-    n: "04 / Measure",
-    title: "Measure",
-    body: "Progress against the outcome you named — milestones cleared, and where the mentee goes next.",
+    n: "04 / Grow",
+    title: "Grow",
+    body: "Learn, connect and grow through mentorship — measured against the outcome you named.",
   },
 ];
 
@@ -217,11 +217,6 @@ export const isfWhy = {
 export const faculty = [
   { initials: "SR", name: "Siddharth Reddy", role: "Director · Jṉanana Foundation" },
   { initials: "RM", name: "Ravva Madusudan", role: "Mentor · Business Building" },
-  { initials: "AK", name: "Mentor Name", role: "Mentor · SaaS & Product" },
-  { initials: "PD", name: "Mentor Name", role: "Mentor · Investment Banking" },
-  { initials: "NL", name: "Mentor Name", role: "Mentor · D2C & Consumer" },
-  { initials: "VS", name: "Mentor Name", role: "Mentor · Deep Tech" },
-  { initials: "TA", name: "Mentor Name", role: "Mentor · Design & Brand" },
 ];
 
 export const domains = [

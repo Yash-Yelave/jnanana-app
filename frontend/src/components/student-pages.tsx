@@ -50,11 +50,11 @@ export function PageTitle({ children, backHref }: { children: React.ReactNode; b
       router.back();
       setTimeout(() => {
         if (window.location.pathname === currentPath) {
-          router.push("/dashboard/home");
+          router.push("/dashboard");
         }
       }, 150);
     } else {
-      router.push("/dashboard/home");
+      router.push("/dashboard");
     }
   };
 
@@ -167,7 +167,7 @@ export function MentorDirectory() {
                   <b>Mentorship</b>
                   <b>Tutorials</b>
                   <span>
-                    Mentorship Fee<strong>⚡ 10 Jule Tokens</strong>
+                    Mentorship Fee<strong>10 Jule Tokens</strong>
                   </span>
                   <Link className={styles.button} href={`/mentors/${mentor.id}`}>
                     Request Mentorship <ArrowUpRight size={16} />
@@ -184,10 +184,8 @@ export function MentorDirectory() {
 
 const tabs = [
   ["About", "/profile"],
-  ["Lessons", "/profile/lessons"],
-  ["Feedback", "/profile/feedback"],
-  ["Schedule", "/schedule"],
-  ["Community", "/community"],
+  ["My Requests", "/requests"],
+  ["Wallet", "/jule/transactions"],
 ] as const;
 
 export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = false, mentorId }: { mode?: "about" | "lessons" | "feedback"; mentorDetail?: boolean; mentorApp?: boolean; mentorId?: string }) {
@@ -208,7 +206,7 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
   const avatar = publicAsset("avatars", data?.avatar_path) ?? "/assets/app/mentor-1.png";
   const mentor = data && "headline" in data ? data : data?.mentor;
 
-  const currentBalance = walletData?.balance ?? 50;
+  const currentBalance = walletData?.balance ?? 0;
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -224,7 +222,11 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
     setRequestError("");
     setRequestMsg("");
     try {
-      const targetId = mentorId || (data && "id" in data ? (data as any).id : undefined) || "00000000-0000-0000-0000-000000000000";
+      const targetId = mentorId || (data && "id" in data ? (data as any).id : undefined);
+      if (!targetId) {
+        setRequestError("We couldn't identify this mentor. Please reopen their profile and try again.");
+        return;
+      }
       await apiFetch("/mentorship-requests", {
         method: "POST",
         body: JSON.stringify({
@@ -234,7 +236,7 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
         }),
       });
       clearApiCache();
-      setRequestMsg("🎉 Mentorship request submitted! 10 Jools deducted from your wallet.");
+      setRequestMsg("Request sent. 10 Jule Tokens deducted — track it under My Requests.");
       setTimeout(() => setShowJuleModal(false), 2000);
     } catch (err: any) {
       setRequestError(err.message || "Failed to submit mentorship request");
@@ -274,7 +276,7 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
                 ⚡ Request Mentorship
               </h2>
               <p style={{ color: "#94A3B8", marginBottom: "20px", lineHeight: 1.5 }}>
-                Use <strong>10 Jools</strong> to request a mentorship connection with <strong>{formattedName || "Mentor"}</strong>?
+                Use <strong>10 Jule Tokens</strong> to request a mentorship connection with <strong>{formattedName || "Mentor"}</strong>?
               </p>
 
               <div style={{
@@ -287,13 +289,13 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
                 justifyContent: "space-between",
                 alignItems: "center"
               }}>
-                <span style={{ fontSize: "0.9rem", color: "#E2E8F0" }}>Your Jools Wallet Balance:</span>
-                <strong style={{ fontSize: "1.2rem", color: "#FFB800" }}>⚡ {currentBalance} Jools</strong>
+                <span style={{ fontSize: "0.9rem", color: "#E2E8F0" }}>Your Jule Token balance:</span>
+                <strong style={{ fontSize: "1.2rem", color: "#FFB800" }}>⚡ {currentBalance} Jule Tokens</strong>
               </div>
 
               {currentBalance < 10 ? (
                 <div style={{ padding: "12px", borderRadius: "8px", background: "rgba(239, 68, 68, 0.2)", border: "1px solid #EF4444", color: "#EF4444", marginBottom: "20px" }}>
-                  ⚠️ Insufficient Jools. You have {currentBalance} Jools, but 10 are required. Check into an event to claim 50 Jools!
+                  Insufficient Jule Tokens. You have {currentBalance}, but 10 are required. Check in at an event to claim 50.
                 </div>
               ) : (
                 <div style={{ marginBottom: "20px" }}>
@@ -348,7 +350,7 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
                       cursor: submittingRequest ? "not-allowed" : "pointer"
                     }}
                   >
-                    {submittingRequest ? "Submitting..." : "Confirm (Spend 10 Jools)"}
+                    {submittingRequest ? "Submitting..." : "Confirm (spend 10 Jule Tokens)"}
                   </button>
                 )}
               </div>
@@ -395,7 +397,7 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
                       boxShadow: "0 4px 14px rgba(255, 184, 0, 0.4)",
                     }}
                   >
-                    ⚡ Request Mentorship (10 Jools)
+                    Request Mentorship (10 Jule Tokens)
                   </button>
                 </div>
               )}
@@ -409,7 +411,7 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
               {tabs.map(([label, href]) => (
                 <Link
                   className={mode === label.toLowerCase() ? styles.current : ""}
-                  href={mentorApp ? "/mentor/lessons" : mentorDetail ? (label === "About" ? "/mentors/kristin-watson" : href) : href}
+                  href={mentorApp ? "/mentor/requests" : href}
                   key={label}
                 >
                   {label}

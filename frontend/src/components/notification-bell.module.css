@@ -1,0 +1,25 @@
+.wrap{position:relative}
+
+.bell{position:relative;display:grid;width:40px;height:40px;place-items:center;border:0;border-radius:50%;background:transparent;color:inherit;cursor:pointer}
+.bell:hover{background:rgba(0,0,0,.06)}
+
+.badge{position:absolute;top:2px;right:2px;min-width:18px;height:18px;padding:0 5px;display:grid;place-items:center;border-radius:999px;background:#d6206a;color:#fff;font:700 10px/1 var(--font-manrope)}
+
+.panel{position:absolute;top:48px;right:0;z-index:40;width:min(340px,calc(100vw - 32px));max-height:min(420px,70vh);overflow-y:auto;padding:16px;border:1px solid #e2e5e7;border-radius:18px;background:#fff;box-shadow:0 12px 32px rgba(0,0,0,.14)}
+.panel h2{margin:0 0 12px;font:800 15px var(--font-manrope)}
+.panel ul{margin:0;padding:0;list-style:none}
+.panel li{padding:12px 0;border-top:1px solid #f0f0f0}
+.panel li:first-child{border-top:0}
+.panel strong{display:block;font:700 14px var(--font-manrope)}
+.panel p{margin:4px 0 6px;color:#555;font-size:13px;line-height:1.45}
+.panel time{color:#999;font-size:11px}
+
+.fresh{position:relative;padding-left:14px}
+.fresh::before{content:"";position:absolute;top:18px;left:0;width:6px;height:6px;border-radius:50%;background:#d6206a}
+
+.empty{margin:0;padding:20px 0;color:#888;font-size:13px;text-align:center}
+
+@media(max-width:767px){
+  .bell{width:34px;height:34px}
+  .panel{top:42px;right:-8px;padding:12px;border-radius:14px}
+}
