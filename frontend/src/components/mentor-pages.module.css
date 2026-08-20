@@ -20,9 +20,9 @@
   margin: auto;
   padding: 40px 7%;
   overflow: hidden;
-  border-radius: 0 0 100px 100px;
+  border-radius:0;
   background: #FFFFFF;
-  border: 1.5px solid #141210;
+  border:1.5px solid #141210;
   box-shadow: 6px 6px 0 #141210;
   text-align: center;
 }
@@ -42,11 +42,11 @@
 .heroActions a,
 .mentorCta a {
   padding: 14px 28px;
-  border: 1.5px solid #141210;
+  border:1.5px solid #141210;
   border-radius: 999px;
   font-weight: 800;
-  background: linear-gradient(135deg, #FFB800 0%, #FF8A00 100%);
-  color: #000000;
+  background: #F5B921;
+  color: #141210;
   box-shadow: 3px 3px 0 #141210;
   text-decoration: none;
   transition: transform 160ms ease, box-shadow 160ms ease;
@@ -64,7 +64,7 @@
   display: inline-block;
   margin-top: 60px;
   padding: 8px 30px;
-  border: 1.5px solid #141210;
+  border:1.5px solid #141210;
   border-radius: 999px;
   font-size: 12px;
   font-weight: 800;
@@ -141,22 +141,22 @@
   transform: translateX(-50%);
   border-radius: 999px;
   background: #F6EBDB;
-  border: 1.5px solid #141210;
+  border:1.5px solid #141210;
   box-shadow: 4px 4px 0 #141210;
 }
 
 .heroActions a:first-child {
-  background: linear-gradient(135deg, #FFB800 0%, #FF8A00 100%);
-  color: #000000;
+  background: #F5B921;
+  color: #141210;
 }
 
 .mentorAbout {
   width: min(calc(100% - 48px), 1400px);
   margin: 60px auto;
   padding: 60px;
-  border-radius: 40px;
+  border-radius:0;
   background: #FFFFFF;
-  border: 1.5px solid #141210;
+  border:1.5px solid #141210;
   box-shadow: 6px 6px 0 #141210;
   text-align: center;
 }
@@ -176,8 +176,8 @@
 
 .mentorAbout article {
   padding: 28px;
-  border: 1.5px solid #141210;
-  border-radius: 24px;
+  border:1.5px solid #141210;
+  border-radius:0;
   background: #F6EBDB;
   box-shadow: 3px 3px 0 #141210;
 }
@@ -191,16 +191,16 @@
   width: min(calc(100% - 48px), 1400px);
   margin: auto;
   padding: 60px;
-  border-radius: 40px;
+  border-radius:0;
   background: #062E24;
-  border: 1.5px solid #141210;
+  border:1.5px solid #141210;
   box-shadow: 6px 6px 0 #141210;
   text-align: center;
   color: #FFFFFF;
 }
 
 .mentorCta h2 {
-  color: #FFB800;
+  color: #F5B921;
 }
 
 .pro {
@@ -208,25 +208,25 @@
   padding: 28px 44px;
   align-items: center;
   justify-content: space-between;
-  border-radius: 28px;
+  border-radius:0;
   background: #062E24;
-  border: 1.5px solid #141210;
+  border:1.5px solid #141210;
   box-shadow: 4px 4px 0 #141210;
   color: #FFFFFF;
 }
 
 .pro h1 {
   font: 800 30px var(--font-manrope, sans-serif);
-  color: #FFB800;
+  color: #F5B921;
 }
 
 .pro a {
   display: inline-block;
   padding: 14px 28px;
-  border: 1.5px solid #141210;
+  border:1.5px solid #141210;
   border-radius: 999px;
-  background: linear-gradient(135deg, #FFB800 0%, #FF8A00 100%);
-  color: #000000;
+  background: #F5B921;
+  color: #141210;
   box-shadow: 3px 3px 0 #141210;
   font-weight: 800;
   cursor: pointer;
@@ -248,9 +248,9 @@
 
 .panel {
   padding: 28px;
-  border-radius: 24px;
+  border-radius:0;
   background: #FFFFFF;
-  border: 1.5px solid #141210;
+  border:1.5px solid #141210;
   box-shadow: 4px 4px 0 #141210;
 }
 
@@ -260,7 +260,7 @@
   padding: 16px;
   align-items: center;
   gap: 14px;
-  border: 1.5px solid #141210;
+  border:1.5px solid #141210;
   border-radius: 999px;
   background: #FFFFFF;
   box-shadow: 2px 2px 0 #141210;
@@ -282,7 +282,7 @@
   place-items: center;
   border-radius: 50%;
   background: #F6EBDB;
-  border: 1.5px solid #141210;
+  border:1.5px solid #141210;
   color: #0B6B44;
 }
 
@@ -312,9 +312,9 @@
   margin: 14px 0;
   padding: 18px;
   gap: 8px;
-  border-radius: 18px;
+  border-radius:0;
   background: #FFFFFF;
-  border: 1.5px solid #141210;
+  border:1.5px solid #141210;
   box-shadow: 3px 3px 0 #141210;
 }
 
@@ -322,9 +322,9 @@
   justify-self: end;
   padding: 8px 18px;
   border-radius: 999px;
-  border: 1.5px solid #141210;
-  background: linear-gradient(135deg, #FFB800 0%, #FF8A00 100%);
-  color: #000000;
+  border:1.5px solid #141210;
+  background: #F5B921;
+  color: #141210;
   font-weight: 800;
   text-decoration: none;
   box-shadow: 2px 2px 0 #141210;
@@ -343,12 +343,12 @@
   gap: 14px;
   border-radius: 999px;
   background: #F6EBDB;
-  border: 1.5px solid #141210;
+  border:1.5px solid #141210;
 }
 
 .people img {
   border-radius: 50%;
-  border: 1.5px solid #141210;
+  border:1.5px solid #141210;
 }
 
 .booking {
@@ -368,8 +368,8 @@
 .booking article > div {
   margin: 24px 0;
   padding: 22px;
-  border: 1.5px solid #141210;
-  border-radius: 22px;
+  border:1.5px solid #141210;
+  border-radius:0;
   background: #FFFFFF;
   box-shadow: 3px 3px 0 #141210;
 }
@@ -382,9 +382,9 @@
   display: inline-block;
   margin: 6px;
   padding: 8px 14px;
-  border-radius: 10px;
+  border-radius:0;
   background: #F6EBDB;
-  border: 1.5px solid #141210;
+  border:1.5px solid #141210;
   color: #0B6B44;
   font-weight: 700;
 }
@@ -394,7 +394,7 @@
   height: 200px;
   place-items: center;
   border: 2px dashed #0B6B44;
-  border-radius: 20px;
+  border-radius:0;
   background: #F6EBDB;
   text-align: center;
   color: #6A675F;
@@ -403,7 +403,7 @@
 }
 
 .upload:hover {
-  border-color: #FFB800;
+  border-color: #F5B921;
   background: #FFFDF9;
 }
 
@@ -424,8 +424,8 @@
   min-height: 120px;
   margin: 20px 0;
   padding: 15px;
-  border: 1.5px solid #141210;
-  border-radius: 15px;
+  border:1.5px solid #141210;
+  border-radius:0;
   background: #FAFAFA;
 }
 
@@ -438,7 +438,7 @@
 .booking aside a {
   flex: 1;
   padding: 12px;
-  border: 1.5px solid #141210;
+  border:1.5px solid #141210;
   border-radius: 999px;
   background: #FFFFFF;
   text-align: center;
@@ -451,8 +451,8 @@
 
 .booking aside a {
   border-color: #141210;
-  background: linear-gradient(135deg, #FFB800 0%, #FF8A00 100%);
-  color: #000000;
+  background: #F5B921;
+  color: #141210;
 }
 
 .modal {
@@ -470,9 +470,9 @@
   width: min(440px, calc(100% - 30px));
   padding: 32px;
   gap: 18px;
-  border-radius: 28px;
+  border-radius:0;
   background: #FFFFFF;
-  border: 1.5px solid #141210;
+  border:1.5px solid #141210;
   box-shadow: 6px 6px 0 #141210;
 }
 
@@ -486,17 +486,17 @@
 .modal input,
 .modal textarea {
   padding: 14px;
-  border: 1.5px solid #141210;
-  border-radius: 12px;
+  border:1.5px solid #141210;
+  border-radius:0;
   background: #FAFAFA;
 }
 
 .modal button {
   padding: 14px;
-  border: 1.5px solid #141210;
+  border:1.5px solid #141210;
   border-radius: 999px;
-  background: linear-gradient(135deg, #FFB800 0%, #FF8A00 100%);
-  color: #000000;
+  background: #F5B921;
+  color: #141210;
   font-weight: 800;
   box-shadow: 3px 3px 0 #141210;
   cursor: pointer;
@@ -508,7 +508,7 @@
   gap: 40px;
   border-radius: 999px;
   background: #FFFFFF;
-  border: 1.5px solid #141210;
+  border:1.5px solid #141210;
   box-shadow: 3px 3px 0 #141210;
 }
 
@@ -529,17 +529,17 @@
   align-items: center;
   gap: 24px;
   padding: 20px;
-  border-radius: 22px;
+  border-radius:0;
   background: #FFFFFF;
-  border: 1.5px solid #141210;
+  border:1.5px solid #141210;
   box-shadow: 4px 4px 0 #141210;
 }
 
 .lessonList img {
   height: 140px;
   object-fit: cover;
-  border-radius: 16px;
-  border: 1.5px solid #141210;
+  border-radius:0;
+  border:1.5px solid #141210;
 }
 
 .lessonList small {
@@ -550,9 +550,9 @@
 .lessonList a {
   padding: 12px 24px;
   border-radius: 999px;
-  border: 1.5px solid #141210;
-  background: linear-gradient(135deg, #FFB800 0%, #FF8A00 100%);
-  color: #000000;
+  border:1.5px solid #141210;
+  background: #F5B921;
+  color: #141210;
   font-weight: 800;
   text-decoration: none;
   box-shadow: 2px 2px 0 #141210;
@@ -561,9 +561,9 @@
 .summary {
   display: grid;
   padding: 28px;
-  border-radius: 28px;
+  border-radius:0;
   background: #FFFFFF;
-  border: 1.5px solid #141210;
+  border:1.5px solid #141210;
   box-shadow: 4px 4px 0 #141210;
   grid-template-columns: repeat(3, 1fr);
 }
@@ -604,8 +604,8 @@
 
 .bars i {
   width: 10%;
-  border-radius: 14px 14px 0 0;
-  background: linear-gradient(#FFB800 0%, #0B6B44 100%);
+  border-radius:0;
+  background: linear-gradient(#F5B921 0%, #0B6B44 100%);
 }
 
 .dashboard aside {
@@ -622,9 +622,9 @@
 .dashboard aside > a {
   padding: 14px;
   border-radius: 999px;
-  border: 1.5px solid #141210;
-  background: linear-gradient(135deg, #FFB800 0%, #FF8A00 100%);
-  color: #000000;
+  border:1.5px solid #141210;
+  background: #F5B921;
+  color: #141210;
   font-weight: 800;
   text-align: center;
   text-decoration: none;
@@ -677,7 +677,7 @@
     width: 100%;
     height: 720px;
     padding: 22px 20px;
-    border-radius: 0 0 45px 45px;
+    border-radius:0;
   }
   .hero header > a {
     padding: 10px 15px;
@@ -704,7 +704,7 @@
     width: calc(100% - 30px);
     margin: 20px auto;
     padding: 30px 20px;
-    border-radius: 28px;
+    border-radius:0;
   }
   .mentorAbout h2,
   .mentorCta h2 {
@@ -737,7 +737,7 @@
   }
   .summary {
     grid-template-columns: 1fr;
-    border-radius: 20px;
+    border-radius:0;
   }
   .summary div + div {
     margin-top: 16px;

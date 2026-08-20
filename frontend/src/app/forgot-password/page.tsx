@@ -61,7 +61,7 @@ export default function ForgotPasswordPage() {
               <p
                 style={{
                   padding: "10px 14px",
-                  borderRadius: "8px",
+                  borderRadius: "0",
                   fontSize: "0.9rem",
                   marginTop: "12px",
                   background: isSuccess ? "rgba(16, 185, 129, 0.15)" : "rgba(239, 68, 68, 0.15)",

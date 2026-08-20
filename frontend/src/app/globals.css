@@ -7,17 +7,12 @@
    ============================================================ */
 
 :root {
-  --lime: #a3d95d;
-  --lime-soft: #c3f089;
-  --ink: #0f0f0f;
-  --ink-soft: #171717;
-  --paper: #ffffff;
-  --muted: #959595;
-  --line: #303030;
-  --surface: #1b1b1b;
-  --container: 1538px;
-  --radius-card: 34px;
-  --radius-panel: 61px;
+  /* Held over from the pre-system app screens. Only these two are still
+     referenced; both now resolve to design-system values so the screens that
+     use them land on-brand. --lime is amber because it backs buttons that carry
+     dark text, which emerald could not. */
+  --lime: #f5b921;
+  --ink: #141210;
 }
 
 @theme {

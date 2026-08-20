@@ -14,9 +14,9 @@
   min-height: calc(100vh - 56px);
   grid-template-columns: 1fr 44%;
   overflow: hidden;
-  border-radius: 32px;
+  border-radius:0;
   background: #FFFFFF;
-  border: 1.5px solid #141210;
+  border:1.5px solid #141210;
   box-shadow: 6px 6px 0 #141210;
 }
 
@@ -46,7 +46,7 @@
 }
 
 .copy h1 em {
-  color: #FFB800;
+  color: #F5B921;
   font-style: italic;
   font-family: Georgia, serif;
 }
@@ -73,8 +73,8 @@
 .form input {
   height: 54px;
   padding: 0 18px;
-  border: 1.5px solid #141210;
-  border-radius: 12px;
+  border:1.5px solid #141210;
+  border-radius:0;
   outline: none;
   background: #FAFAFA;
   font-size: 16px; /* 16px prevents mobile iOS auto-zoom */
@@ -105,10 +105,10 @@
   padding: 0 24px;
   align-items: center;
   justify-content: space-between;
-  border: 1.5px solid #141210;
+  border:1.5px solid #141210;
   border-radius: 999px;
-  background: linear-gradient(135deg, #FFB800 0%, #FF8A00 100%);
-  color: #000000;
+  background: #F5B921;
+  color: #141210;
   font-weight: 800;
   font-size: 1rem;
   cursor: pointer;
@@ -151,9 +151,9 @@
 .card > aside {
   position: relative;
   margin: 18px;
-  border-radius: 24px;
+  border-radius:0;
   background: #062E24;
-  border: 1.5px solid #141210;
+  border:1.5px solid #141210;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -177,8 +177,8 @@
   .card {
     display: block;
     min-height: auto;
-    border-radius: 24px;
-    border: 1.5px solid #141210;
+    border-radius:0;
+    border:1.5px solid #141210;
     box-shadow: 4px 4px 0 #141210;
     background: #FFFFFF;
   }

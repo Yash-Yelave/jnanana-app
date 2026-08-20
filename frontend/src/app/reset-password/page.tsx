@@ -115,13 +115,13 @@ export default function ResetPasswordPage() {
           </div>
 
           {checkingSession ? (
-            <p style={{ color: "#94A3B8", padding: "20px 0" }}>Verifying password reset link…</p>
+            <p style={{ color: "#6A675F", padding: "20px 0" }}>Verifying password reset link…</p>
           ) : !hasValidSession ? (
             <div style={{ display: "flex", flexDirection: "column", gap: "16px", margin: "16px 0" }}>
               <div
                 style={{
                   padding: "16px",
-                  borderRadius: "12px",
+                  borderRadius: "0",
                   background: "rgba(239, 68, 68, 0.15)",
                   border: "1px solid #EF4444",
                   color: "#EF4444",
@@ -142,8 +142,8 @@ export default function ResetPasswordPage() {
                 href="/forgot-password"
                 style={{
                   padding: "12px 20px",
-                  borderRadius: "10px",
-                  background: "linear-gradient(135deg, #FFB800 0%, #FF8A00 100%)",
+                  borderRadius: "0",
+                  background: "#F5B921",
                   color: "#000",
                   fontWeight: 700,
                   textAlign: "center",
@@ -166,13 +166,13 @@ export default function ResetPasswordPage() {
               </label>
 
               {error && (
-                <div style={{ padding: "10px 14px", borderRadius: "8px", background: "rgba(239, 68, 68, 0.15)", border: "1px solid #EF4444", color: "#EF4444", fontSize: "0.9rem", marginTop: "12px" }} role="alert">
+                <div style={{ padding: "10px 14px", borderRadius: "0", background: "rgba(239, 68, 68, 0.15)", border: "1px solid #EF4444", color: "#EF4444", fontSize: "0.9rem", marginTop: "12px" }} role="alert">
                   {error}
                 </div>
               )}
 
               {successMsg && (
-                <div style={{ padding: "12px 16px", borderRadius: "8px", background: "rgba(16, 185, 129, 0.15)", border: "1px solid #10B981", color: "#10B981", fontSize: "0.95rem", marginTop: "12px", display: "flex", alignItems: "center", gap: "8px" }} role="status">
+                <div style={{ padding: "12px 16px", borderRadius: "0", background: "rgba(16, 185, 129, 0.15)", border: "1px solid #10B981", color: "#10B981", fontSize: "0.95rem", marginTop: "12px", display: "flex", alignItems: "center", gap: "8px" }} role="status">
                   <CheckCircle2 size={18} />
                   {successMsg}
                 </div>

@@ -17,7 +17,7 @@
   width: 46px;
   height: 46px;
   place-items: center;
-  border: 1.5px solid #141210;
+  border:1.5px solid #141210;
   border-radius: 50%;
   background: #F6EBDB;
   color: #141210;
@@ -28,7 +28,7 @@
 
 .backBtn:hover {
   transform: scale(1.08);
-  background: #FFB800;
+  background: #F5B921;
   box-shadow: 3px 3px 0 #141210;
 }
 
@@ -44,9 +44,9 @@
   align-items: center;
   justify-content: center;
   border-radius: 999px;
-  border: 1.5px solid #141210;
-  background: linear-gradient(135deg, #FFB800 0%, #FF8A00 100%);
-  color: #000000;
+  border:1.5px solid #141210;
+  background: #F5B921;
+  color: #141210;
   font-weight: 800;
   text-decoration: none;
   box-shadow: 3px 3px 0 #141210;
@@ -63,8 +63,8 @@
   height: 64px;
   margin-bottom: 32px;
   padding: 0 24px;
-  border: 1.5px solid #141210;
-  border-radius: 20px;
+  border:1.5px solid #141210;
+  border-radius:0;
   background: #FFFFFF;
   font-size: 1.1rem;
   box-shadow: 4px 4px 0 #141210;
@@ -86,9 +86,9 @@
   position: relative;
   min-height: 340px;
   padding: 28px 240px 28px 30px;
-  border-radius: 28px;
+  border-radius:0;
   background: #FFFFFF;
-  border: 1.5px solid #141210;
+  border:1.5px solid #141210;
   box-shadow: 4px 4px 0 #141210;
   transition: transform 200ms ease, box-shadow 200ms ease;
 }
@@ -106,7 +106,7 @@
 
 .mentorBio img {
   border-radius: 50%;
-  border: 2px solid #141210;
+  border:1.5px solid #141210;
 }
 
 .mentorBio h2 {
@@ -132,8 +132,8 @@
   font-size: 13px;
   background: #F6EBDB;
   padding: 3px 10px;
-  border-radius: 99px;
-  border: 1px solid #141210;
+  border-radius:0;
+  border:1.5px solid #141210;
 }
 
 .starRating {
@@ -173,9 +173,9 @@
 .about i {
   display: inline-block;
   padding: 4px 10px;
-  border-radius: 8px;
+  border-radius:0;
   background: #F6EBDB;
-  border: 1px solid #141210;
+  border:1.5px solid #141210;
   color: #0B6B44;
   font-style: normal;
   font-size: 12px;
@@ -198,7 +198,7 @@
 
 .mentorCard > a:hover {
   transform: translateX(4px);
-  color: #FFB800;
+  color: #F5B921;
 }
 
 .mentorCard > aside {
@@ -208,7 +208,7 @@
   width: 210px;
   padding: 20px;
   flex-direction: column;
-  border-radius: 0 22px 22px 0;
+  border-radius:0;
   background: #062E24;
   border-left: 1.5px solid #141210;
   color: #FFFFFF;
@@ -217,10 +217,10 @@
 .mentorCard > aside > b {
   margin-bottom: 8px;
   padding: 6px 12px;
-  border-radius: 16px;
+  border-radius:0;
   background: rgba(255, 184, 0, 0.15);
-  border: 1px solid #FFB800;
-  color: #FFB800;
+  border: 1px solid #F5B921;
+  color: #F5B921;
   font-weight: 800;
   font-size: 0.8rem;
   text-align: center;
@@ -235,16 +235,16 @@
 }
 
 .mentorCard > aside > span strong {
-  color: #FFB800;
+  color: #F5B921;
   font-size: 24px;
 }
 
 .filters {
   margin-top: 28px;
   padding: 24px;
-  border-radius: 24px;
+  border-radius:0;
   background: #FFFFFF;
-  border: 1.5px solid #141210;
+  border:1.5px solid #141210;
   box-shadow: 4px 4px 0 #141210;
   color: #141210;
 }
@@ -263,8 +263,8 @@
 
 .filters button {
   padding: 8px 16px;
-  border: 1.5px solid #141210;
-  border-radius: 99px;
+  border:1.5px solid #141210;
+  border-radius:0;
   background: #F6EBDB;
   font-size: 12px;
   font-weight: 700;
@@ -274,7 +274,7 @@
 }
 
 .filters button:hover {
-  background: #FFB800;
+  background: #F5B921;
   transform: translateY(-2px);
 }
 
@@ -293,10 +293,10 @@
   padding: 32px 44px;
   align-items: center;
   gap: 28px;
-  border-radius: 28px;
+  border-radius:0;
   background: #FFFFFF;
   box-shadow: 4px 4px 0 #141210;
-  border: 1.5px solid #141210;
+  border:1.5px solid #141210;
 }
 
 .profileName img {
@@ -336,7 +336,7 @@
   padding: 4px 14px;
   border-radius: 999px;
   background: #F6EBDB;
-  border: 1px solid #141210;
+  border:1.5px solid #141210;
   color: #0B6B44;
   font-weight: 800;
   font-size: 13px;
@@ -346,9 +346,9 @@
   margin-left: auto;
   padding: 14px 32px;
   border-radius: 999px;
-  border: 1.5px solid #141210;
-  background: linear-gradient(135deg, #FFB800 0%, #FF8A00 100%);
-  color: #000000;
+  border:1.5px solid #141210;
+  background: #F5B921;
+  color: #141210;
   font-weight: 800;
   text-decoration: none;
   box-shadow: 3px 3px 0 #141210;
@@ -368,7 +368,7 @@
   justify-content: space-between;
   border-radius: 999px;
   background: #FFFFFF;
-  border: 1.5px solid #141210;
+  border:1.5px solid #141210;
   box-shadow: 3px 3px 0 #141210;
 }
 
@@ -403,9 +403,9 @@
 .score,
 .settings {
   padding: 28px;
-  border-radius: 24px;
+  border-radius:0;
   background: #FFFFFF;
-  border: 1.5px solid #141210;
+  border:1.5px solid #141210;
   box-shadow: 4px 4px 0 #141210;
 }
 
@@ -448,9 +448,9 @@
   margin-left: auto;
   padding: 12px 28px;
   border-radius: 999px;
-  border: 1.5px solid #141210;
-  background: linear-gradient(135deg, #FFB800 0%, #FF8A00 100%);
-  color: #000000;
+  border:1.5px solid #141210;
+  background: #F5B921;
+  color: #141210;
   font-weight: 800;
   text-decoration: none;
   box-shadow: 3px 3px 0 #141210;
@@ -491,9 +491,9 @@
   display: grid;
   margin-bottom: 24px;
   padding: 28px;
-  border-radius: 28px;
+  border-radius:0;
   background: #FFFFFF;
-  border: 1.5px solid #141210;
+  border:1.5px solid #141210;
   box-shadow: 4px 4px 0 #141210;
   grid-template-columns: repeat(3, 1fr);
 }
@@ -537,8 +537,8 @@
 
 .chart i {
   width: 10%;
-  border-radius: 14px 14px 0 0;
-  background: linear-gradient(#FFB800 0%, #0B6B44 100%);
+  border-radius:0;
+  background: linear-gradient(#F5B921 0%, #0B6B44 100%);
   transition: height 400ms ease;
 }
 
@@ -569,9 +569,9 @@
   gap: 6px;
   padding: 14px;
   border-radius: 999px;
-  border: 1.5px solid #141210;
-  background: linear-gradient(135deg, #FFB800 0%, #FF8A00 100%);
-  color: #000000;
+  border:1.5px solid #141210;
+  background: #F5B921;
+  color: #141210;
   text-align: center;
   font-weight: 800;
   box-shadow: 3px 3px 0 #141210;
@@ -646,8 +646,8 @@
   appearance: none;
   width: 52px;
   height: 28px;
-  border-radius: 30px;
-  border: 1.5px solid #141210;
+  border-radius:0;
+  border:1.5px solid #141210;
   background: #E2E8F0;
   cursor: pointer;
   transition: background-color 160ms ease;
@@ -666,15 +666,15 @@
   padding: 22px;
   align-items: center;
   justify-content: space-between;
-  border-radius: 18px;
+  border-radius:0;
   background: #F6EBDB;
-  border: 1.5px solid #141210;
+  border:1.5px solid #141210;
 }
 
 .logout button {
   padding: 12px 24px;
   border-radius: 999px;
-  border: 1.5px solid #141210;
+  border:1.5px solid #141210;
   background: #EF4444;
   color: #FFFFFF;
   font-weight: 800;
@@ -707,9 +707,9 @@
     margin-top: 20px;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    border-radius: 18px;
+    border-radius:0;
     border-left: none;
-    border: 1.5px solid #141210;
+    border:1.5px solid #141210;
   }
   .mentorCard > aside > span,
   .mentorCard > aside > a {
@@ -732,7 +732,7 @@
   }
   .mentorCard {
     padding: 20px;
-    border-radius: 20px;
+    border-radius:0;
   }
   .mentorCard dl {
     grid-template-columns: 1fr;
@@ -744,7 +744,7 @@
     min-height: 140px;
     margin: 0 10px 20px;
     padding: 20px 16px;
-    border-radius: 24px;
+    border-radius:0;
   }
   .profileName img {
     width: 64px;
@@ -773,7 +773,7 @@
   }
   .stats {
     padding: 20px;
-    border-radius: 20px;
+    border-radius:0;
     grid-template-columns: 1fr;
   }
   .stats > div + div {

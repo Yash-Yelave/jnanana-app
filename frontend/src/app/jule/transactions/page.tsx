@@ -35,8 +35,8 @@ export default function JuleTransactionsPage() {
               justifyContent: "center",
               width: "40px",
               height: "40px",
-              borderRadius: "10px",
-              background: "#1E293B",
+              borderRadius: "0",
+              background: "#F6EBDB",
               color: "#fff",
               textDecoration: "none",
             }}
@@ -46,7 +46,7 @@ export default function JuleTransactionsPage() {
           </Link>
           <div>
             <h1 style={{ fontSize: "1.75rem", fontWeight: 800, margin: 0 }}>Jule Token Ledger</h1>
-            <p style={{ color: "#94A3B8", margin: 0, fontSize: "0.9rem" }}>
+            <p style={{ color: "#6A675F", margin: 0, fontSize: "0.9rem" }}>
               Complete history of your Jule Token allocations, mentorship requests, and refunds.
             </p>
           </div>
@@ -55,8 +55,8 @@ export default function JuleTransactionsPage() {
         {/* Balance Overview Card */}
         <div
           style={{
-            background: "linear-gradient(135deg, #1E293B 0%, #0F172A 100%)",
-            borderRadius: "20px",
+            background: "linear-gradient(135deg, #F6EBDB 0%, #141210 100%)",
+            borderRadius: "0",
             padding: "28px",
             border: "1px solid rgba(255, 184, 0, 0.3)",
             marginBottom: "32px",
@@ -65,16 +65,16 @@ export default function JuleTransactionsPage() {
             justifyContent: "space-between",
             alignItems: "center",
             gap: "20px",
-            boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3)",
+            boxShadow: "4px 4px 0 #141210",
           }}
         >
           <div>
-            <span style={{ fontSize: "0.875rem", color: "#94A3B8", textTransform: "uppercase", letterSpacing: "1px" }}>
+            <span style={{ fontSize: "0.875rem", color: "#6A675F", textTransform: "uppercase", letterSpacing: "1px" }}>
               Current Wallet Balance
             </span>
             <div style={{ display: "flex", alignItems: "center", gap: "10px", marginTop: "4px" }}>
-              <Sparkles size={28} color="#FFB800" />
-              <strong style={{ fontSize: "2.5rem", fontWeight: 800, color: "#FFB800" }}>
+              <Sparkles size={28} color="#F5B921" />
+              <strong style={{ fontSize: "2.5rem", fontWeight: 800, color: "#F5B921" }}>
                 {wallet?.balance ?? 0} Jule Tokens
               </strong>
             </div>
@@ -85,8 +85,8 @@ export default function JuleTransactionsPage() {
               href="/events"
               style={{
                 padding: "12px 20px",
-                borderRadius: "12px",
-                background: "linear-gradient(135deg, #FFB800 0%, #FF8A00 100%)",
+                borderRadius: "0",
+                background: "#F5B921",
                 color: "#000",
                 fontWeight: 700,
                 textDecoration: "none",
@@ -107,24 +107,24 @@ export default function JuleTransactionsPage() {
         </h2>
 
         {loading ? (
-          <div style={{ padding: "40px", textAlign: "center", color: "#94A3B8" }}>Loading transaction history...</div>
+          <div style={{ padding: "40px", textAlign: "center", color: "#6A675F" }}>Loading transaction history...</div>
         ) : error ? (
-          <div style={{ padding: "20px", background: "rgba(239, 68, 68, 0.15)", borderRadius: "12px", color: "#EF4444" }}>
+          <div style={{ padding: "20px", background: "rgba(239, 68, 68, 0.15)", borderRadius: "0", color: "#EF4444" }}>
             {error}
           </div>
         ) : transactions.length === 0 ? (
           <div
             style={{
               padding: "40px",
-              background: "#1E293B",
-              borderRadius: "16px",
+              background: "#F6EBDB",
+              borderRadius: "0",
               textAlign: "center",
-              color: "#94A3B8",
+              color: "#6A675F",
             }}
           >
-            <Clock size={36} color="#64748B" style={{ marginBottom: "12px" }} />
+            <Clock size={36} color="#6A675F" style={{ marginBottom: "12px" }} />
             <p style={{ margin: 0, fontSize: "1rem" }}>No Jule Token transactions recorded yet.</p>
-            <small style={{ color: "#64748B" }}>Check in to live events to claim 50 Jule Tokens!</small>
+            <small style={{ color: "#6A675F" }}>Check in to live events to claim 50 Jule Tokens!</small>
           </div>
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
@@ -139,8 +139,8 @@ export default function JuleTransactionsPage() {
                 <div
                   key={tx.id}
                   style={{
-                    background: "#1E293B",
-                    borderRadius: "14px",
+                    background: "#F6EBDB",
+                    borderRadius: "0",
                     padding: "18px 24px",
                     display: "flex",
                     alignItems: "center",
@@ -153,12 +153,12 @@ export default function JuleTransactionsPage() {
                       style={{
                         width: "44px",
                         height: "44px",
-                        borderRadius: "12px",
+                        borderRadius: "0",
                         background: isPositive ? "rgba(72, 187, 120, 0.15)" : "rgba(239, 68, 68, 0.15)",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        color: isPositive ? "#48BB78" : "#EF4444",
+                        color: isPositive ? "#0B6B44" : "#EF4444",
                       }}
                     >
                       {isPositive ? <ArrowDownRight size={22} /> : <ArrowUpRight size={22} />}
@@ -167,8 +167,8 @@ export default function JuleTransactionsPage() {
                       <strong style={{ fontSize: "1rem", display: "block", color: "#F8FAFC" }}>
                         {tx.notes || (isPositive ? "Jule Token Allocation" : "Mentorship Request")}
                       </strong>
-                      <span style={{ fontSize: "0.85rem", color: "#94A3B8" }}>
-                        Type: <span style={{ textTransform: "capitalize", color: "#CBD5E1" }}>{tx.transaction_type.replace(/_/g, " ")}</span> • {formattedDate}
+                      <span style={{ fontSize: "0.85rem", color: "#6A675F" }}>
+                        Type: <span style={{ textTransform: "capitalize", color: "#6A675F" }}>{tx.transaction_type.replace(/_/g, " ")}</span> • {formattedDate}
                       </span>
                     </div>
                   </div>
@@ -178,12 +178,12 @@ export default function JuleTransactionsPage() {
                       style={{
                         fontSize: "1.25rem",
                         fontWeight: 800,
-                        color: isPositive ? "#48BB78" : "#EF4444",
+                        color: isPositive ? "#0B6B44" : "#EF4444",
                       }}
                     >
                       {isPositive ? `+${tx.amount}` : tx.amount} Jule Tokens
                     </span>
-                    <span style={{ display: "block", fontSize: "0.75rem", color: "#64748B" }}>
+                    <span style={{ display: "block", fontSize: "0.75rem", color: "#6A675F" }}>
                       ID: {tx.id.slice(0, 8)}...
                     </span>
                   </div>

@@ -131,7 +131,7 @@ export function AppShell({
           style={{
             padding: "4px 10px",
             borderRadius: "9999px",
-            background: "linear-gradient(135deg, #FFB800 0%, #FF8A00 100%)",
+            background: "#F5B921",
             color: "#000",
             fontWeight: "700",
             fontSize: "0.75rem",
@@ -143,7 +143,7 @@ export function AppShell({
         </button>
         <NotificationBell />
         <Link href={profileTarget} aria-label="Open profile">
-          <Image src={avatar} alt={name} width={40} height={40} style={{ borderRadius: "50%", border: "1.5px solid #FFB800" }} />
+          <Image src={avatar} alt={name} width={40} height={40} style={{ borderRadius: "50%", border: "1.5px solid #F5B921" }} />
         </Link>
       </header>
 
@@ -166,12 +166,12 @@ export function AppShell({
               gap: "6px",
               padding: "6px 14px",
               borderRadius: "9999px",
-              background: "linear-gradient(135deg, #FFB800 0%, #FF8A00 100%)",
+              background: "#F5B921",
               color: "#000",
               fontWeight: "700",
               fontSize: "0.875rem",
               border: "none",
-              boxShadow: "0 2px 8px rgba(255, 184, 0, 0.3)",
+              boxShadow: "4px 4px 0 #141210",
               cursor: "pointer",
             }}
           >

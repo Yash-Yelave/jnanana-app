@@ -156,7 +156,7 @@ export function SchedulePage({ booking = false, mentorId }: { booking?: boolean;
             </div>
 
             {actionMsg && (
-              <p style={{ marginTop: "20px", padding: "12px 18px", borderRadius: "12px", background: "#efffde", color: "#5c9822", fontWeight: 800 }}>
+              <p style={{ marginTop: "20px", padding: "12px 18px", borderRadius: "0", background: "#efffde", color: "#5c9822", fontWeight: 800 }}>
                 ✓ {actionMsg}
               </p>
             )}
@@ -180,7 +180,7 @@ export function SchedulePage({ booking = false, mentorId }: { booking?: boolean;
                           key={offer.id}
                           style={{
                             padding: "20px",
-                            borderRadius: "20px",
+                            borderRadius: "0",
                             background: "#fcfdfe",
                             border: "1.5px solid #dbeabe",
                             display: "grid",
@@ -206,7 +206,7 @@ export function SchedulePage({ booking = false, mentorId }: { booking?: boolean;
                                 </p>
                               )}
                               {offer.note && (
-                                <p style={{ margin: "8px 0 0", color: "#444", fontSize: "14px", background: "#f5f5f5", padding: "10px 14px", borderRadius: "12px" }}>
+                                <p style={{ margin: "8px 0 0", color: "#444", fontSize: "14px", background: "#f5f5f5", padding: "10px 14px", borderRadius: "0" }}>
                                   💬 <i>"{offer.note}"</i>
                                 </p>
                               )}
@@ -259,7 +259,7 @@ export function SchedulePage({ booking = false, mentorId }: { booking?: boolean;
                         key={b.id}
                         style={{
                           padding: "18px 20px",
-                          borderRadius: "20px",
+                          borderRadius: "0",
                           background: "#efffde",
                           border: "1.5px solid #a3dc58",
                           display: "flex",

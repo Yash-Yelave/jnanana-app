@@ -164,7 +164,7 @@ export function AdminDashboard() {
   const pendingCount = allMentors.filter((m) => m.approval_status === "pending").length;
 
   return (
-    <main className={styles.page} style={{ background: "#0F172A", minHeight: "100vh", color: "#F8FAFC", padding: "24px" }}>
+    <main className={styles.page}>
       <header style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "32px", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: "16px" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
           <Brand />
@@ -175,8 +175,8 @@ export function AdminDashboard() {
             href="/dashboard"
             style={{
               padding: "8px 16px",
-              borderRadius: "8px",
-              background: "linear-gradient(135deg, #FFB800 0%, #FF8A00 100%)",
+              borderRadius: "0",
+              background: "#F5B921",
               color: "#000",
               fontWeight: 700,
               textDecoration: "none",
@@ -190,11 +190,12 @@ export function AdminDashboard() {
             onClick={handleSignOut}
             style={{
               padding: "8px 16px",
-              borderRadius: "8px",
-              background: "#EF4444",
+              borderRadius: "0",
+              background: "#D6206A",
               color: "#fff",
               fontWeight: 700,
-              border: 0,
+              border: "1.5px solid #141210",
+              boxShadow: "3px 3px 0 #141210",
               cursor: "pointer",
               fontSize: "14px",
             }}
@@ -205,7 +206,7 @@ export function AdminDashboard() {
       </header>
 
       {message && (
-        <div style={{ padding: "12px 20px", borderRadius: "8px", background: "rgba(255, 184, 0, 0.15)", border: "1px solid #FFB800", color: "#FFB800", marginBottom: "24px" }}>
+        <div style={{ padding: "12px 20px", borderRadius: "0", background: "rgba(255, 184, 0, 0.15)", border: "1px solid #F5B921", color: "#F5B921", marginBottom: "24px" }}>
           {message}
         </div>
       )}
@@ -218,9 +219,9 @@ export function AdminDashboard() {
             onClick={() => setActiveTab(tab)}
             style={{
               padding: "10px 20px",
-              borderRadius: "8px",
-              background: activeTab === tab ? "#FFB800" : "#1E293B",
-              color: activeTab === tab ? "#000" : "#94A3B8",
+              borderRadius: "0",
+              background: activeTab === tab ? "#F5B921" : "#F6EBDB",
+              color: activeTab === tab ? "#000" : "#6A675F",
               fontWeight: 700,
               border: "none",
               cursor: "pointer",
@@ -245,24 +246,24 @@ export function AdminDashboard() {
           <h2 style={{ fontSize: "1.25rem", marginBottom: "16px" }}>Platform Overview Metrics</h2>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: "16px" }}>
             {[
-              { label: "Total Users", val: metrics?.total_users ?? 0, color: "#3B82F6" },
+              { label: "Total Users", val: metrics?.total_users ?? 0, color: "#0B6B44" },
               { label: "Total Mentors", val: metrics?.total_mentors ?? 0, color: "#10B981" },
               { label: "Active Events", val: metrics?.active_events ?? 0, color: "#F59E0B" },
               { label: "Event Participants", val: metrics?.event_participants ?? 0, color: "#8B5CF6" },
               { label: "Pending Requests", val: metrics?.pending_requests ?? 0, color: "#EC4899" },
-              { label: "Jule Tokens Issued", val: metrics?.jule_tokens_issued ?? 0, color: "#EAB308" },
-              { label: "Jule Tokens Spent", val: metrics?.jule_tokens_spent ?? 0, color: "#6366F1" },
+              { label: "Jule Tokens Issued", val: metrics?.jule_tokens_issued ?? 0, color: "#F5B921" },
+              { label: "Jule Tokens Spent", val: metrics?.jule_tokens_spent ?? 0, color: "#0B6B44" },
             ].map((m) => (
               <div
                 key={m.label}
                 style={{
-                  background: "#1E293B",
-                  borderRadius: "12px",
+                  background: "#F6EBDB",
+                  borderRadius: "0",
                   padding: "20px",
                   borderLeft: `4px solid ${m.color}`,
                 }}
               >
-                <span style={{ fontSize: "0.875rem", color: "#94A3B8", display: "block" }}>{m.label}</span>
+                <span style={{ fontSize: "0.875rem", color: "#6A675F", display: "block" }}>{m.label}</span>
                 <strong style={{ fontSize: "1.75rem", fontWeight: 800 }}>{m.val}</strong>
               </div>
             ))}
@@ -272,7 +273,7 @@ export function AdminDashboard() {
 
       {/* TAB 2: MENTOR APPROVALS */}
       {activeTab === "mentors" && (
-        <section style={{ background: "#1E293B", padding: "24px", borderRadius: "12px" }}>
+        <section style={{ background: "#F6EBDB", padding: "24px", borderRadius: "0" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
             <h2 style={{ fontSize: "1.25rem", margin: 0 }}>Mentor Application Approvals</h2>
             <div style={{ display: "flex", gap: "8px" }}>
@@ -282,9 +283,9 @@ export function AdminDashboard() {
                   onClick={() => setMentorFilter(f)}
                   style={{
                     padding: "6px 14px",
-                    borderRadius: "6px",
-                    background: mentorFilter === f ? "#38BDF8" : "#0F172A",
-                    color: mentorFilter === f ? "#000" : "#94A3B8",
+                    borderRadius: "0",
+                    background: mentorFilter === f ? "#38BDF8" : "#141210",
+                    color: mentorFilter === f ? "#000" : "#6A675F",
                     fontWeight: 600,
                     fontSize: "0.85rem",
                     border: "none",
@@ -300,7 +301,7 @@ export function AdminDashboard() {
 
           <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
             {filteredMentors.length === 0 ? (
-              <p style={{ color: "#94A3B8", textAlign: "center", padding: "30px 0" }}>
+              <p style={{ color: "#6A675F", textAlign: "center", padding: "30px 0" }}>
                 No mentor applications found for filter &quot;{mentorFilter}&quot;.
               </p>
             ) : (
@@ -313,9 +314,9 @@ export function AdminDashboard() {
                   <div
                     key={m.profile_id}
                     style={{
-                      background: "#0F172A",
+                      background: "#fff",
                       padding: "20px",
-                      borderRadius: "12px",
+                      borderRadius: "0",
                       border: "1px solid rgba(255,255,255,0.08)",
                       display: "flex",
                       flexWrap: "wrap",
@@ -341,8 +342,8 @@ export function AdminDashboard() {
                               : isRejected
                               ? "rgba(239, 68, 68, 0.2)"
                               : "rgba(255, 184, 0, 0.2)",
-                            color: isApproved ? "#48BB78" : isRejected ? "#EF4444" : "#FFB800",
-                            border: `1px solid ${isApproved ? "#48BB78" : isRejected ? "#EF4444" : "#FFB800"}`,
+                            color: isApproved ? "#0B6B44" : isRejected ? "#EF4444" : "#F5B921",
+                            border: `1px solid ${isApproved ? "#0B6B44" : isRejected ? "#EF4444" : "#F5B921"}`,
                           }}
                         >
                           {m.approval_status}
@@ -352,7 +353,7 @@ export function AdminDashboard() {
                       <p style={{ margin: "4px 0 8px", color: "#38BDF8", fontSize: "0.9rem", fontWeight: 600 }}>
                         {m.headline || "Mentor Application"}
                       </p>
-                      {m.bio && <p style={{ margin: "0 0 8px", color: "#94A3B8", fontSize: "0.85rem", maxWidth: "600px" }}>{m.bio}</p>}
+                      {m.bio && <p style={{ margin: "0 0 8px", color: "#6A675F", fontSize: "0.85rem", maxWidth: "600px" }}>{m.bio}</p>}
 
                       {m.professions && m.professions.length > 0 && (
                         <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
@@ -361,9 +362,9 @@ export function AdminDashboard() {
                               key={prof}
                               style={{
                                 padding: "2px 8px",
-                                borderRadius: "4px",
-                                background: "#1E293B",
-                                color: "#CBD5E1",
+                                borderRadius: "0",
+                                background: "#F6EBDB",
+                                color: "#6A675F",
                                 fontSize: "0.75rem",
                               }}
                             >
@@ -383,7 +384,7 @@ export function AdminDashboard() {
                             onClick={() => handleApproveMentor(m.profile_id)}
                             style={{
                               padding: "10px 20px",
-                              borderRadius: "8px",
+                              borderRadius: "0",
                               background: "#10B981",
                               color: "#000",
                               fontWeight: 700,
@@ -400,7 +401,7 @@ export function AdminDashboard() {
                             onClick={() => handleRejectMentor(m.profile_id)}
                             style={{
                               padding: "10px 20px",
-                              borderRadius: "8px",
+                              borderRadius: "0",
                               background: "rgba(239, 68, 68, 0.15)",
                               color: "#EF4444",
                               border: "1px solid #EF4444",
@@ -414,7 +415,7 @@ export function AdminDashboard() {
                         </>
                       )}
                       {isApproved && (
-                        <span style={{ color: "#48BB78", fontWeight: 600, fontSize: "0.875rem" }}>
+                        <span style={{ color: "#0B6B44", fontWeight: 600, fontSize: "0.875rem" }}>
                           ✓ Mentor Approved & Active
                         </span>
                       )}
@@ -434,7 +435,7 @@ export function AdminDashboard() {
 
       {/* TAB 3: EVENT MANAGEMENT */}
       {activeTab === "events" && (
-        <section style={{ maxWidth: "600px", background: "#1E293B", padding: "24px", borderRadius: "12px" }}>
+        <section style={{ maxWidth: "600px", background: "#F6EBDB", padding: "24px", borderRadius: "0" }}>
           <h2 style={{ fontSize: "1.25rem", marginBottom: "16px" }}>Create Event (SRS Phase 1)</h2>
           <form onSubmit={handleCreateEvent} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
             <div>
@@ -445,7 +446,7 @@ export function AdminDashboard() {
                 placeholder="e.g. Jnanana Summit 2026"
                 value={eventName}
                 onChange={(e) => setEventName(e.target.value)}
-                style={{ width: "100%", padding: "10px", borderRadius: "6px", background: "#0F172A", border: "1px solid #334155", color: "#fff" }}
+                style={{ width: "100%", padding: "10px", borderRadius: "0", background: "#fff", border: "1.5px solid #141210", color: "#141210" }}
               />
             </div>
             <div>
@@ -455,7 +456,7 @@ export function AdminDashboard() {
                 placeholder="jnanana-summit-2026"
                 value={eventSlug}
                 onChange={(e) => setEventSlug(e.target.value)}
-                style={{ width: "100%", padding: "10px", borderRadius: "6px", background: "#0F172A", border: "1px solid #334155", color: "#fff" }}
+                style={{ width: "100%", padding: "10px", borderRadius: "0", background: "#fff", border: "1.5px solid #141210", color: "#141210" }}
               />
             </div>
             <div>
@@ -465,7 +466,7 @@ export function AdminDashboard() {
                 required
                 value={eventDate}
                 onChange={(e) => setEventDate(e.target.value)}
-                style={{ width: "100%", padding: "10px", borderRadius: "6px", background: "#0F172A", border: "1px solid #334155", color: "#fff" }}
+                style={{ width: "100%", padding: "10px", borderRadius: "0", background: "#fff", border: "1.5px solid #141210", color: "#141210" }}
               />
             </div>
             <div>
@@ -475,7 +476,7 @@ export function AdminDashboard() {
                 placeholder="e.g. Main Auditorium / Hybrid"
                 value={eventLoc}
                 onChange={(e) => setEventLoc(e.target.value)}
-                style={{ width: "100%", padding: "10px", borderRadius: "6px", background: "#0F172A", border: "1px solid #334155", color: "#fff" }}
+                style={{ width: "100%", padding: "10px", borderRadius: "0", background: "#fff", border: "1.5px solid #141210", color: "#141210" }}
               />
             </div>
             <div>
@@ -486,7 +487,7 @@ export function AdminDashboard() {
                 placeholder="Describe the mentorship event..."
                 value={eventDesc}
                 onChange={(e) => setEventDesc(e.target.value)}
-                style={{ width: "100%", padding: "10px", borderRadius: "6px", background: "#0F172A", border: "1px solid #334155", color: "#fff" }}
+                style={{ width: "100%", padding: "10px", borderRadius: "0", background: "#fff", border: "1.5px solid #141210", color: "#141210" }}
               />
             </div>
             <button
@@ -494,8 +495,8 @@ export function AdminDashboard() {
               disabled={creatingEvent}
               style={{
                 padding: "12px",
-                borderRadius: "8px",
-                background: "linear-gradient(135deg, #FFB800 0%, #FF8A00 100%)",
+                borderRadius: "0",
+                background: "#F5B921",
                 color: "#000",
                 fontWeight: 700,
                 border: "none",
@@ -510,7 +511,7 @@ export function AdminDashboard() {
 
       {/* TAB 4: TOKEN ALLOCATION CONTROLS */}
       {activeTab === "tokens" && (
-        <section style={{ maxWidth: "600px", background: "#1E293B", padding: "24px", borderRadius: "12px" }}>
+        <section style={{ maxWidth: "600px", background: "#F6EBDB", padding: "24px", borderRadius: "0" }}>
           <h2 style={{ fontSize: "1.25rem", marginBottom: "16px" }}>Grant / Deduct Jule Tokens</h2>
           <form onSubmit={handleAdjustTokens} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
             <div>
@@ -518,7 +519,7 @@ export function AdminDashboard() {
               <select
                 value={tokenUserId}
                 onChange={(e) => setTokenUserId(e.target.value)}
-                style={{ width: "100%", padding: "10px", borderRadius: "6px", background: "#0F172A", border: "1px solid #334155", color: "#fff" }}
+                style={{ width: "100%", padding: "10px", borderRadius: "0", background: "#fff", border: "1.5px solid #141210", color: "#141210" }}
               >
                 <option value="">-- Choose User --</option>
                 {users.data?.items.map((u) => (
@@ -535,7 +536,7 @@ export function AdminDashboard() {
                 required
                 value={tokenAmount}
                 onChange={(e) => setTokenAmount(Number(e.target.value))}
-                style={{ width: "100%", padding: "10px", borderRadius: "6px", background: "#0F172A", border: "1px solid #334155", color: "#fff" }}
+                style={{ width: "100%", padding: "10px", borderRadius: "0", background: "#fff", border: "1.5px solid #141210", color: "#141210" }}
               />
             </div>
             <div>
@@ -544,7 +545,7 @@ export function AdminDashboard() {
                 type="text"
                 value={tokenNotes}
                 onChange={(e) => setTokenNotes(e.target.value)}
-                style={{ width: "100%", padding: "10px", borderRadius: "6px", background: "#0F172A", border: "1px solid #334155", color: "#fff" }}
+                style={{ width: "100%", padding: "10px", borderRadius: "0", background: "#fff", border: "1.5px solid #141210", color: "#141210" }}
               />
             </div>
             <button
@@ -552,8 +553,8 @@ export function AdminDashboard() {
               disabled={adjustingTokens}
               style={{
                 padding: "12px",
-                borderRadius: "8px",
-                background: "linear-gradient(135deg, #FFB800 0%, #FF8A00 100%)",
+                borderRadius: "0",
+                background: "#F5B921",
                 color: "#000",
                 fontWeight: 700,
                 border: "none",
@@ -575,9 +576,9 @@ export function AdminDashboard() {
               <div
                 key={profile.id}
                 style={{
-                  background: "#1E293B",
+                  background: "#F6EBDB",
                   padding: "16px",
-                  borderRadius: "8px",
+                  borderRadius: "0",
                   display: "flex",
                   justifyContent: "space-between",
                   alignItems: "center",
@@ -585,7 +586,7 @@ export function AdminDashboard() {
               >
                 <div>
                   <strong style={{ fontSize: "1rem", display: "block" }}>{profile.first_name} {profile.last_name}</strong>
-                  <span style={{ fontSize: "0.85rem", color: "#94A3B8" }}>
+                  <span style={{ fontSize: "0.85rem", color: "#6A675F" }}>
                     Role: <strong>{profile.role}</strong> | ID: {profile.id}
                   </span>
                 </div>
@@ -596,10 +597,10 @@ export function AdminDashboard() {
                   }}
                   style={{
                     padding: "6px 12px",
-                    borderRadius: "6px",
+                    borderRadius: "0",
                     background: "rgba(255,184,0,0.15)",
-                    color: "#FFB800",
-                    border: "1px solid #FFB800",
+                    color: "#F5B921",
+                    border: "1px solid #F5B921",
                     fontWeight: 600,
                     cursor: "pointer",
                   }}

@@ -309,7 +309,7 @@ export function MentorBookingsPage() {
                   placeholder="e.g. React & Next.js Architecture Deep Dive"
                   required
                   minLength={3}
-                  style={{ height: "52px", padding: "0 18px", borderRadius: "12px", border: "1px solid #d8d8d8", outline: "none", fontSize: "16px" }}
+                  style={{ height: "52px", padding: "0 18px", borderRadius: "0", border: "1px solid #d8d8d8", outline: "none", fontSize: "16px" }}
                 />
               </label>
 
@@ -320,7 +320,7 @@ export function MentorBookingsPage() {
                   placeholder="Describe what you want to learn or teach in this session..."
                   required
                   minLength={10}
-                  style={{ minHeight: "120px", padding: "14px 18px", borderRadius: "12px", border: "1px solid #d8d8d8", outline: "none", fontSize: "15px", fontFamily: "inherit" }}
+                  style={{ minHeight: "120px", padding: "14px 18px", borderRadius: "0", border: "1px solid #d8d8d8", outline: "none", fontSize: "15px", fontFamily: "inherit" }}
                 />
               </label>
 
@@ -332,7 +332,7 @@ export function MentorBookingsPage() {
                   defaultValue={250}
                   min="1"
                   required
-                  style={{ height: "52px", padding: "0 18px", borderRadius: "12px", border: "1px solid #d8d8d8", outline: "none", fontSize: "16px" }}
+                  style={{ height: "52px", padding: "0 18px", borderRadius: "0", border: "1px solid #d8d8d8", outline: "none", fontSize: "16px" }}
                 />
               </label>
 
@@ -387,7 +387,7 @@ export function MentorBookingsPage() {
                       setSelectedIndex(Number(e.target.value));
                       setIsEditing(false);
                     }}
-                    style={{ padding: "10px 16px", borderRadius: "12px", border: "1px solid #d8d8d8", outline: "none", fontSize: "14px" }}
+                    style={{ padding: "10px 16px", borderRadius: "0", border: "1px solid #d8d8d8", outline: "none", fontSize: "14px" }}
                   >
                     {requests.map((item, index) => (
                       <option key={item.id} value={index}>
@@ -417,7 +417,7 @@ export function MentorBookingsPage() {
                       defaultValue={request.title}
                       required
                       minLength={3}
-                      style={{ height: "46px", padding: "0 14px", borderRadius: "10px", border: "1px solid #ddd", fontSize: "15px" }}
+                      style={{ height: "46px", padding: "0 14px", borderRadius: "0", border: "1px solid #ddd", fontSize: "15px" }}
                     />
                   </label>
                   <label style={{ display: "grid", gap: "6px", fontWeight: "700" }}>
@@ -427,7 +427,7 @@ export function MentorBookingsPage() {
                       defaultValue={request.description}
                       required
                       minLength={10}
-                      style={{ minHeight: "100px", padding: "12px", borderRadius: "10px", border: "1px solid #ddd", fontSize: "14px", fontFamily: "inherit" }}
+                      style={{ minHeight: "100px", padding: "12px", borderRadius: "0", border: "1px solid #ddd", fontSize: "14px", fontFamily: "inherit" }}
                     />
                   </label>
                   <label style={{ display: "grid", gap: "6px", fontWeight: "700" }}>
@@ -438,7 +438,7 @@ export function MentorBookingsPage() {
                       defaultValue={request.proposed_amount_minor / 100}
                       min="1"
                       required
-                      style={{ height: "46px", padding: "0 14px", borderRadius: "10px", border: "1px solid #ddd", fontSize: "15px" }}
+                      style={{ height: "46px", padding: "0 14px", borderRadius: "0", border: "1px solid #ddd", fontSize: "15px" }}
                     />
                   </label>
                   <button
@@ -498,7 +498,7 @@ export function MentorBookingsPage() {
                     defaultValue={(request.proposed_amount_minor / 100)}
                     min="1"
                     required
-                    style={{ height: "48px", padding: "0 16px", borderRadius: "12px", border: "1px solid #ddd", fontSize: "15px" }}
+                    style={{ height: "48px", padding: "0 16px", borderRadius: "0", border: "1px solid #ddd", fontSize: "15px" }}
                   />
                 </label>
 
@@ -508,7 +508,7 @@ export function MentorBookingsPage() {
                     name="note"
                     defaultValue="Ready to mentor this session at the proposed topic depth."
                     required
-                    style={{ minHeight: "90px", padding: "12px", borderRadius: "12px", border: "1px solid #ddd", fontSize: "14px", fontFamily: "inherit" }}
+                    style={{ minHeight: "90px", padding: "12px", borderRadius: "0", border: "1px solid #ddd", fontSize: "14px", fontFamily: "inherit" }}
                   />
                 </label>
 

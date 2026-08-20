@@ -86,7 +86,7 @@ export default function DashboardPage() {
         <div
           style={{
             background: "#FFFFFF",
-            borderRadius: "16px",
+            borderRadius: "0",
             padding: "20px",
             border: "1.5px solid #141210",
             boxShadow: "3px 3px 0 #141210",
@@ -112,7 +112,7 @@ export default function DashboardPage() {
                 style={{
                   width: "100%",
                   padding: "12px 14px 12px 42px",
-                  borderRadius: "10px",
+                  borderRadius: "0",
                   border: "1.5px solid #141210",
                   fontSize: "0.925rem",
                   outline: "none",
@@ -148,7 +148,7 @@ export default function DashboardPage() {
                 onChange={(e) => setMinRating(Number(e.target.value))}
                 style={{
                   padding: "12px 16px",
-                  borderRadius: "10px",
+                  borderRadius: "0",
                   border: "1.5px solid #141210",
                   fontSize: "0.9rem",
                   fontWeight: 600,
@@ -178,7 +178,7 @@ export default function DashboardPage() {
                   onClick={() => setSelectedCategory(cat.id)}
                   style={{
                     padding: "6px 14px",
-                    borderRadius: "99px",
+                    borderRadius: "0",
                     border: "1.5px solid #141210",
                     background: active ? "#0B6B44" : "#F6EBDB",
                     color: active ? "#FFFFFF" : "#141210",
@@ -200,7 +200,7 @@ export default function DashboardPage() {
                 style={{
                   marginLeft: "auto",
                   padding: "6px 12px",
-                  borderRadius: "8px",
+                  borderRadius: "0",
                   background: "transparent",
                   border: "1px solid #D6206A",
                   color: "#D6206A",
@@ -230,7 +230,7 @@ export default function DashboardPage() {
           <div
             style={{
               background: "#FFFFFF",
-              borderRadius: "20px",
+              borderRadius: "0",
               padding: "48px 24px",
               textAlign: "center",
               border: "1.5px solid #141210",
@@ -246,7 +246,7 @@ export default function DashboardPage() {
               onClick={resetFilters}
               style={{
                 padding: "10px 20px",
-                borderRadius: "10px",
+                borderRadius: "0",
                 background: "#0B6B44",
                 color: "#FFF",
                 fontWeight: 700,
@@ -270,7 +270,7 @@ export default function DashboardPage() {
                 key={m.id}
                 style={{
                   background: "#FFFFFF",
-                  borderRadius: "20px",
+                  borderRadius: "0",
                   padding: "24px",
                   border: "1.5px solid #141210",
                   boxShadow: "4px 4px 0 #141210",
@@ -314,7 +314,7 @@ export default function DashboardPage() {
                         key={tag}
                         style={{
                           padding: "4px 10px",
-                          borderRadius: "99px",
+                          borderRadius: "0",
                           border: "1px solid #141210",
                           background: "#F6EBDB",
                           fontSize: "0.75rem",
@@ -333,7 +333,7 @@ export default function DashboardPage() {
                   href={`/mentors/${m.id}?request=true`}
                   style={{
                     padding: "12px 20px",
-                    borderRadius: "12px",
+                    borderRadius: "0",
                     background: "#0B6B44",
                     color: "#FFF",
                     fontWeight: 700,

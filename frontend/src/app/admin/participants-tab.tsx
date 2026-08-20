@@ -82,7 +82,7 @@ export function ParticipantsTab() {
       <h2 style={{ fontSize: "1.25rem", marginBottom: "16px" }}>Event Participants &amp; Check-in</h2>
 
       {events.length === 0 ? (
-        <p style={{ color: "#94A3B8" }}>No events yet. Create one from the Events tab first.</p>
+        <p style={{ color: "#6A675F" }}>No events yet. Create one from the Events tab first.</p>
       ) : (
         <>
           <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "12px", marginBottom: "20px" }}>
@@ -91,10 +91,10 @@ export function ParticipantsTab() {
               onChange={(e) => setEventId(e.target.value)}
               style={{
                 padding: "10px 14px",
-                borderRadius: "8px",
-                background: "#0F172A",
-                border: "1px solid #334155",
-                color: "#fff",
+                borderRadius: "0",
+                background: "#fff",
+                border: "1.5px solid #141210",
+                color: "#141210",
                 minWidth: "260px",
               }}
             >
@@ -111,8 +111,8 @@ export function ParticipantsTab() {
                 onClick={() => void togglePublished(selected.status !== "published")}
                 style={{
                   padding: "10px 18px",
-                  borderRadius: "8px",
-                  background: selected.status === "published" ? "#334155" : "#FFB800",
+                  borderRadius: "0",
+                  background: selected.status === "published" ? "#141210" : "#F5B921",
                   color: selected.status === "published" ? "#fff" : "#000",
                   fontWeight: 700,
                   border: "none",
@@ -123,22 +123,22 @@ export function ParticipantsTab() {
               </button>
             )}
 
-            <span style={{ color: "#94A3B8", fontSize: "0.9rem" }}>
+            <span style={{ color: "#6A675F", fontSize: "0.9rem" }}>
               {checkedIn} of {participants?.length ?? 0} checked in
             </span>
           </div>
 
-          {note && <p style={{ color: "#48BB78", fontWeight: 600, marginBottom: "12px" }}>{note}</p>}
+          {note && <p style={{ color: "#0B6B44", fontWeight: 600, marginBottom: "12px" }}>{note}</p>}
           {error && (
             <p style={{ color: "#EF4444", marginBottom: "12px" }} role="alert">
               {error}
             </p>
           )}
 
-          {!participants && <p style={{ color: "#94A3B8" }}>Loading participants…</p>}
+          {!participants && <p style={{ color: "#6A675F" }}>Loading participants…</p>}
 
           {participants?.length === 0 && (
-            <p style={{ color: "#94A3B8" }}>
+            <p style={{ color: "#6A675F" }}>
               Nobody has registered for this event yet. Participants appear here once they open the event.
             </p>
           )}
@@ -147,7 +147,7 @@ export function ParticipantsTab() {
             <div style={{ overflowX: "auto" }}>
               <table style={{ width: "100%", borderCollapse: "collapse", minWidth: "760px" }}>
                 <thead>
-                  <tr style={{ textAlign: "left", color: "#94A3B8", fontSize: "0.8rem" }}>
+                  <tr style={{ textAlign: "left", color: "#6A675F", fontSize: "0.8rem" }}>
                     <th style={{ padding: "10px" }}>Name</th>
                     <th style={{ padding: "10px" }}>Phone</th>
                     <th style={{ padding: "10px" }}>Role</th>
@@ -161,10 +161,10 @@ export function ParticipantsTab() {
                     const name = `${p.first_name} ${p.last_name}`;
                     const isIn = p.checkin_status === "checked_in";
                     return (
-                      <tr key={p.user_id} style={{ borderTop: "1px solid #1E293B" }}>
+                      <tr key={p.user_id} style={{ borderTop: "1px solid #F6EBDB" }}>
                         <td style={{ padding: "12px 10px", fontWeight: 600 }}>{name}</td>
-                        <td style={{ padding: "12px 10px", color: "#94A3B8" }}>{p.phone ?? "—"}</td>
-                        <td style={{ padding: "12px 10px", color: "#94A3B8", textTransform: "capitalize" }}>
+                        <td style={{ padding: "12px 10px", color: "#6A675F" }}>{p.phone ?? "—"}</td>
+                        <td style={{ padding: "12px 10px", color: "#6A675F", textTransform: "capitalize" }}>
                           {p.role}
                         </td>
                         <td style={{ padding: "12px 10px" }}>
@@ -175,13 +175,13 @@ export function ParticipantsTab() {
                               fontSize: "0.75rem",
                               fontWeight: 700,
                               background: isIn ? "rgba(72,187,120,.15)" : "rgba(148,163,184,.15)",
-                              color: isIn ? "#48BB78" : "#94A3B8",
+                              color: isIn ? "#0B6B44" : "#6A675F",
                             }}
                           >
                             {isIn ? "Checked in" : "Pending"}
                           </span>
                         </td>
-                        <td style={{ padding: "12px 10px", color: "#FFB800", fontWeight: 700 }}>
+                        <td style={{ padding: "12px 10px", color: "#F5B921", fontWeight: 700 }}>
                           {p.jule_balance}
                         </td>
                         <td style={{ padding: "12px 10px", textAlign: "right" }}>
@@ -192,8 +192,8 @@ export function ParticipantsTab() {
                               disabled={busyId === p.user_id}
                               style={{
                                 padding: "8px 16px",
-                                borderRadius: "8px",
-                                background: "#FFB800",
+                                borderRadius: "0",
+                                background: "#F5B921",
                                 color: "#000",
                                 fontWeight: 700,
                                 border: "none",

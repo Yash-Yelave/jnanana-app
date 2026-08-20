@@ -264,42 +264,42 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
             padding: "20px"
           }}>
             <div style={{
-              background: "#1E293B",
-              borderRadius: "20px",
+              background: "#F6EBDB",
+              borderRadius: "0",
               padding: "32px",
               maxWidth: "500px",
               width: "100%",
               border: "1px solid rgba(255, 184, 0, 0.3)",
-              color: "#fff"
+              color: "#141210"
             }}>
               <h2 style={{ fontSize: "1.5rem", fontWeight: "700", marginBottom: "12px" }}>
                 ⚡ Request Mentorship
               </h2>
-              <p style={{ color: "#94A3B8", marginBottom: "20px", lineHeight: 1.5 }}>
+              <p style={{ color: "#6A675F", marginBottom: "20px", lineHeight: 1.5 }}>
                 Use <strong>10 Jule Tokens</strong> to request a mentorship connection with <strong>{formattedName || "Mentor"}</strong>?
               </p>
 
               <div style={{
                 background: "rgba(255, 184, 0, 0.1)",
                 border: "1px solid rgba(255, 184, 0, 0.2)",
-                borderRadius: "12px",
+                borderRadius: "0",
                 padding: "16px",
                 marginBottom: "20px",
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center"
               }}>
-                <span style={{ fontSize: "0.9rem", color: "#E2E8F0" }}>Your Jule Token balance:</span>
-                <strong style={{ fontSize: "1.2rem", color: "#FFB800" }}>⚡ {currentBalance} Jule Tokens</strong>
+                <span style={{ fontSize: "0.9rem", color: "#141210" }}>Your Jule Token balance:</span>
+                <strong style={{ fontSize: "1.2rem", color: "#F5B921" }}>⚡ {currentBalance} Jule Tokens</strong>
               </div>
 
               {currentBalance < 10 ? (
-                <div style={{ padding: "12px", borderRadius: "8px", background: "rgba(239, 68, 68, 0.2)", border: "1px solid #EF4444", color: "#EF4444", marginBottom: "20px" }}>
+                <div style={{ padding: "12px", borderRadius: "0", background: "rgba(239, 68, 68, 0.2)", border: "1px solid #EF4444", color: "#EF4444", marginBottom: "20px" }}>
                   Insufficient Jule Tokens. You have {currentBalance}, but 10 are required. Check in at an event to claim 50.
                 </div>
               ) : (
                 <div style={{ marginBottom: "20px" }}>
-                  <label style={{ display: "block", marginBottom: "8px", fontSize: "0.9rem", color: "#CBD5E1" }}>
+                  <label style={{ display: "block", marginBottom: "8px", fontSize: "0.9rem", color: "#6A675F" }}>
                     Add a note for {formattedName} (Optional):
                   </label>
                   <textarea
@@ -310,16 +310,16 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
                     style={{
                       width: "100%",
                       padding: "10px",
-                      borderRadius: "8px",
-                      background: "#0F172A",
-                      border: "1px solid #334155",
-                      color: "#fff"
+                      borderRadius: "0",
+                      background: "#fff",
+                border: "1.5px solid #141210",
+                color: "#141210"
                     }}
                   />
                 </div>
               )}
 
-              {requestMsg && <div style={{ color: "#48BB78", marginBottom: "16px", fontWeight: "600" }}>{requestMsg}</div>}
+              {requestMsg && <div style={{ color: "#0B6B44", marginBottom: "16px", fontWeight: "600" }}>{requestMsg}</div>}
               {requestError && <div style={{ color: "#EF4444", marginBottom: "16px" }}>{requestError}</div>}
 
               <div style={{ display: "flex", gap: "12px", justifyContent: "flex-end" }}>
@@ -327,8 +327,8 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
                   onClick={() => setShowJuleModal(false)}
                   style={{
                     padding: "10px 20px",
-                    borderRadius: "10px",
-                    background: "#334155",
+                    borderRadius: "0",
+                    background: "#fff",
                     color: "#fff",
                     border: "none",
                     cursor: "pointer"
@@ -342,8 +342,8 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
                     disabled={submittingRequest}
                     style={{
                       padding: "10px 24px",
-                      borderRadius: "10px",
-                      background: "linear-gradient(135deg, #FFB800 0%, #FF8A00 100%)",
+                      borderRadius: "0",
+                      background: "#F5B921",
                       color: "#000",
                       fontWeight: "700",
                       border: "none",
@@ -384,8 +384,8 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
                     onClick={() => setShowJuleModal(true)}
                     style={{
                       padding: "12px 24px",
-                      borderRadius: "12px",
-                      background: "linear-gradient(135deg, #FFB800 0%, #FF8A00 100%)",
+                      borderRadius: "0",
+                      background: "#F5B921",
                       color: "#000",
                       fontWeight: 700,
                       fontSize: "1rem",
@@ -394,7 +394,7 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
                       display: "flex",
                       alignItems: "center",
                       gap: "8px",
-                      boxShadow: "0 4px 14px rgba(255, 184, 0, 0.4)",
+                      boxShadow: "4px 4px 0 #141210",
                     }}
                   >
                     Request Mentorship (10 Jule Tokens)
@@ -422,7 +422,7 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
             
             {/* Logout Button */}
             {!mentorDetail && (
-              <div style={{ marginTop: "40px", paddingTop: "24px", borderTop: "1px solid #E2E8F0", textAlign: "center" }}>
+              <div style={{ marginTop: "40px", paddingTop: "24px", borderTop: "1px solid #141210", textAlign: "center" }}>
                 <button
                   type="button"
                   onClick={async () => {
@@ -433,7 +433,7 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
                   }}
                   style={{
                     padding: "12px 32px",
-                    borderRadius: "12px",
+                    borderRadius: "0",
                     background: "#EF4444",
                     color: "#FFFFFF",
                     fontWeight: 700,
@@ -443,7 +443,7 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
                     display: "inline-flex",
                     alignItems: "center",
                     gap: "8px",
-                    boxShadow: "0 4px 14px rgba(239, 68, 68, 0.3)",
+                    boxShadow: "4px 4px 0 #141210",
                     transition: "transform 0.15s ease",
                   }}
                 >
@@ -582,7 +582,7 @@ function Lessons({ mentorId }: { mentorId?: string }) {
   return (
     <div style={{ display: "grid", gap: "28px" }}>
       {actionMsg && (
-        <p style={{ padding: "14px 20px", borderRadius: "16px", background: "#efffde", color: "#5c9822", fontWeight: 800 }}>
+        <p style={{ padding: "14px 20px", borderRadius: "0", background: "#efffde", color: "#5c9822", fontWeight: 800 }}>
           ✓ {actionMsg}
         </p>
       )}
@@ -597,7 +597,7 @@ function Lessons({ mentorId }: { mentorId?: string }) {
               {requests.map((req) => {
                 const reqOffers = offers.filter((o) => o.request_id === req.id && o.status === "pending");
                 return (
-                  <div key={req.id} style={{ padding: "20px", borderRadius: "20px", border: "1px solid #eee", background: "#fafafa" }}>
+                  <div key={req.id} style={{ padding: "20px", borderRadius: "0", border: "1px solid #eee", background: "#fafafa" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                       <h3 style={{ margin: 0, fontSize: "18px" }}>{req.title}</h3>
                       <span style={{ padding: "4px 14px", borderRadius: "999px", background: req.status === "accepted" ? "#efffde" : "#e9e9e9", color: req.status === "accepted" ? "#5c9822" : "#333", fontWeight: 800, fontSize: "13px" }}>
@@ -613,7 +613,7 @@ function Lessons({ mentorId }: { mentorId?: string }) {
                       <div style={{ marginTop: "16px", paddingTop: "16px", borderTop: "1px solid #ddd" }}>
                         <h4 style={{ fontSize: "14px", color: "#555", marginBottom: "10px" }}>Offers Received from Mentors:</h4>
                         {reqOffers.map((off) => (
-                          <div key={off.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px", borderRadius: "14px", background: "#fff", border: "1px solid #e0e0e0" }}>
+                          <div key={off.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px", borderRadius: "0", background: "#fff", border: "1px solid #e0e0e0" }}>
                             <div>
                               <p style={{ margin: 0, fontWeight: 800, fontSize: "15px" }}>Rate: {off.currency} {(off.amount_minor / 100).toLocaleString()}</p>
                               {off.note && <small style={{ color: "#666" }}>"{off.note}"</small>}
