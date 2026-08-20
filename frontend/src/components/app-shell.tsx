@@ -20,20 +20,23 @@ import { publicAsset } from "@/lib/supabase/client";
 import { NotificationBell } from "@/components/notification-bell";
 import styles from "./app-shell.module.css";
 
+/* `short` is what the mobile bottom bar shows. Five labels have to share a
+   320px row, so anything longer than one word wraps to two lines and leaves
+   that one item taller than its neighbours. */
 const studentNav = [
-  { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { label: "Wallet", href: "/jule/transactions", icon: Sparkles },
-  { label: "My Requests", href: "/requests", icon: HeartHandshake },
-  { label: "Events", href: "/events", icon: Calendar },
-  { label: "Settings", href: "/settings", icon: Settings },
+  { label: "Dashboard", short: "Home", href: "/dashboard", icon: LayoutDashboard },
+  { label: "Wallet", short: "Wallet", href: "/jule/transactions", icon: Sparkles },
+  { label: "My Requests", short: "Requests", href: "/requests", icon: HeartHandshake },
+  { label: "Events", short: "Events", href: "/events", icon: Calendar },
+  { label: "Settings", short: "Settings", href: "/settings", icon: Settings },
 ] as const;
 
 const mentorNav = [
-  { label: "Dashboard", href: "/mentor/dashboard", icon: LayoutDashboard },
-  { label: "Wallet", href: "/jule/transactions", icon: Sparkles },
-  { label: "Requests", href: "/mentor/requests", icon: HeartHandshake },
-  { label: "Events", href: "/events", icon: Calendar },
-  { label: "Settings", href: "/settings", icon: Settings },
+  { label: "Dashboard", short: "Home", href: "/mentor/dashboard", icon: LayoutDashboard },
+  { label: "Wallet", short: "Wallet", href: "/jule/transactions", icon: Sparkles },
+  { label: "Requests", short: "Requests", href: "/mentor/requests", icon: HeartHandshake },
+  { label: "Events", short: "Events", href: "/events", icon: Calendar },
+  { label: "Settings", short: "Settings", href: "/settings", icon: Settings },
 ] as const;
 
 function Navigation({ active, mentor = false }: { active: string; mentor?: boolean }) {
@@ -69,7 +72,7 @@ function MobileBottomNav({ active, mentor = false }: { active: string; mentor?: 
 
   return (
     <nav className={styles.mobileBottomNav} aria-label="Mobile bottom navigation">
-      {links.map(({ label, href, icon: Icon }) => {
+      {links.map(({ label, short, href, icon: Icon }) => {
         const isActive = active === href;
         return (
           <Link
@@ -79,7 +82,7 @@ function MobileBottomNav({ active, mentor = false }: { active: string; mentor?: 
             aria-label={label}
           >
             <Icon size={22} className={styles.mobileNavIcon} />
-            <span className={styles.mobileNavLabel}>{label}</span>
+            <span className={styles.mobileNavLabel}>{short}</span>
           </Link>
         );
       })}
