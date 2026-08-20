@@ -15,7 +15,7 @@ import {
 import { AppShell } from "@/components/app-shell";
 import { Brand } from "@/components/brand";
 import { PageTitle, ProfileView, StarRating } from "@/components/student-pages";
-import { apiFetch } from "@/lib/api";
+import { apiFetch, actionMentorshipRequest, type MentorshipRequestItem } from "@/lib/api";
 import type { Booking, LessonRequest, Mentor } from "@/lib/types";
 import { useApi, clearApiCache } from "@/lib/use-api";
 import styles from "./mentor-pages.module.css";
@@ -151,6 +151,23 @@ export function MentorBookingsPage() {
   const [message, setMessage] = useState("");
   const [pending, setPending] = useState(false);
   const { data, loading, reload } = useApi<{ items: LessonRequest[] }>("/lesson-requests");
+  const mRequestsApi = useApi<MentorshipRequestItem[]>("/mentorship-requests/my");
+
+  const handleActionMentorship = async (id: string, action: "accept" | "reject") => {
+    setPending(true);
+    setError("");
+    setMessage("");
+    try {
+      await actionMentorshipRequest(id, action);
+      setMessage(`Mentorship request ${action}ed successfully!`);
+      clearApiCache();
+      await mRequestsApi.reload();
+    } catch (err: any) {
+      setError(err.message || `Failed to ${action} request`);
+    } finally {
+      setPending(false);
+    }
+  };
 
   const requests = data?.items ?? [];
   const request = requests[selectedIndex] || requests[0];
@@ -286,6 +303,113 @@ export function MentorBookingsPage() {
         {loading && !data && <p className="data-state">Loading lesson requests…</p>}
         {message && <p className="data-state" style={{ color: "#5e9d26", fontWeight: "800", fontSize: "16px", marginBottom: "16px" }}>✓ {message}</p>}
         {error && <p className="data-state" role="alert" style={{ color: "#b42318", fontWeight: "800", fontSize: "16px", marginBottom: "16px" }}>⚠ {error}</p>}
+
+        {/* Direct Mentorship Requests Section (B3) */}
+        {mRequestsApi.data && mRequestsApi.data.length > 0 && (
+          <section className={styles.panel} style={{ marginBottom: "32px", padding: "28px" }}>
+            <h2 style={{ fontSize: "1.4rem", fontWeight: 800, color: "#0B6B44", margin: "0 0 16px" }}>
+              ⚡ Direct Mentorship Requests ({mRequestsApi.data.filter((r) => r.status === "pending").length} Pending)
+            </h2>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: "18px" }}>
+              {mRequestsApi.data.map((req) => (
+                <div
+                  key={req.id}
+                  style={{
+                    background: "#FAFAFA",
+                    borderRadius: "16px",
+                    padding: "20px",
+                    border: "1.5px solid #141210",
+                    boxShadow: "3px 3px 0 #141210",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <div>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
+                      <strong style={{ fontSize: "1.05rem", color: "#141210" }}>
+                        {req.mentee_name || "Mentee Student"}
+                      </strong>
+                      <span
+                        style={{
+                          padding: "3px 10px",
+                          borderRadius: "99px",
+                          fontSize: "0.75rem",
+                          fontWeight: "800",
+                          background:
+                            req.status === "accepted"
+                              ? "#DCFCE7"
+                              : req.status === "rejected"
+                              ? "#FEE2E2"
+                              : req.status === "pending"
+                              ? "#FEF3C7"
+                              : "#F1F5F9",
+                          color:
+                            req.status === "accepted"
+                              ? "#166534"
+                              : req.status === "rejected"
+                              ? "#991B1B"
+                              : req.status === "pending"
+                              ? "#92400E"
+                              : "#475569",
+                        }}
+                      >
+                        {req.status.toUpperCase()}
+                      </span>
+                    </div>
+
+                    <p style={{ fontSize: "0.925rem", color: "#6A675F", margin: "0 0 12px", lineHeight: 1.4 }}>
+                      "{req.note || "Requesting 1-on-1 mentorship session"}"
+                    </p>
+
+                    <div style={{ fontSize: "0.825rem", color: "#0B6B44", fontWeight: "700", marginBottom: "16px" }}>
+                      ⚡ {req.tokens_used} Jools Token Stake • {new Date(req.created_at).toLocaleDateString()}
+                    </div>
+                  </div>
+
+                  {req.status === "pending" && (
+                    <div style={{ display: "flex", gap: "10px" }}>
+                      <button
+                        type="button"
+                        onClick={() => handleActionMentorship(req.id, "accept")}
+                        disabled={pending}
+                        style={{
+                          flex: 1,
+                          padding: "8px 14px",
+                          borderRadius: "99px",
+                          background: "#0B6B44",
+                          color: "#FFFFFF",
+                          fontWeight: "800",
+                          border: "1px solid #141210",
+                          cursor: "pointer",
+                        }}
+                      >
+                        Accept
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleActionMentorship(req.id, "reject")}
+                        disabled={pending}
+                        style={{
+                          flex: 1,
+                          padding: "8px 14px",
+                          borderRadius: "99px",
+                          background: "#FFFFFF",
+                          color: "#EF4444",
+                          fontWeight: "800",
+                          border: "1px solid #EF4444",
+                          cursor: "pointer",
+                        }}
+                      >
+                        Reject
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
 
         {(data || !loading) && (showCreateForm ? (
           <section className={styles.panel} style={{ maxWidth: "720px", margin: "0 auto 40px", padding: "36px" }}>

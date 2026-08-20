@@ -28,41 +28,7 @@ type AdminMentor = {
   created_at: string | null;
 };
 
-const mentorFixtures: AdminMentor[] = [
-  {
-    profile_id: "m1",
-    first_name: "Emery",
-    last_name: "Aminoff",
-    headline: "Senior UI/UX Designer & Product Lead",
-    bio: "Passionate about building scalable design systems and user-centric products.",
-    approval_status: "approved",
-    rejection_reason: null,
-    professions: ["UI/UX", "Figma", "Design Systems"],
-    created_at: "2026-08-15T10:00:00Z",
-  },
-  {
-    profile_id: "m2",
-    first_name: "Kristin",
-    last_name: "Watson",
-    headline: "Staff Software Engineer @ Google",
-    bio: "Helping students master System Design, Data Structures, and Algorithms.",
-    approval_status: "pending",
-    rejection_reason: null,
-    professions: ["System Design", "Python", "DSA"],
-    created_at: "2026-08-18T14:30:00Z",
-  },
-  {
-    profile_id: "m3",
-    first_name: "Jaxson",
-    last_name: "Torff",
-    headline: "Head of Marketing & Brand Growth",
-    bio: "Specializing in growth loops, personal branding, and go-to-market strategies.",
-    approval_status: "pending",
-    rejection_reason: null,
-    professions: ["Brand Growth", "GTM Strategy", "Marketing"],
-    created_at: "2026-08-19T09:15:00Z",
-  },
-];
+
 
 export function AdminDashboard() {
   const users = useApi<{ items: Profile[] }>("/admin/users");
@@ -185,9 +151,7 @@ export function AdminDashboard() {
     window.location.href = "/login";
   };
 
-  const allMentors = (mentorsApi.data?.items && mentorsApi.data.items.length > 0)
-    ? mentorsApi.data.items
-    : mentorFixtures;
+  const allMentors = mentorsApi.data?.items || [];
 
   const filteredMentors = mentorFilter === "all"
     ? allMentors

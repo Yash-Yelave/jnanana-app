@@ -3,8 +3,9 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Calendar, MapPin, Clock, ExternalLink, CheckCircle2, Award } from "lucide-react";
+import { Calendar, MapPin, Clock, ExternalLink, CheckCircle2, Award, Sparkles } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
+import { getEvents, type EventItem } from "@/lib/api";
 
 type EventDetail = {
   id: string;
@@ -133,6 +134,14 @@ function CountdownTimer({ targetDate }: { targetDate: string }) {
 }
 
 export default function EventsPage() {
+  const [apiEvents, setApiEvents] = useState<EventItem[]>([]);
+
+  useEffect(() => {
+    getEvents()
+      .then((data) => setApiEvents(data || []))
+      .catch(() => null);
+  }, []);
+
   return (
     <AppShell active="/events">
       <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "16px 0", color: "#141210" }}>
@@ -162,7 +171,80 @@ export default function EventsPage() {
           </p>
         </div>
 
-        {/* Events List */}
+        {/* Live Database Events Section if present */}
+        {apiEvents.length > 0 && (
+          <div style={{ marginBottom: "36px", display: "flex", flexDirection: "column", gap: "20px" }}>
+            <h2 style={{ fontSize: "1.4rem", fontWeight: 800, color: "#0B6B44", margin: 0 }}>
+              Official Platform Events ({apiEvents.length})
+            </h2>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: "20px" }}>
+              {apiEvents.map((ev) => (
+                <div
+                  key={ev.id}
+                  style={{
+                    background: "#FFFFFF",
+                    borderRadius: "18px",
+                    padding: "24px",
+                    border: "1.5px solid #141210",
+                    boxShadow: "4px 4px 0 #141210",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <div>
+                    <span
+                      style={{
+                        padding: "3px 10px",
+                        borderRadius: "99px",
+                        background: "#062E24",
+                        color: "#FFB800",
+                        fontSize: "0.75rem",
+                        fontWeight: 800,
+                        display: "inline-block",
+                        marginBottom: "12px",
+                      }}
+                    >
+                      {ev.status.toUpperCase()} EVENT
+                    </span>
+                    <h3 style={{ fontSize: "1.25rem", fontWeight: 800, color: "#062E24", margin: "0 0 8px" }}>
+                      {ev.name}
+                    </h3>
+                    <div style={{ display: "flex", gap: "12px", color: "#6A675F", fontSize: "0.85rem", marginBottom: "12px" }}>
+                      <span>📅 {new Date(ev.event_date).toLocaleDateString()}</span>
+                      <span>📍 {ev.location}</span>
+                    </div>
+                    <p style={{ fontSize: "0.925rem", color: "#141210", lineHeight: 1.5, marginBottom: "16px" }}>
+                      {ev.description.slice(0, 120)}...
+                    </p>
+                  </div>
+                  <Link
+                    href={`/events/${ev.id}`}
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: "6px",
+                      padding: "10px 18px",
+                      borderRadius: "99px",
+                      background: "linear-gradient(135deg, #FFB800 0%, #FF8A00 100%)",
+                      color: "#000",
+                      fontWeight: 800,
+                      fontSize: "0.875rem",
+                      textDecoration: "none",
+                      border: "1.5px solid #141210",
+                      boxShadow: "2px 2px 0 #141210",
+                    }}
+                  >
+                    View Details & Check In →
+                  </Link>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Featured Spotlight Conclaves */}
         <div style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
           {spotlightEvents.map((ev) => (
             <article

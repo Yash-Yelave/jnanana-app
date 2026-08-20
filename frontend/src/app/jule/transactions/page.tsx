@@ -75,7 +75,7 @@ export default function JuleTransactionsPage() {
             <div style={{ display: "flex", alignItems: "center", gap: "10px", marginTop: "4px" }}>
               <Sparkles size={28} color="#FFB800" />
               <strong style={{ fontSize: "2.5rem", fontWeight: 800, color: "#FFB800" }}>
-                {wallet?.balance ?? 50} Jools
+                {wallet?.balance ?? 0} Jools
               </strong>
             </div>
           </div>

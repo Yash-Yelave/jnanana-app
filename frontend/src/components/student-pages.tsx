@@ -21,7 +21,7 @@ import {
   LogOut,
 } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
-import { apiFetch } from "@/lib/api";
+import { apiFetch, actionMentorshipRequest, type MentorshipRequestItem } from "@/lib/api";
 import { createClient, publicAsset } from "@/lib/supabase/client";
 import type { Booking, LessonRequest, Mentor, MentorProfile, Offer, Profile, Review } from "@/lib/types";
 import { useApi, clearApiCache } from "@/lib/use-api";
@@ -208,7 +208,7 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
   const avatar = publicAsset("avatars", data?.avatar_path) ?? "/assets/app/mentor-1.png";
   const mentor = data && "headline" in data ? data : data?.mentor;
 
-  const currentBalance = walletData?.balance ?? 50;
+  const currentBalance = walletData?.balance ?? 0;
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -224,7 +224,12 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
     setRequestError("");
     setRequestMsg("");
     try {
-      const targetId = mentorId || (data && "id" in data ? (data as any).id : undefined) || "00000000-0000-0000-0000-000000000000";
+      const targetId = mentorId || (data && "id" in data ? (data as any).id : undefined);
+      if (!targetId) {
+        setRequestError("Please select a valid mentor before submitting a request.");
+        setSubmittingRequest(false);
+        return;
+      }
       await apiFetch("/mentorship-requests", {
         method: "POST",
         body: JSON.stringify({
@@ -709,10 +714,26 @@ function Feedback({ mentorId }: { mentorId?: string }) {
 export function DashboardPage() {
   const { data: dashboard } = useApi<{ completed_bookings: number; active_courses: number }>("/dashboard/student");
   const { data: wallet } = useApi<{ currency: string; balance_minor: number }>("/wallet");
+  const mRequestsApi = useApi<MentorshipRequestItem[]>("/mentorship-requests/my");
+  const [cancellingId, setCancellingId] = useState<string | null>(null);
+
+  const handleCancelRequest = async (id: string) => {
+    setCancellingId(id);
+    try {
+      await actionMentorshipRequest(id, "cancel");
+      clearApiCache();
+      await mRequestsApi.reload();
+    } catch {
+      alert("Failed to cancel mentorship request");
+    } finally {
+      setCancellingId(null);
+    }
+  };
+
   return (
     <AppShell active="/dashboard">
       <main className={styles.main}>
-        <PageTitle>Statistics</PageTitle>
+        <PageTitle>Dashboard</PageTitle>
         <section className={styles.stats}>
           <div>
             <Banknote size={24} color="var(--lime)" /> <b>{wallet?.currency ?? "INR"} {((wallet?.balance_minor ?? 0) / 100).toLocaleString()}</b>
@@ -727,6 +748,102 @@ export function DashboardPage() {
             <span>Completed lessons</span>
           </div>
         </section>
+
+        {/* Mentee Requests Status View (B4) */}
+        {mRequestsApi.data && mRequestsApi.data.length > 0 && (
+          <section className={styles.whitePanel} style={{ marginBottom: "28px", padding: "24px" }}>
+            <h2 style={{ fontSize: "1.3rem", fontWeight: 800, color: "#0B6B44", margin: "0 0 16px" }}>
+              ⚡ My Mentorship Requests ({mRequestsApi.data.length})
+            </h2>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "16px" }}>
+              {mRequestsApi.data.map((req) => (
+                <div
+                  key={req.id}
+                  style={{
+                    background: "#FAFAFA",
+                    borderRadius: "16px",
+                    padding: "18px",
+                    border: "1.5px solid #141210",
+                    boxShadow: "3px 3px 0 #141210",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <div>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+                      <strong style={{ fontSize: "1rem", color: "#141210" }}>
+                        Mentor: {req.mentor_name || "Assigned Mentor"}
+                      </strong>
+                      <span
+                        style={{
+                          padding: "3px 10px",
+                          borderRadius: "99px",
+                          fontSize: "0.75rem",
+                          fontWeight: "800",
+                          background:
+                            req.status === "accepted"
+                              ? "#DCFCE7"
+                              : req.status === "rejected"
+                              ? "#FEE2E2"
+                              : req.status === "pending"
+                              ? "#FEF3C7"
+                              : "#F1F5F9",
+                          color:
+                            req.status === "accepted"
+                              ? "#166534"
+                              : req.status === "rejected"
+                              ? "#991B1B"
+                              : req.status === "pending"
+                              ? "#92400E"
+                              : "#475569",
+                        }}
+                      >
+                        {req.status === "pending"
+                          ? "🟡 Pending"
+                          : req.status === "accepted"
+                          ? "🟢 Accepted!"
+                          : req.status === "rejected"
+                          ? "🔴 Declined (Refunded)"
+                          : req.status.toUpperCase()}
+                      </span>
+                    </div>
+
+                    <p style={{ fontSize: "0.875rem", color: "#6A675F", margin: "0 0 10px", lineHeight: 1.4 }}>
+                      "{req.note || "1-on-1 Mentorship Request"}"
+                    </p>
+
+                    <div style={{ fontSize: "0.8rem", color: "#0B6B44", fontWeight: "700", marginBottom: "12px" }}>
+                      ⚡ {req.tokens_used} Jools Stake • {new Date(req.created_at).toLocaleDateString()}
+                    </div>
+                  </div>
+
+                  {req.status === "pending" && (
+                    <button
+                      type="button"
+                      onClick={() => handleCancelRequest(req.id)}
+                      disabled={cancellingId === req.id}
+                      style={{
+                        padding: "6px 14px",
+                        borderRadius: "99px",
+                        background: "#FFFFFF",
+                        color: "#EF4444",
+                        fontWeight: "800",
+                        fontSize: "0.8rem",
+                        border: "1px solid #EF4444",
+                        cursor: "pointer",
+                        marginTop: "8px",
+                      }}
+                    >
+                      {cancellingId === req.id ? "Cancelling..." : "Cancel Request"}
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
         <section className={styles.dashboardGrid}>
           <article className={styles.whitePanel}>
             <h2>Hours Spent</h2>
@@ -736,8 +853,8 @@ export function DashboardPage() {
             <h2>Available Credit</h2>
             <strong>{wallet?.currency ?? "INR"} {((wallet?.balance_minor ?? 0) / 100).toLocaleString()}</strong>
             <p>Your current balance</p>
-            <Link href="/payment">
-              Add Credits <ArrowUpRight size={16} />
+            <Link href="/jule/transactions">
+              View Jools <ArrowUpRight size={16} />
             </Link>
           </aside>
           <article className={styles.whitePanel}>

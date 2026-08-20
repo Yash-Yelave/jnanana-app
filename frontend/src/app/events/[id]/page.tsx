@@ -3,14 +3,17 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { Calendar, MapPin, ArrowRight } from "lucide-react";
-import { getEvent, type EventItem } from "@/lib/api";
+import { Calendar, MapPin, ArrowRight, CheckCircle, Sparkles } from "lucide-react";
+import { getEvent, checkinEvent, type EventItem } from "@/lib/api";
 import { AppShell } from "@/components/app-shell";
 
 export default function EventDetailPage() {
   const { id } = useParams() as { id: string };
   const [event, setEvent] = useState<EventItem | null>(null);
   const [loading, setLoading] = useState(true);
+  const [checkingIn, setCheckingIn] = useState(false);
+  const [checkinMessage, setCheckinMessage] = useState<string | null>(null);
+  const [tokensGranted, setTokensGranted] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -20,6 +23,21 @@ export default function EventDetailPage() {
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
   }, [id]);
+
+  const handleCheckin = async () => {
+    if (!id) return;
+    setCheckingIn(true);
+    setError(null);
+    try {
+      const res = await checkinEvent(id);
+      setCheckinMessage(res.message);
+      setTokensGranted(res.tokens_granted);
+    } catch (err: any) {
+      setError(err.message || "Failed to check in");
+    } finally {
+      setCheckingIn(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -57,21 +75,67 @@ export default function EventDetailPage() {
             boxShadow: "4px 4px 0 #141210",
           }}
         >
-          <span
-            style={{
-              display: "inline-block",
-              padding: "6px 14px",
-              borderRadius: "9999px",
-              background: "#062E24",
-              color: "#FFB800",
-              fontSize: "0.85rem",
-              fontWeight: "800",
-              marginBottom: "20px",
-              border: "1px solid #141210",
-            }}
-          >
-            Phase 1 Official Event
-          </span>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "12px", marginBottom: "20px" }}>
+            <span
+              style={{
+                display: "inline-block",
+                padding: "6px 14px",
+                borderRadius: "9999px",
+                background: "#062E24",
+                color: "#FFB800",
+                fontSize: "0.85rem",
+                fontWeight: "800",
+                border: "1px solid #141210",
+              }}
+            >
+              Phase 1 Official Event
+            </span>
+
+            {/* Check-In Button (B1) */}
+            {checkinMessage ? (
+              <span
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  padding: "8px 16px",
+                  borderRadius: "9999px",
+                  background: "#DCFCE7",
+                  color: "#166534",
+                  fontWeight: "800",
+                  fontSize: "0.875rem",
+                  border: "1.5px solid #141210",
+                }}
+              >
+                <CheckCircle size={16} />
+                Checked In ✓ ({tokensGranted ? `+${tokensGranted} Jools` : "Verified"})
+              </span>
+            ) : (
+              <button
+                type="button"
+                onClick={handleCheckin}
+                disabled={checkingIn}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  padding: "8px 20px",
+                  borderRadius: "9999px",
+                  background: "linear-gradient(135deg, #FFB800 0%, #FF8A00 100%)",
+                  color: "#000",
+                  fontWeight: "800",
+                  fontSize: "0.875rem",
+                  border: "1.5px solid #141210",
+                  boxShadow: "2px 2px 0 #141210",
+                  cursor: "pointer",
+                }}
+              >
+                <Sparkles size={16} />
+                {checkingIn ? "Checking In..." : "Check In to Event (+50 Jools)"}
+              </button>
+            )}
+          </div>
+
           <h1 style={{ fontSize: "2.5rem", fontWeight: "800", marginBottom: "16px", lineHeight: 1.15, color: "#0B6B44" }}>
             {event.name}
           </h1>

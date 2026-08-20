@@ -106,7 +106,7 @@ export function AppShell({
   const name = profile ? `${profile.first_name} ${profile.last_name}` : "Profile";
   const profileTarget = isMentor ? "/mentor/profile" : "/profile";
   const brandHref = isMentor ? "/mentor/dashboard" : "/dashboard";
-  const juleBalance = wallet?.balance ?? 50;
+  const juleBalance = wallet?.balance ?? 0;
 
   const handleJuleClick = (e: React.MouseEvent) => {
     e.preventDefault();

@@ -9,49 +9,6 @@ import type { Mentor } from "@/lib/types";
 import { useApi } from "@/lib/use-api";
 import { publicAsset } from "@/lib/supabase/client";
 
-const mentorFixtures = [
-  {
-    id: "m1",
-    name: "Emery Aminoff",
-    headline: "Senior UI/UX Designer & Product Lead",
-    rating: 4.9,
-    reviews: 128,
-    bio: "Passionate about building scalable design systems, user-centric products, and mentoring early-stage designers to accelerate their careers.",
-    tags: ["UI/UX", "Figma", "Design Systems", "Product Strategy"],
-    image: "/assets/app/mentor-1.png",
-  },
-  {
-    id: "m2",
-    name: "Kristin Watson",
-    headline: "Staff Software Engineer @ Google",
-    rating: 4.8,
-    reviews: 94,
-    bio: "Helping students master System Design, Data Structures, Algorithms, and technical interview preparation for tier-1 tech companies.",
-    tags: ["System Design", "Python", "DSA", "Backend Architecture"],
-    image: "/assets/app/mentor-2.png",
-  },
-  {
-    id: "m3",
-    name: "Jaxson Torff",
-    headline: "Head of Marketing & Brand Growth",
-    rating: 5.0,
-    reviews: 156,
-    bio: "Specializing in growth loops, personal branding, go-to-market strategies, and content monetization for creators and tech founders.",
-    tags: ["Brand Growth", "GTM Strategy", "Marketing", "SEO"],
-    image: "/assets/app/mentor-3.png",
-  },
-  {
-    id: "m4",
-    name: "Kaisya Dias",
-    headline: "Lead Fullstack Architect @ Microsoft",
-    rating: 4.9,
-    reviews: 82,
-    bio: "10+ years architecting enterprise cloud applications. Dedicated to guiding developers through React, Next.js, Node.js, and Cloud DevOps.",
-    tags: ["React", "Next.js", "Node.js", "AWS Cloud"],
-    image: "/assets/app/mentor-4.png",
-  },
-];
-
 const categoryFilters = [
   { label: "All", id: "All" },
   { label: "Design & UI/UX", id: "Design" },
@@ -67,18 +24,16 @@ export default function DashboardPage() {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [minRating, setMinRating] = useState<number>(0);
 
-  const mentorsList = (mentorData?.items && mentorData.items.length > 0)
-    ? mentorData.items.map((m, index) => ({
-        id: m.id,
-        name: `${m.first_name} ${m.last_name}`,
-        headline: m.headline || "Verified Mentor",
-        rating: m.average_rating || 4.9,
-        reviews: m.review_count || 12,
-        bio: m.bio || "Experienced industry mentor helping students build real-world skills and advance their tech careers.",
-        tags: m.professions && m.professions.length > 0 ? m.professions : ["Mentorship", "Career Advice"],
-        image: publicAsset("avatars", m.avatar_path) ?? `/assets/app/mentor-${(index % 4) + 1}.png`,
-      }))
-    : mentorFixtures;
+  const mentorsList = (mentorData?.items || []).map((m, index) => ({
+    id: m.id,
+    name: `${m.first_name} ${m.last_name}`,
+    headline: m.headline || "Verified Mentor",
+    rating: m.average_rating || 4.9,
+    reviews: m.review_count || 12,
+    bio: m.bio || "Experienced industry mentor helping students build real-world skills and advance their tech careers.",
+    tags: m.professions && m.professions.length > 0 ? m.professions : ["Mentorship", "Career Advice"],
+    image: publicAsset("avatars", m.avatar_path) ?? `/assets/app/mentor-${(index % 4) + 1}.png`,
+  }));
 
   const filteredMentors = mentorsList.filter((m) => {
     // 1. Search Query

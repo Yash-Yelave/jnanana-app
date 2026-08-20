@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.auth import get_current_user_id
 from app.db import get_db_session
-from app.models import JuleTransaction, JuleWallet, MentorProfile, MentorshipRequest, Profile
+from app.models import JuleTransaction, JuleWallet, MentorProfile, MentorshipRequest, Notification, Profile
 from app.schemas import MentorshipRequestActionInput, MentorshipRequestCreate, MentorshipRequestRead
 
 router = APIRouter(prefix="/mentorship-requests", tags=["mentorship-requests"])
@@ -64,15 +64,27 @@ async def create_request(
         note=payload.note,
     )
     db.add(req)
-    await db.commit()
-    await db.refresh(req)
 
-    # Fetch profile details for response
+    # Fetch profile details for response and notification
     p_stmt = select(Profile).where(Profile.id == user_id)
     mentee_p = (await db.execute(p_stmt)).scalar_one_or_none()
 
     m_p_stmt = select(Profile).where(Profile.id == mentor.profile_id)
     mentor_p = (await db.execute(m_p_stmt)).scalar_one_or_none()
+
+    # Create notification for mentor (B6)
+    mentee_name_str = f"{mentee_p.first_name} {mentee_p.last_name}" if mentee_p else "A student"
+    notif = Notification(
+        user_id=mentor.profile_id,
+        kind="mentorship_request",
+        title="New Mentorship Request",
+        body=f"{mentee_name_str} requested mentorship ({payload.tokens_used} Jools).",
+        data={"request_id": str(req.id), "mentee_id": str(user_id)},
+    )
+    db.add(notif)
+
+    await db.commit()
+    await db.refresh(req)
 
     return MentorshipRequestRead(
         id=req.id,
@@ -84,7 +96,7 @@ async def create_request(
         note=req.note,
         created_at=req.created_at,
         updated_at=req.updated_at,
-        mentee_name=f"{mentee_p.first_name} {mentee_p.last_name}" if mentee_p else None,
+        mentee_name=mentee_name_str if mentee_p else None,
         mentor_name=f"{mentor_p.first_name} {mentor_p.last_name}" if mentor_p else None,
         mentor_avatar=mentor_p.avatar_path if mentor_p else None,
         mentor_headline=mentor.headline,
@@ -194,6 +206,16 @@ async def action_request(
 
     if payload.action == "accept":
         req.status = "accepted"
+        # Notification for mentee (B6)
+        notif = Notification(
+            user_id=req.mentee_id,
+            kind="mentorship_accepted",
+            title="Mentorship Request Accepted!",
+            body="Your mentorship request has been accepted by your mentor.",
+            data={"request_id": str(req.id)},
+        )
+        db.add(notif)
+
     elif payload.action == "reject":
         req.status = "rejected"
         # Refund Jule tokens to mentee
@@ -211,6 +233,17 @@ async def action_request(
                 notes=f"Refund for rejected mentorship request ({req.tokens_used} Jule Tokens)",
             )
             db.add(txn)
+
+        # Notification for mentee (B6)
+        notif = Notification(
+            user_id=req.mentee_id,
+            kind="mentorship_rejected",
+            title="Mentorship Request Declined",
+            body=f"Your mentorship request was declined. {req.tokens_used} Jools have been refunded to your wallet.",
+            data={"request_id": str(req.id)},
+        )
+        db.add(notif)
+
     elif payload.action == "complete":
         req.status = "completed"
     elif payload.action == "cancel":
