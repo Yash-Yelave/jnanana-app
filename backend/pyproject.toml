@@ -3,7 +3,7 @@ name = "upskillink-backend"
 version = "0.1.0"
 description = "FastAPI backend for the Upskillink mentorship platform"
 readme = "README.md"
-requires-python = ">=3.13,<3.14"
+requires-python = ">=3.13"
 dependencies = [
   "fastapi",
   "pydantic-settings",
@@ -24,6 +24,7 @@ dev = [
 
 [tool.pytest.ini_options]
 addopts = "-q"
+asyncio_mode = "auto"
 testpaths = ["tests"]
 pythonpath = ["."]
 

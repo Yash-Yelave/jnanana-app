@@ -4,24 +4,58 @@ from uuid import uuid4
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy import text
+from fastapi.responses import JSONResponse
+from sqlalchemy import inspect, text
+from sqlalchemy.engine import Connection
+from sqlalchemy.ext.asyncio import AsyncEngine
 
 from app.config import get_settings
 from app.db import SessionFactory, engine
-from app.routers import accounts, admin, bookings, community, events, jule, mentors, mentorship_requests, platform
+from app.routers import accounts, admin, events, jule, mentors, mentorship_requests, notifications
 
+# Tables the Phase 1 product cannot operate without. The schema is owned by
+# supabase/migrations — the app never creates tables at boot, because tables
+# created that way arrive without the RLS policies the migrations attach.
+REQUIRED_TABLES = (
+    "profiles",
+    "mentor_profiles",
+    "events",
+    "event_participants",
+    "jule_wallets",
+    "jule_transactions",
+    "mentorship_requests",
+    "notifications",
+)
+
+SCHEMA_HINT = (
+    "Apply the database migrations before starting the API: "
+    "`supabase db push` (or `supabase migration up --local`). "
+    "See backend/supabase/migrations/."
+)
+
+
+def _missing_tables(sync_conn: Connection) -> list[str]:
+    present = set(inspect(sync_conn).get_table_names())
+    return [name for name in REQUIRED_TABLES if name not in present]
+
+
+async def verify_schema(target: AsyncEngine | None = None) -> list[str]:
+    """Return the required tables that are missing from the database."""
+    async with (target or engine).connect() as conn:
+        return await conn.run_sync(_missing_tables)
 
 
 @asynccontextmanager
 async def lifespan(_: FastAPI) -> AsyncIterator[None]:
-    from app.models import Base
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+    # Fail loudly at boot rather than serving 500s on the first real request.
+    # Skipped under APP_ENV=test, where the suite supplies its own schema;
+    # verify_schema itself is covered directly by tests/test_schema_guard.py.
+    if get_settings().app_env != "test":
+        missing = await verify_schema()
+        if missing:
+            raise RuntimeError(f"Database is missing required tables: {', '.join(missing)}. {SCHEMA_HINT}")
     yield
     await engine.dispose()
-
-
-from fastapi.responses import JSONResponse
 
 
 def create_app() -> FastAPI:
@@ -66,16 +100,16 @@ def create_app() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+    # SRS §44: bookings, payments, courses, subscriptions, referrals and the
+    # community/chat surface are explicitly out of scope for Phase 1.
     for router in (
         accounts.router,
         admin.router,
-        bookings.router,
-        community.router,
         events.router,
         jule.router,
         mentors.router,
         mentorship_requests.router,
-        platform.router,
+        notifications.router,
     ):
         app.include_router(router, prefix=settings.api_prefix)
 
@@ -90,6 +124,13 @@ def create_app() -> FastAPI:
                 await session.execute(text("select 1"))
         except Exception as exc:
             raise HTTPException(status_code=503, detail="database unavailable") from exc
+
+        missing = await verify_schema()
+        if missing:
+            raise HTTPException(
+                status_code=503,
+                detail=f"database is missing required tables: {', '.join(missing)}",
+            )
         return {"status": "ready"}
 
     return app

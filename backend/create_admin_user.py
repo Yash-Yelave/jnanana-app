@@ -1,8 +1,26 @@
+"""Bootstrap an admin account.
+
+Credentials come from the environment — never hard-code them here. Set
+ADMIN_EMAIL and ADMIN_PASSWORD (see .env.example) before running:
+
+    uv run python create_admin_user.py
+"""
+
+import os
+import sys
+
 import httpx
 import psycopg
+
 from app.config import get_settings
 
-def setup_admin():
+
+def setup_admin() -> None:
+    email = os.environ.get("ADMIN_EMAIL")
+    password = os.environ.get("ADMIN_PASSWORD")
+    if not email or not password:
+        sys.exit("ADMIN_EMAIL and ADMIN_PASSWORD must be set in the environment.")
+
     settings = get_settings()
     secret_key = settings.supabase_secret_key.get_secret_value()
     url = f"{settings.supabase_url.rstrip('/')}/auth/v1/admin/users"
@@ -11,100 +29,55 @@ def setup_admin():
         "Authorization": f"Bearer {secret_key}",
         "Content-Type": "application/json",
     }
-    
+
     payload = {
-        "email": "rostopedia@gmail.com",
-        "password": "Jarvisyash1@1",
+        "email": email,
+        "password": password,
         "email_confirm": True,
-        "user_metadata": {
-            "first_name": "admin",
-            "last_name": "admin",
-            "name": "admin"
-        },
-        "app_metadata": {
-            "role": "admin"
-        }
+        "user_metadata": {"first_name": "admin", "last_name": "admin", "name": "admin"},
+        "app_metadata": {"role": "admin"},
     }
-    
+
     user_id = None
     with httpx.Client() as client:
-        res = client.get(url, headers=headers)
-        if res.status_code == 200:
-            users_data = res.json()
-            users = users_data.get("users", []) if isinstance(users_data, dict) else users_data
-            for u in users:
-                if u.get("email") == "rostopedia@gmail.com":
-                    user_id = u.get("id")
+        response = client.post(url, headers=headers, json=payload, timeout=30)
+        if response.status_code in (200, 201):
+            user_id = response.json().get("id")
+            print(f"Created admin auth user {email}")
+        elif response.status_code == 422:
+            listed = client.get(url, headers=headers, params={"page": 1, "per_page": 200}, timeout=30)
+            listed.raise_for_status()
+            for user in listed.json().get("users", []):
+                if user.get("email") == email:
+                    user_id = user["id"]
                     break
-        
-        if user_id:
-            print(f"Updating admin user {user_id}...")
-            update_url = f"{url}/{user_id}"
-            update_payload = {
-                "password": "Jarvisyash1@1",
-                "email_confirm": True,
-                "user_metadata": {
-                    "first_name": "admin",
-                    "last_name": "admin",
-                    "name": "admin"
-                },
-                "app_metadata": {
-                    "role": "admin"
-                }
-            }
-            res = client.put(update_url, headers=headers, json=update_payload)
-            print("PUT update status:", res.status_code)
+            if user_id:
+                client.put(
+                    f"{url}/{user_id}",
+                    headers=headers,
+                    json={"app_metadata": {"role": "admin"}},
+                    timeout=30,
+                ).raise_for_status()
+                print(f"Promoted existing user {email} to admin")
         else:
-            print("Creating new admin user...")
-            res = client.post(url, headers=headers, json=payload)
-            print("POST create status:", res.status_code)
-            if res.status_code in (200, 201):
-                user_id = res.json().get("id")
+            response.raise_for_status()
 
-    if user_id:
-        db_url = settings.database_url.replace("postgresql+psycopg://", "postgresql://")
-        print("Ensuring public.profiles row exists in database...")
-        with psycopg.connect(db_url) as conn:
-            with conn.cursor() as cur:
-                cur.execute(
-                    """
-                    INSERT INTO public.profiles (id, role, onboarding_status, first_name, last_name, username)
-                    VALUES (%s, 'student', 'complete', 'admin', 'admin', 'admin_rostopedia')
-                    ON CONFLICT (id) DO UPDATE SET
-                      role = EXCLUDED.role,
-                      onboarding_status = 'complete',
-                      first_name = EXCLUDED.first_name,
-                      last_name = EXCLUDED.last_name;
-                    """,
-                    (user_id,)
-                )
-                conn.commit()
-                print("Public profile row verified successfully!")
+    if not user_id:
+        sys.exit("Could not resolve the admin user id.")
 
-    print("\nTesting authentication and admin claims...")
-    token_url = f"{settings.supabase_url.rstrip('/')}/auth/v1/token?grant_type=password"
-    token_headers = {
-        "apikey": settings.supabase_publishable_key,
-        "Content-Type": "application/json",
-    }
-    login_body = {
-        "email": "rostopedia@gmail.com",
-        "password": "Jarvisyash1@1"
-    }
-    with httpx.Client() as client:
-        res = client.post(token_url, headers=token_headers, json=login_body)
-        print("Login status:", res.status_code)
-        if res.status_code == 200:
-            token_data = res.json()
-            user_data = token_data.get("user", {})
-            app_meta = user_data.get("app_metadata", {})
-            print("Authentication successful!")
-            print("User ID:", user_data.get("id"))
-            print("Email:", user_data.get("email"))
-            print("App Metadata Role:", app_meta.get("role"))
-            print("Confirmed At:", user_data.get("email_confirmed_at"))
-        else:
-            print("Login error:", res.text)
+    with psycopg.connect(settings.database_url.replace("+asyncpg", "")) as conn:
+        conn.execute(
+            """
+            insert into public.profiles (id, role, onboarding_status, first_name, last_name)
+            values (%s, 'admin', 'complete', 'Admin', 'User')
+            on conflict (id) do update set role = 'admin', onboarding_status = 'complete'
+            """,
+            (user_id,),
+        )
+        conn.commit()
+
+    print(f"Admin profile ready: {user_id}")
+
 
 if __name__ == "__main__":
     setup_admin()
