@@ -31,7 +31,7 @@ export function Join() {
         <Reveal delay={120} variant="scale-up">
           <p className="lead mx-auto mt-5.5 mb-10 text-paper/75">
             Mentorship at Jṉanana is curated on both sides. Tell us who you are
-            — we&apos;ll place you where the guidance lands hardest.
+            and we&apos;ll place you where the guidance lands hardest.
           </p>
 
           <div className="flex flex-col justify-center gap-3.5 sm:flex-row sm:flex-wrap">

@@ -31,6 +31,9 @@ export function MentorshipRequestsPage() {
   const [error, setError] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
+  // The request whose session length is being logged, and the value typed in.
+  const [loggingId, setLoggingId] = useState<string | null>(null);
+  const [minutes, setMinutes] = useState("");
 
   const load = useCallback(
     () =>
@@ -46,17 +49,31 @@ export function MentorshipRequestsPage() {
     load();
   }, [load]);
 
-  const act = async (id: string, action: "accept" | "reject" | "cancel") => {
+  const act = async (
+    id: string,
+    action: "accept" | "reject" | "cancel" | "complete",
+    durationMinutes?: number,
+  ) => {
     setBusyId(id);
     setActionError(null);
     try {
-      await actionMentorshipRequest(id, action);
+      await actionMentorshipRequest(id, action, durationMinutes);
+      setLoggingId(null);
       await load();
     } catch (err) {
       setActionError(err instanceof Error ? err.message : "That action didn't go through. Please try again.");
     } finally {
       setBusyId(null);
     }
+  };
+
+  const logSession = (id: string) => {
+    const parsed = Number(minutes);
+    if (!Number.isFinite(parsed) || parsed <= 0 || parsed > 1440) {
+      setActionError("Enter the session length in minutes, between 1 and 1440.");
+      return;
+    }
+    void act(id, "complete", Math.round(parsed));
   };
 
   return (
@@ -166,6 +183,54 @@ export function MentorshipRequestsPage() {
                       Cancel request
                     </button>
                   )}
+
+                  {/* Only the mentor can close out a session, and the minutes
+                      they log are what the public counter sums. */}
+                  {request.status === "accepted" && isMentor && (
+                    loggingId === request.id ? (
+                      <div className={styles.logSession}>
+                        <label htmlFor={`minutes-${request.id}`}>Session length</label>
+                        <div>
+                          <input
+                            id={`minutes-${request.id}`}
+                            type="number"
+                            inputMode="numeric"
+                            min={1}
+                            max={1440}
+                            placeholder="45"
+                            value={minutes}
+                            onChange={(event) => setMinutes(event.target.value)}
+                            autoFocus
+                          />
+                          <span>min</span>
+                          <button
+                            type="button"
+                            className={styles.accept}
+                            onClick={() => logSession(request.id)}
+                            disabled={busyId === request.id}
+                          >
+                            <Check size={16} aria-hidden /> Save
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        className={styles.accept}
+                        onClick={() => {
+                          setMinutes("");
+                          setActionError(null);
+                          setLoggingId(request.id);
+                        }}
+                      >
+                        Mark complete
+                      </button>
+                    )
+                  )}
+
+                  {request.status === "completed" && request.duration_minutes ? (
+                    <small className={styles.refund}>{request.duration_minutes} minutes logged</small>
+                  ) : null}
 
                   {request.status === "rejected" && (
                     <small className={styles.refund}>{request.tokens_used} Jule Tokens refunded</small>

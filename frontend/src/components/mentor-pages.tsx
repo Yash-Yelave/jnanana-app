@@ -41,12 +41,11 @@ export function MentorMarketingPage() {
           <br />
           Mentor
         </h1>
+        {/* Design system §0.2: no invented statistics. The mentor count that sat
+            here was fabricated; omit the claim rather than soften it. */}
         <div className={styles.quote}>
           <b>“</b>
           <p>Now you can teach anywhere, anytime, and build an independent career.</p>
-          <strong>
-            10K+<small>Mentors</small>
-          </strong>
         </div>
         <Image src="/assets/app/mentor-marketing-hero.png" alt="Professional mentor" width={500} height={560} priority />
         <div className={styles.rating}>

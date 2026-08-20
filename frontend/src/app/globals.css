@@ -33,10 +33,11 @@
   --color-edge: #141210;
   --color-line: rgba(11, 107, 68, 0.09);
 
-  --font-display: var(--font-manrope), system-ui, sans-serif;
-  --font-serif: Georgia, serif;
-  --font-mono: ui-monospace, monospace;
-  --font-body: var(--font-public-sans), system-ui, sans-serif;
+  /* Design system §3 — four faces, one job each. */
+  --font-display: var(--font-bricolage), system-ui, sans-serif;
+  --font-serif: var(--font-instrument-serif), Georgia, serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
+  --font-body: var(--font-manrope), system-ui, sans-serif;
 
   --shadow-hard-sm: 3px 3px 0 #141210;
   --shadow-hard: 4px 4px 0 #141210;
@@ -161,14 +162,6 @@
     letter-spacing: 0.22em;
     text-transform: uppercase;
     color: var(--color-magenta);
-  }
-
-  .eyebrow::before {
-    content: "";
-    width: 26px;
-    height: 1px;
-    flex: none;
-    background: currentColor;
   }
 
   .eyebrow--center {
@@ -383,15 +376,19 @@
   }
 }
 
+/* Animate scale only. Tailwind v4 compiles `-translate-x-1/2` to the standalone
+   `translate` property, which composes with `transform` rather than being
+   overridden by it — so re-declaring translateX(-50%) here shifted these
+   elements left by half their width a second time. */
 @keyframes breathe {
   0%,
   100% {
     opacity: 0.82;
-    transform: translateX(-50%) scale(1);
+    transform: scale(1);
   }
   50% {
     opacity: 1;
-    transform: translateX(-50%) scale(1.03);
+    transform: scale(1.03);
   }
 }
 
@@ -410,15 +407,52 @@
   75% { transform: rotate(5deg) scale(1.05); }
 }
 
+/* Countdown digits. Each digit sits in a clipped slot; when its value changes
+   React remounts it (the key changes) and it drops in from above. `transform`
+   only — no Tailwind translate utility on these elements, or the two would
+   compose and the digit would start a full slot too high. */
+.cd-slot {
+  display: inline-block;
+  height: 1em;
+  overflow: hidden;
+  line-height: 1;
+  vertical-align: bottom;
+}
+
+.cd-digit {
+  display: block;
+  animation: digitDrop 0.26s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes digitDrop {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* §7 forbids bouncing; this eases out flat. Honour a reduced-motion request by
+   swapping the value with no movement at all. */
+@media (prefers-reduced-motion: reduce) {
+  .cd-digit {
+    animation: none;
+  }
+}
+
+/* Same reason as `breathe`: the element carries -translate-y-[0.02em] already. */
 @keyframes glow {
   0%,
   100% {
     box-shadow: 0 0 34px rgba(245, 185, 33, 0.6);
-    transform: translateY(-0.02em) scale(1);
+    transform: scale(1);
   }
   50% {
     box-shadow: 0 0 64px rgba(245, 185, 33, 0.98), 0 0 20px rgba(214, 32, 106, 0.6);
-    transform: translateY(-0.02em) scale(1.08);
+    transform: scale(1.08);
   }
 }
 

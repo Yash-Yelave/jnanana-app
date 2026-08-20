@@ -17,7 +17,7 @@ export function Faculty() {
             <span className="text-magenta">actually built it.</span>
           </h2>
           <p className="lead mx-auto mt-5">
-            Founders, operators, investors, engineers and educators — admitted
+            Founders, operators, investors, engineers and educators, admitted
             for what they&apos;ve shipped, not what they&apos;ve posted.
           </p>
         </Reveal>

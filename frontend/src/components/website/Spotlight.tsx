@@ -66,7 +66,7 @@ export function Spotlight() {
         <Reveal delay={200} variant="fade-up">
           <p className="lead mx-auto mt-7.5 text-paper/72">
             A monthly gathering where ideas, people and possibility come
-            together. You bring the idea — we bring the spotlight.
+            together. You bring the idea. We bring the spotlight.
           </p>
         </Reveal>
 

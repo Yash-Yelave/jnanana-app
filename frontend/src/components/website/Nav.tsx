@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { nav } from "@/content/landing";
 import { apiFetch } from "@/lib/api";
 import { createClient, publicAsset } from "@/lib/supabase/client";
@@ -14,6 +14,10 @@ export function Nav() {
   const [scrolled, setScrolled] = useState(false);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
+  const wasOpenRef = useRef(false);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -33,44 +37,80 @@ export function Nav() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const target = profile?.role === "mentor" ? "/mentor/home" : "/dashboard";
-  const avatar = publicAsset("avatars", profile?.avatar_path) ?? "/assets/app/mentor-1.png";
+  const closeMenu = useCallback(() => setOpen(false), []);
 
-  // Prevent background body scrolling when mobile menu is open
+  // Stop the page behind the drawer from scrolling. Plain `overflow: hidden` —
+  // pinning the body with `position: fixed` also works and covers iOS Safari,
+  // but it reflows the whole document the instant the menu opens, which is a lot
+  // of side effect for a nav toggle. The drawer is opaque and full-screen, so
+  // any scroll that does leak through is invisible anyway.
   useEffect(() => {
-    if (open) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
+    if (!open) return;
+
+    const { body } = document;
+    const previous = body.style.overflow;
+    body.style.overflow = "hidden";
+
     return () => {
-      document.body.style.overflow = "";
+      body.style.overflow = previous;
     };
   }, [open]);
 
-  const toggleMenu = (e: React.MouseEvent | React.TouchEvent) => {
-    e.stopPropagation();
-    setOpen((prev) => !prev);
-  };
+  // Escape closes, and focus moves into the drawer. Focus only returns to the
+  // trigger when the menu was actually open — sending focus there on first mount
+  // put a focus ring on the button before anyone had touched it.
+  useEffect(() => {
+    if (!open) {
+      if (wasOpenRef.current) triggerRef.current?.focus({ preventScroll: true });
+      wasOpenRef.current = false;
+      return;
+    }
+
+    wasOpenRef.current = true;
+    closeRef.current?.focus({ preventScroll: true });
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") closeMenu();
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [open, closeMenu]);
+
+  // A resize past the lg breakpoint reveals the desktop nav; a drawer left open
+  // would otherwise cover the page with no visible way out.
+  useEffect(() => {
+    if (!open) return;
+    const query = window.matchMedia("(min-width: 1024px)");
+    const onChange = () => query.matches && setOpen(false);
+    query.addEventListener("change", onChange);
+    return () => query.removeEventListener("change", onChange);
+  }, [open]);
+
+  const target = profile?.role === "mentor" ? "/mentor/home" : "/dashboard";
+  const avatar = publicAsset("avatars", profile?.avatar_path) ?? "/assets/app/mentor-1.png";
 
   return (
     <>
       <nav
-        className={`sticky top-0 z-40 border-b-[1.5px] border-edge bg-[#FBF3E7]/95 backdrop-blur-[12px] transition-all duration-300 ${
+        className={`sticky top-0 z-50 border-b-[1.5px] border-edge bg-[#FBF3E7]/95 backdrop-blur-[12px] transition-all duration-300 ${
           scrolled ? "shadow-soft" : ""
         }`}
       >
         <div
-          className={`wrap flex items-center justify-between transition-all duration-300 ${
+          className={`wrap flex items-center justify-between gap-4 transition-all duration-300 ${
             scrolled ? "py-2.5" : "py-4"
           }`}
         >
-          <Link href="#top" aria-label="Jṉanana — back to top" className="group inline-block transition-transform duration-200 hover:scale-105">
+          <Link
+            href="#top"
+            aria-label="Jṉanana — back to top"
+            className="group inline-block shrink-0 transition-transform duration-200 hover:scale-105"
+          >
             <Wordmark />
           </Link>
 
-          {/* Desktop Navigation Links */}
-          <div className="hidden items-center gap-7 lg:flex">
+          {/* Desktop navigation */}
+          <div className="hidden items-center gap-6 lg:flex xl:gap-7">
             {nav.map((item) => (
               <Link
                 key={item.href}
@@ -92,7 +132,7 @@ export function Nav() {
                     alt="Profile"
                     width={38}
                     height={38}
-                    className="rounded-full object-cover border-2 border-magenta"
+                    className="rounded-full border-2 border-magenta object-cover"
                   />
                 </Link>
               </div>
@@ -108,13 +148,15 @@ export function Nav() {
             )}
           </div>
 
-          {/* Mobile 3-Lines Hamburger Button */}
+          {/* Mobile / tablet trigger — 44px square, the minimum comfortable tap target */}
           <button
+            ref={triggerRef}
             type="button"
-            onClick={toggleMenu}
+            onClick={() => setOpen((prev) => !prev)}
             aria-expanded={open}
+            aria-controls="mobile-menu"
             aria-label={open ? "Close menu" : "Open menu"}
-            className="flex h-11 w-11 shrink-0 flex-col items-center justify-center gap-[5px] border-[1.5px] border-edge bg-white shadow-hard-sm transition-transform active:translate-[2px] active:shadow-none lg:hidden cursor-pointer z-50"
+            className="flex h-11 w-11 shrink-0 cursor-pointer flex-col items-center justify-center gap-[5px] border-[1.5px] border-edge bg-white shadow-hard-sm transition-transform active:translate-y-[2px] active:shadow-none lg:hidden"
           >
             <span
               className={`h-[2.5px] w-5 bg-ink transition-all duration-200 ${
@@ -123,7 +165,7 @@ export function Nav() {
             />
             <span
               className={`h-[2.5px] w-5 bg-ink transition-all duration-200 ${
-                open ? "opacity-0 scale-50" : "opacity-100"
+                open ? "scale-50 opacity-0" : "opacity-100"
               }`}
             />
             <span
@@ -135,39 +177,48 @@ export function Nav() {
         </div>
       </nav>
 
-      {/* Full-Screen Mobile Drawer Modal (z-50) */}
+      {/* Full-screen drawer. `inset-0` sizes it — an explicit 100vw would overflow
+          horizontally wherever a classic scrollbar takes width. */}
       {open && (
         <div
-          className="fixed inset-0 z-[9999] flex flex-col bg-[#FBF3E7] lg:hidden"
-          style={{ height: "100dvh", width: "100vw" }}
+          id="mobile-menu"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Site menu"
+          className="fixed inset-0 z-[100] flex h-[100dvh] flex-col overscroll-contain bg-[#FBF3E7] lg:hidden"
         >
-          {/* Mobile Drawer Top Header Bar */}
-          <div className="flex items-center justify-between border-b-[1.5px] border-edge px-5 py-4 bg-[#FBF3E7]">
-            <Link href="#top" onClick={() => setOpen(false)}>
+          <div
+            className="flex items-center justify-between gap-4 border-b-[1.5px] border-edge bg-[#FBF3E7] px-5 py-4"
+            style={{ paddingTop: "max(1rem, env(safe-area-inset-top))" }}
+          >
+            <Link href="#top" onClick={() => closeMenu()} aria-label="Jṉanana — back to top">
               <Wordmark />
             </Link>
 
             <button
+              ref={closeRef}
               type="button"
-              onClick={() => setOpen(false)}
-              className="flex h-11 w-11 items-center justify-center border-[1.5px] border-edge bg-white shadow-hard-sm text-ink font-bold text-xl cursor-pointer active:translate-[2px] active:shadow-none"
+              onClick={() => closeMenu()}
               aria-label="Close menu"
+              className="flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center border-[1.5px] border-edge bg-white text-xl font-bold text-ink shadow-hard-sm active:translate-y-[2px] active:shadow-none"
             >
               ✕
             </button>
           </div>
 
-          {/* Mobile Drawer Links & Actions */}
-          <div className="flex-1 overflow-y-auto px-6 py-6 flex flex-col justify-between">
+          <div
+            className="flex flex-1 flex-col justify-between overflow-y-auto overscroll-contain px-6 py-6"
+            style={{ paddingBottom: "max(1.5rem, env(safe-area-inset-bottom))" }}
+          >
             <div className="flex flex-col gap-1">
-              <span className="mono text-xs text-[#D6206A] uppercase tracking-widest font-bold mb-2">
+              <span className="mono mb-2 text-xs font-bold tracking-widest text-magenta uppercase">
                 Navigation
               </span>
               {nav.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
-                  onClick={() => setOpen(false)}
+                  onClick={() => closeMenu()}
                   className="mono border-b border-[#141210]/15 py-4 text-lg font-extrabold text-ink transition-colors hover:text-magenta"
                 >
                   {item.label}
@@ -175,14 +226,13 @@ export function Nav() {
               ))}
             </div>
 
-            {/* Auth Buttons in Mobile Drawer */}
-            <div className="mt-8 flex flex-col gap-3.5 pb-8">
+            <div className="mt-8 flex flex-col gap-3.5 pb-2">
               {isLoggedIn ? (
                 <Button
                   href={target}
                   variant="magenta"
                   className="w-full justify-center py-4 text-base"
-                  onClick={() => setOpen(false)}
+                  onClick={() => closeMenu()}
                 >
                   Go to Dashboard →
                 </Button>
@@ -192,7 +242,7 @@ export function Nav() {
                     href="/login"
                     variant="ghost"
                     className="w-full justify-center border-[1.5px] border-edge bg-white py-3.5 text-base"
-                    onClick={() => setOpen(false)}
+                    onClick={() => closeMenu()}
                   >
                     Sign In
                   </Button>
@@ -200,7 +250,7 @@ export function Nav() {
                     href="/onboarding/student"
                     variant="magenta"
                     className="w-full justify-center py-4 text-base"
-                    onClick={() => setOpen(false)}
+                    onClick={() => closeMenu()}
                   >
                     Join as Mentee
                   </Button>
@@ -208,7 +258,7 @@ export function Nav() {
                     href="/onboarding/mentor"
                     variant="amber"
                     className="w-full justify-center py-3.5 text-base"
-                    onClick={() => setOpen(false)}
+                    onClick={() => closeMenu()}
                   >
                     Join as Mentor
                   </Button>

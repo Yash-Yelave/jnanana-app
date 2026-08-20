@@ -30,15 +30,20 @@ export const strip = [
 export const hero = {
   kicker: "Jṉanana Foundation",
   lines: ["THE WORLD'S", "LARGEST", "MENTORSHIP", "PROGRAM"],
-  sub: "Great ideas shouldn't stay hidden.",
-  lead: "Thousands of people are building something right now — and most of them will never meet the one person who could have shown them the way. Jṉanana exists to close that distance, deliberately, at scale.",
+  lead: "Thousands of people are building something right now, and most of them will never meet the one person who could have shown them the way. Jṉanana exists to close that distance, deliberately, at scale.",
   chips: [
     { label: "Curated matching", tone: "emerald" },
     { label: "Monthly J-Spotlight", tone: "magenta" },
     { label: "Three tracks", tone: "plain" },
     { label: "ISF partnered", tone: "emerald" },
   ] as const,
-  sticker: { top: "Edition 01", big: "29 · 08 · 26", bottom: "J-Spotlight" },
+  sticker: {
+    top: "Edition 01",
+    big: "29 · 08 · 26",
+    bottom: "J-Spotlight",
+    // Drives the live countdown. IST, matching the 4:00 PM start in eventDetails.
+    startsAt: "2026-08-29T16:00:00+05:30",
+  },
 };
 
 export const gaps = [
@@ -67,14 +72,14 @@ export const steps = [
   {
     n: "04 / Grow",
     title: "Grow",
-    body: "Learn, connect and grow through mentorship — measured against the outcome you named.",
+    body: "Learn, connect and grow through mentorship, measured against the outcome you named.",
   },
 ];
 
 export const forMentors = {
   eyebrow: "For Mentors",
   title: ["Give the guidance", "you once needed."],
-  body: "Your experience placed where it compounds — with none of the coordination.",
+  body: "Your experience placed where it compounds, with none of the coordination.",
   points: [
     "Mentees pre-screened and matched to your domain",
     "Scheduling, agendas and follow-ups handled for you",
@@ -99,7 +104,7 @@ export const spotlightSteps = [
   {
     n: "01",
     title: "Pitch",
-    body: "Share what you're building or thinking about — in front of a room that's actually listening.",
+    body: "Share what you're building or thinking about, in front of a room that's actually listening.",
   },
   {
     n: "02",
@@ -128,7 +133,7 @@ export const noPrereq = [
 
 export const eventDetails = [
   { k: "Date", v: "29 August 2026", s: "Saturday" },
-  { k: "Time", v: "4:00 – 6:00 PM", s: "Two hours" },
+  { k: "Time", v: "4:00 to 6:00 PM", s: "Two hours" },
   { k: "Venue", v: "To Be Announced", s: "Shared after confirmation" },
   { k: "Access", v: "Invite Only", s: "Curated room" },
   { k: "Capacity", v: "Only 50 Seats", s: "High value, high impact" },
@@ -166,14 +171,14 @@ export const tracks: {
     title: "Jṉanana Gurukul",
     pin: "Invite only",
     kick: "The mastery track.",
-    body: "A long-form mentor–shishya relationship for those pursuing depth in a single craft. The oldest teaching model there is, run with modern structure and real accountability.",
+    body: "A long-form mentor-shishya relationship for those pursuing depth in a single craft. The oldest teaching model there is, run with modern structure and real accountability.",
     meta: "12 months · Weekly · 1-to-1",
   },
   {
     tag: "Track 02",
     title: "Junicorns",
     kick: "The founder track.",
-    body: "Early builders paired with operators who have already built the thing they're attempting — through the first product, the first hires, the first raise. Surfaced through J-Spotlight.",
+    body: "Early builders paired with operators who have already built the thing they're attempting, through the first product, the first hires, the first raise. Surfaced through J-Spotlight.",
     meta: "6 months · Fortnightly · 1-to-1 + circle",
   },
   {
@@ -184,7 +189,7 @@ export const tracks: {
     body: [
       "Run with the ",
       { strong: "International Startup Foundation" },
-      " — the organisation working to strengthen India's startup ecosystem by connecting founders to investors, mentors and opportunity. Their mentors, our structure, your idea.",
+      ", the organisation working to strengthen India's startup ecosystem by connecting founders to investors, mentors and opportunity. Their mentors, our structure, your idea.",
     ],
     meta: "Rolling · One hour a week · Mentor network",
   },
@@ -193,10 +198,10 @@ export const tracks: {
 export const isfPartner = {
   eyebrow: "The Partner",
   title: ["International", "Startup Foundation"],
-  body: "ISF works to strengthen India's entrepreneurial ecosystem — connecting startups with the investors, mentors and resources they otherwise never reach. Its stated mission: empower, connect and thrive.",
+  body: "ISF works to strengthen India's entrepreneurial ecosystem by connecting startups with the investors, mentors and resources they otherwise never reach. Its stated mission: empower, connect and thrive.",
   points: [
     'A "one hour a week" mentorship model built for busy operators',
-    "The Junicorn program — backing entrepreneurs while they're still teenagers",
+    "The Junicorn program, backing entrepreneurs while they're still teenagers",
     "Summits and investor-connect sessions that put founders in the room",
     "A focus on rural entrepreneurship as inclusive growth, not charity",
   ],
@@ -205,7 +210,7 @@ export const isfPartner = {
 export const isfWhy = {
   eyebrow: "Why It Matters Here",
   title: ["Structure meets", "reach."],
-  body: "Jṉanana brings the mentorship architecture — matching, tracks, cadence, measurement. ISF brings a national network of founders, mentors and investors, and a decade-deep conviction that talent outside the metros deserves the same shot.",
+  body: "Jṉanana brings the mentorship architecture of matching, tracks, cadence and measurement. ISF brings a national network of founders, mentors and investors, and a decade-deep conviction that talent outside the metros deserves the same shot.",
   points: [
     "Mentees reach mentors far beyond their own city",
     "Mentors give in a format that respects their calendar",

@@ -26,7 +26,7 @@ export function TheGap() {
           <Reveal variant="fade-left">
             <p className="lead mb-8">
               There are thousands of people with ideas. But not everyone gets a
-              chance to —
+              chance to:
             </p>
           </Reveal>
 

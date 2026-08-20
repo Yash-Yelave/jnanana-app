@@ -12,6 +12,7 @@ import { Tracks } from "@/components/website/Tracks";
 import { Faculty } from "@/components/website/Faculty";
 import { Statement } from "@/components/website/Statement";
 import { Events, AppCta } from "@/components/website/Events";
+import { Numbers } from "@/components/website/Numbers";
 import { Join } from "@/components/website/Join";
 import { Footer } from "@/components/website/Footer";
 
@@ -25,6 +26,7 @@ export function LandingPage() {
 
       <main id="main">
         <Hero />
+        <Numbers />
         <Strip items={strip} />
         <TheGap />
         <HowItWorks />

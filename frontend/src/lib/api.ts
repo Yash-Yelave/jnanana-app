@@ -49,6 +49,31 @@ export async function apiFetch<T>(path: string, init: RequestInit = {}): Promise
   }
 }
 
+/**
+ * For endpoints the API serves without a session. `apiFetch` throws whenever
+ * there is no token, so anything it backs is invisible to logged-out visitors —
+ * which is exactly who the landing page is for.
+ */
+export async function publicFetch<T>(path: string): Promise<T> {
+  const response = await fetch(`${apiUrl()}/api/v1${path}`, {
+    headers: { "Content-Type": "application/json" },
+  });
+  if (!response.ok) {
+    throw new ApiError("Request failed", response.status);
+  }
+  return (await response.json()) as T;
+}
+
+export interface ProgrammeStats {
+  mentors: number;
+  mentees: number;
+  mentorship_minutes: number;
+}
+
+export function getProgrammeStats() {
+  return publicFetch<ProgrammeStats>("/stats");
+}
+
 export interface EventItem {
   id: string;
   slug: string;
@@ -86,6 +111,7 @@ export interface MentorshipRequestItem {
   tokens_used: number;
   status: string;
   note?: string;
+  duration_minutes?: number | null;
   created_at: string;
   updated_at: string;
   mentee_name?: string;
@@ -96,11 +122,11 @@ export interface MentorshipRequestItem {
 
 // Events API
 export function getEvents() {
-  return apiFetch<EventItem[]>("/events");
+  return publicFetch<EventItem[]>("/events");
 }
 
 export function getEvent(id: string) {
-  return apiFetch<EventItem>(`/events/${id}`);
+  return publicFetch<EventItem>(`/events/${id}`);
 }
 
 export function getMyParticipation(id: string) {
@@ -136,10 +162,14 @@ export function getMyMentorshipRequests() {
   return apiFetch<MentorshipRequestItem[]>("/mentorship-requests/my");
 }
 
-export function actionMentorshipRequest(id: string, action: "accept" | "reject" | "complete" | "cancel") {
-  return apiFetch<{ message: string }>(`/mentorship-requests/${id}/action`, {
+export function actionMentorshipRequest(
+  id: string,
+  action: "accept" | "reject" | "complete" | "cancel",
+  durationMinutes?: number,
+) {
+  return apiFetch<{ message: string; status: string }>(`/mentorship-requests/${id}/action`, {
     method: "POST",
-    body: JSON.stringify({ action }),
+    body: JSON.stringify({ action, duration_minutes: durationMinutes }),
   });
 }
 

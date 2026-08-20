@@ -67,7 +67,7 @@ export function Philosophy() {
             </span>
           </p>
           <p className="lead mx-auto mt-6.5">
-            Jṉanana is about finding those people early — and giving them
+            Jṉanana is about finding those people early, and giving them
             somewhere to grow.
           </p>
         </Reveal>
