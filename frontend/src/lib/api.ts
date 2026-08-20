@@ -13,29 +13,40 @@ export class ApiError extends Error {
 export async function apiFetch<T>(path: string, init: RequestInit = {}): Promise<T> {
   const supabase = createClient();
   const { data } = await supabase.auth.getSession();
+  const currentPath = typeof window !== "undefined" ? window.location.pathname : "";
+  const isPublicPage = ["/login", "/", "/mentors", "/events", "/community", "/forgot-password", "/reset-password", "/waiting"].some(
+    (p) => currentPath === p || currentPath.startsWith("/events/") || currentPath.startsWith("/mentors/")
+  );
+
   if (!data.session?.access_token) {
-    if (typeof window !== "undefined" && !["/login", "/", "/mentors"].includes(window.location.pathname)) {
+    if (!isPublicPage && typeof window !== "undefined") {
       window.location.href = "/login";
     }
     throw new ApiError("Authentication required", 401);
   }
 
-  const response = await fetch(`${apiUrl()}/api/v1${path}`, {
-    ...init,
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${data.session.access_token}`,
-      ...init.headers,
-    },
-  });
-  if (!response.ok) {
-    if (response.status === 401 && typeof window !== "undefined" && !["/login", "/", "/mentors"].includes(window.location.pathname)) {
-      window.location.href = "/login";
+  try {
+    const response = await fetch(`${apiUrl()}/api/v1${path}`, {
+      ...init,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${data.session.access_token}`,
+        ...init.headers,
+      },
+    });
+
+    if (!response.ok) {
+      if (response.status === 401 && !isPublicPage && typeof window !== "undefined") {
+        window.location.href = "/login";
+      }
+      const body = (await response.json().catch(() => null)) as { detail?: string } | null;
+      throw new ApiError(body?.detail ?? "Request failed", response.status);
     }
-    const body = (await response.json().catch(() => null)) as { detail?: string } | null;
-    throw new ApiError(body?.detail ?? "Request failed", response.status);
+    return (response.status === 204 ? undefined : await response.json()) as T;
+  } catch (err: any) {
+    if (err instanceof ApiError) throw err;
+    throw new ApiError(err?.message || "Network error - Failed to fetch", 500);
   }
-  return (response.status === 204 ? undefined : await response.json()) as T;
 }
 
 export interface EventItem {
