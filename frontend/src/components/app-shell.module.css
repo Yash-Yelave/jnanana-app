@@ -165,7 +165,8 @@
   min-width: 0;
 }
 
-.mobileHeader {
+.mobileHeader,
+.mobileBottomNav {
   display: none;
 }
 
@@ -185,7 +186,7 @@
   .shell,
   .withoutRail {
     display: block;
-    padding: 0 0 30px;
+    padding: 0 0 84px;
     background-color: var(--color-paper, #FBF3E7);
     background-image:
       linear-gradient(rgba(11, 107, 68, 0.09) 1px, transparent 1px),
@@ -196,53 +197,77 @@
   .topbarHeader {
     display: none;
   }
+
+  /* Top Mobile Header */
   .mobileHeader {
     position: sticky;
-    z-index: 20;
+    z-index: 50;
     top: 0;
-    display: grid;
-    height: 64px;
-    margin: 0 16px;
+    display: flex;
+    height: 60px;
+    margin: 0 12px 16px;
     padding: 0 16px;
-    grid-template-columns: 1fr auto auto auto;
     align-items: center;
-    gap: 14px;
-    border-radius: 0 0 16px 16px;
+    justify-content: space-between;
+    border-radius: 0 0 18px 18px;
     background: #062E24;
     border: 1.5px solid #141210;
-    box-shadow: 4px 4px 0 #141210;
+    box-shadow: 3px 3px 0 #141210;
     color: #fff;
   }
-  .mobileHeader > a:first-child span {
-    font-size: 16px;
-  }
-  .mobileHeader details {
-    position: relative;
-  }
-  .mobileHeader summary {
-    cursor: pointer;
-    font-size: 22px;
-    list-style: none;
-  }
-  .mobileHeader summary::-webkit-details-marker {
-    display: none;
-  }
-  .mobileHeader details .nav {
-    position: absolute;
-    top: 38px;
-    right: -55px;
-    width: 240px;
-    margin: 0;
-    padding: 16px;
-    gap: 6px;
-    border-radius: 18px;
+
+  /* Fixed Bottom Mobile App Nav Bar */
+  .mobileBottomNav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    height: 66px;
+    padding: 4px 10px 8px;
     background: #062E24;
-    border: 1.5px solid #141210;
-    box-shadow: 4px 4px 0 #141210;
+    border-top: 1.5px solid #141210;
+    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.35);
   }
-  .mobileHeader details .nav a {
-    height: 46px;
+
+  .mobileNavItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    padding: 6px 12px;
+    border-radius: 12px;
+    color: #CBD5E1;
+    text-decoration: none;
+    transition: all 160ms ease;
+    border: 1px solid transparent;
   }
+
+  .mobileNavItem:hover {
+    color: #FFB800;
+  }
+
+  .mobileActiveItem {
+    background: rgba(255, 184, 0, 0.18);
+    border-color: #FFB800;
+    color: #FFB800;
+    font-weight: 800;
+  }
+
+  .mobileNavIcon {
+    flex-shrink: 0;
+  }
+
+  .mobileNavLabel {
+    font-size: 0.675rem;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+  }
+
   .content {
     padding: 16px;
   }
