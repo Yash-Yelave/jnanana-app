@@ -3,6 +3,13 @@ import { Eyebrow, Section, Wrap } from "./ui";
 import { Marquee } from "./Marquee";
 import { Reveal } from "./Reveal";
 
+/**
+ * Hidden for now: with only two confirmed names the marquee loops them back to
+ * back and reads as padding rather than a faculty. The markup is intact — flip
+ * this to true once the real list lands.
+ */
+const SHOW_FACULTY_MARQUEE = false;
+
 export function Faculty() {
   return (
     <Section id="faculty" className="pt-0!">
@@ -23,33 +30,35 @@ export function Faculty() {
         </Reveal>
       </Wrap>
 
-      <Marquee
-        seconds={44}
-        ariaLabel="Jṉanana faculty"
-        className="relative z-2 mt-11 border-y-[1.5px] border-edge bg-white py-5.5"
-      >
-        {faculty.map((m, i) => (
-          <span
-            key={`${m.initials}-${i}`}
-            className="group mx-2.5 inline-flex items-center gap-3 border-[1.5px] border-edge bg-paper py-2.5 pr-5.5 pl-2.5 whitespace-nowrap transition-transform duration-200 hover:-translate-y-1 hover:shadow-hard-sm cursor-pointer"
-          >
+      {SHOW_FACULTY_MARQUEE && (
+        <Marquee
+          seconds={44}
+          ariaLabel="Jṉanana faculty"
+          className="relative z-2 mt-11 border-y-[1.5px] border-edge bg-white py-5.5"
+        >
+          {faculty.map((m, i) => (
             <span
-              aria-hidden
-              className="inline-flex h-9.5 w-9.5 shrink-0 items-center justify-center border-[1.5px] border-edge bg-emerald font-display text-sm font-extrabold text-amber transition-transform duration-200 group-hover:scale-110"
+              key={`${m.initials}-${i}`}
+              className="group mx-2.5 inline-flex items-center gap-3 border-[1.5px] border-edge bg-paper py-2.5 pr-5.5 pl-2.5 whitespace-nowrap transition-transform duration-200 hover:-translate-y-1 hover:shadow-hard-sm cursor-pointer"
             >
-              {m.initials}
-            </span>
-            <span className="text-left">
-              <span className="block text-[14.5px] leading-tight font-bold transition-colors duration-200 group-hover:text-magenta">
-                {m.name}
+              <span
+                aria-hidden
+                className="inline-flex h-9.5 w-9.5 shrink-0 items-center justify-center border-[1.5px] border-edge bg-emerald font-display text-sm font-extrabold text-amber transition-transform duration-200 group-hover:scale-110"
+              >
+                {m.initials}
               </span>
-              <span className="block font-mono text-[10px] tracking-[0.1em] text-muted uppercase">
-                {m.role}
+              <span className="text-left">
+                <span className="block text-[14.5px] leading-tight font-bold transition-colors duration-200 group-hover:text-magenta">
+                  {m.name}
+                </span>
+                <span className="block font-mono text-[10px] tracking-[0.1em] text-muted uppercase">
+                  {m.role}
+                </span>
               </span>
             </span>
-          </span>
-        ))}
-      </Marquee>
+          ))}
+        </Marquee>
+      )}
 
       <Wrap>
         <div className="mt-12 grid gap-[1.5px] border-[1.5px] border-edge bg-edge sm:grid-cols-2 lg:grid-cols-3">

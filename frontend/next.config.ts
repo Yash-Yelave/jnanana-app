@@ -6,17 +6,14 @@ const nextConfig: NextConfig = {
   // blocks its dev chunks from other origins by default — the page renders but
   // React never hydrates, so nothing interactive works.
   //
-  // These are hostname patterns, not CIDR ranges: only `*` wildcards match.
-  // Private LAN addresses only, and dev-only — no effect on a production build.
+  // Entries are matched literally (a `*` only stands in for a subdomain label,
+  // so numeric wildcards like `192.168.*.*` never match an IP). List the hosts
+  // you actually open the dev server from; add your machine's LAN address here
+  // to test on a phone. Dev-only — no effect on a production build.
   allowedDevOrigins: [
-    "192.168.*.*",
-    "10.*.*.*",
-    "172.16.*.*",
-    "172.17.*.*",
-    "172.18.*.*",
-    "172.19.*.*",
-    "172.20.*.*",
-    "*.local",
+    "127.0.0.1",
+    "localhost",
+    ...(process.env.DEV_LAN_HOST ? [process.env.DEV_LAN_HOST] : []),
   ],
   images: {
     remotePatterns: [

@@ -1,6 +1,7 @@
 import { statement } from "@/content/landing";
 import { Wrap } from "./ui";
 import { Reveal } from "./Reveal";
+import { JnanaWord } from "./JnanaWord";
 
 /** The one magenta band on the page. */
 export function Statement() {
@@ -10,8 +11,17 @@ export function Statement() {
         <blockquote className="it text-[clamp(30px,6vw,84px)] leading-[1.02] tracking-[-0.02em] text-white">
           {statement.quote.map((line, i) => (
             <Reveal key={line} delay={i * 120} variant="scale-up">
-              <span className="block transition-transform duration-300 hover:scale-[1.02] cursor-default">
-                {line}
+              <span className="block cursor-default">
+                {/* The opening word carries the script cycle; the rest of the
+                    line is plain text. */}
+                {i === 0 ? (
+                  <>
+                    <JnanaWord />
+                    {line.replace(statement.jnana, "")}
+                  </>
+                ) : (
+                  line
+                )}
               </span>
             </Reveal>
           ))}

@@ -407,6 +407,47 @@
   75% { transform: rotate(5deg) scale(1.05); }
 }
 
+/* The word "Jnana" in the statement band, cycling through the scripts it lives
+   in. All variants occupy the same grid cell, so the container is as wide as the
+   widest spelling and the sentence around it never reflows as they swap — no
+   measuring, no fixed pixel width to keep in sync with the copy. */
+.jnana {
+  display: inline-grid;
+  vertical-align: baseline;
+  cursor: default;
+}
+
+.jnana > span {
+  grid-area: 1 / 1;
+  opacity: 0;
+  transform: translateY(0.12em);
+  transition:
+    opacity 0.34s ease,
+    transform 0.34s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.jnana > span[data-active="true"] {
+  opacity: 1;
+  transform: none;
+}
+
+.jnana-devanagari {
+  font-family: var(--font-devanagari), serif;
+  font-style: normal;
+}
+
+.jnana-telugu {
+  font-family: var(--font-telugu), serif;
+  font-style: normal;
+}
+
+/* Reduced motion: the word simply rests in Sanskrit and never cycles. */
+@media (prefers-reduced-motion: reduce) {
+  .jnana > span {
+    transition: none;
+  }
+}
+
 /* Countdown digits. Each digit sits in a clipped slot; when its value changes
    React remounts it (the key changes) and it drops in from above. `transform`
    only — no Tailwind translate utility on these elements, or the two would

@@ -1,5 +1,12 @@
 import type { Metadata, Viewport } from "next";
-import { Bricolage_Grotesque, Instrument_Serif, JetBrains_Mono, Manrope } from "next/font/google";
+import {
+  Bricolage_Grotesque,
+  Instrument_Serif,
+  JetBrains_Mono,
+  Manrope,
+  Noto_Serif_Devanagari,
+  Noto_Serif_Telugu,
+} from "next/font/google";
 import type { ReactNode } from "react";
 import { siteUrl } from "@/lib/env";
 import "./globals.css";
@@ -24,6 +31,24 @@ const instrumentSerif = Instrument_Serif({
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   variable: "--font-jetbrains-mono",
+  display: "swap",
+});
+
+// Instrument Serif is Latin-only. These carry the Devanagari and Telugu
+// spellings of "Jnana" in the statement band; serif, so they sit with it
+// rather than dropping to a system font. Subset-scoped, so each request
+// only fetches the script it needs.
+const notoDevanagari = Noto_Serif_Devanagari({
+  subsets: ["devanagari"],
+  weight: ["400"],
+  variable: "--font-devanagari",
+  display: "swap",
+});
+
+const notoTelugu = Noto_Serif_Telugu({
+  subsets: ["telugu"],
+  weight: ["400"],
+  variable: "--font-telugu",
   display: "swap",
 });
 
@@ -60,7 +85,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
     <html
       lang="en"
       data-scroll-behavior="smooth"
-      className={`${bricolage.variable} ${instrumentSerif.variable} ${jetbrainsMono.variable} ${manrope.variable}`}
+      className={`${bricolage.variable} ${instrumentSerif.variable} ${jetbrainsMono.variable} ${manrope.variable} ${notoDevanagari.variable} ${notoTelugu.variable}`}
     >
       <body>{children}</body>
     </html>

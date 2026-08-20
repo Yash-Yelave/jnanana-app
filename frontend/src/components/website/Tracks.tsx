@@ -49,7 +49,7 @@ export function Tracks() {
                   <h3 className="mt-4 mb-1.5 text-[clamp(24px,3vw,28px)] transition-colors duration-200 group-hover:text-emerald">
                     {t.title}
                     {t.pin && (
-                      <span className="animate-wiggle ml-2 inline-block border-[1.5px] border-edge bg-amber px-2.5 py-0.5 align-middle font-mono text-[9.5px] font-bold tracking-[0.14em] text-ink uppercase shadow-hard-sm">
+                      <span className="animate-wiggle ml-2 inline-block border-[1.5px] border-edge bg-amber px-2.5 py-0.5 align-middle font-mono text-[10px] font-bold tracking-[0.14em] text-ink uppercase shadow-hard-sm">
                         {t.pin}
                       </span>
                     )}
@@ -61,9 +61,6 @@ export function Tracks() {
                     <Rich text={t.body} />
                   </p>
 
-                  <p className="mt-5 border-t-[1.5px] border-edge pt-3.5 font-mono text-[10px] font-bold tracking-[0.14em] text-emerald uppercase transition-colors duration-200 group-hover:text-magenta">
-                    {t.meta}
-                  </p>
                 </article>
               </TiltCard>
             </Reveal>

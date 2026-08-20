@@ -164,7 +164,6 @@ export const tracks: {
   pin?: string;
   kick: string;
   body: RichText;
-  meta: string;
 }[] = [
   {
     tag: "Track 01",
@@ -172,14 +171,12 @@ export const tracks: {
     pin: "Invite only",
     kick: "The mastery track.",
     body: "A long-form mentor-shishya relationship for those pursuing depth in a single craft. The oldest teaching model there is, run with modern structure and real accountability.",
-    meta: "12 months · Weekly · 1-to-1",
   },
   {
     tag: "Track 02",
     title: "Junicorns",
     kick: "The founder track.",
     body: "Early builders paired with operators who have already built the thing they're attempting, through the first product, the first hires, the first raise. Surfaced through J-Spotlight.",
-    meta: "6 months · Fortnightly · 1-to-1 + circle",
   },
   {
     tag: "Track 03 · Partnered",
@@ -191,7 +188,6 @@ export const tracks: {
       { strong: "International Startup Foundation" },
       ", the organisation working to strengthen India's startup ecosystem by connecting founders to investors, mentors and opportunity. Their mentors, our structure, your idea.",
     ],
-    meta: "Rolling · One hour a week · Mentor network",
   },
 ];
 
@@ -251,8 +247,34 @@ export const domains = [
   },
 ];
 
+/**
+ * The scripts "Jnana" lives in. Cycled on hover and left resting on the last
+ * entry, so the word settles back into the Sanskrit the brand uses.
+ */
+export const jnanaScripts = [
+  { lang: "English", text: "Knowledge", script: "latin" },
+  { lang: "Hindi", text: "ज्ञान", script: "devanagari" },
+  { lang: "Telugu", text: "జ్ఞానం", script: "telugu" },
+  { lang: "Sanskrit", text: "Jñāna", script: "latin" },
+] as const;
+
+/**
+ * The Jnanana wordmark in the scripts it is spoken in.
+ *
+ * NOTE: the Devanagari and Telugu spellings below are phonetic transliterations
+ * of "Jnanana" and have NOT been confirmed by a native speaker. A brand name
+ * rendered wrongly in someone's own script is worse than not rendering it at
+ * all — get these checked before this goes live.
+ */
+export const brandScripts = [
+  { lang: "Hindi", text: "ज्ञानन", script: "devanagari" },
+  { lang: "Telugu", text: "జ్ఞానన", script: "telugu" },
+] as const;
+
 export const statement = {
   quote: ["Jñāna is not taught.", "It is passed on."],
+  /** The leading word of quote[0], rendered by JnanaWord rather than as text. */
+  jnana: "Jñāna",
   who: "The Jṉanana Philosophy",
 };
 

@@ -1,6 +1,8 @@
 import Link from "next/link";
 import type { ComponentProps, ReactNode } from "react";
 import { TiltCard } from "./TiltCard";
+import { brandScripts } from "@/content/landing";
+import { ScriptCycle } from "./ScriptCycle";
 
 /* ---------------------------------------------------------- */
 /* Wordmark                                                    */
@@ -9,18 +11,41 @@ import { TiltCard } from "./TiltCard";
 export function Wordmark({
   className = "",
   onDark = false,
+  animated = false,
 }: {
   className?: string;
   onDark?: boolean;
+  /** Cycle the mark through Hindi and Telugu on hover, resting on the Latin
+   *  lockup. Off by default: the mark appears in the footer and the mobile
+   *  drawer too, and a logo that morphs everywhere it appears stops reading as
+   *  a logo. */
+  animated?: boolean;
 }) {
-  return (
-    <span
-      className={`font-display text-[20px] font-extrabold tracking-[0.14em] ${
-        onDark ? "text-paper" : "text-emerald"
-      } ${className}`}
-    >
+  const wrapper = `font-display text-[20px] font-extrabold tracking-[0.14em] ${
+    onDark ? "text-paper" : "text-emerald"
+  } ${className}`;
+
+  const lockup = (
+    <>
       J<span className="border-b-2 border-magenta">Ṉ</span>ANANA
-    </span>
+    </>
+  );
+
+  if (!animated) return <span className={wrapper}>{lockup}</span>;
+
+  return (
+    <ScriptCycle
+      className={wrapper}
+      label="Jṉanana"
+      variants={[
+        ...brandScripts.map((variant) => ({
+          lang: variant.lang,
+          node: variant.text,
+          className: variant.script === "telugu" ? "jnana-telugu" : "jnana-devanagari",
+        })),
+        { lang: "Latin", node: lockup },
+      ]}
+    />
   );
 }
 
