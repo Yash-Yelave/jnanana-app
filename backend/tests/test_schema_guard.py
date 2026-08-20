@@ -7,9 +7,10 @@ first real request. This closes both.
 """
 
 import pytest
+from sqlalchemy import text
 from sqlalchemy.ext.asyncio import create_async_engine
 
-from app.main import REQUIRED_TABLES, verify_schema
+from app.main import REQUIRED_COLUMNS, REQUIRED_TABLES, verify_schema
 from app.models import Base
 
 pytestmark = pytest.mark.asyncio
@@ -46,3 +47,37 @@ async def test_partial_schema_names_only_what_is_missing():
         assert "mentorship_requests" in missing
     finally:
         await engine.dispose()
+
+
+async def test_table_present_but_column_missing_is_still_reported(session_factory):
+    """A migration that widens a table can fail on its own.
+
+    Checking table names alone called that healthy, so the API booted and then
+    failed on the first request touching the column - the exact failure this
+    guard exists to prevent.
+    """
+    engine = session_factory.kw["bind"]
+
+    # Rebuild mentorship_requests without the column the later migration adds,
+    # leaving every other table exactly as the fixture created it.
+    async with engine.begin() as conn:
+        await conn.execute(text("drop table mentorship_requests"))
+        await conn.execute(
+            text(
+                "create table mentorship_requests ("
+                "id varchar primary key, mentee_id varchar, mentor_id varchar,"
+                " status varchar, tokens_used integer)"
+            )
+        )
+
+    missing = await verify_schema(engine)
+
+    assert "mentorship_requests.duration_minutes" in missing
+    # The table itself exists, so it must not also be named as missing.
+    assert "mentorship_requests" not in missing
+
+
+async def test_every_declared_column_belongs_to_a_required_table():
+    """A column guard on a table nobody checks would never run."""
+    for table, _column in REQUIRED_COLUMNS:
+        assert table in REQUIRED_TABLES

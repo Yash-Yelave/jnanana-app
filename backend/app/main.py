@@ -36,6 +36,15 @@ REQUIRED_TABLES = (
     "notifications",
 )
 
+# Columns added by a later migration than the one that created their table.
+# A table can exist while the migration that widened it never ran, and checking
+# table names alone would call that healthy - then /stats and "mark complete"
+# fail on the first real request, which is exactly what this guard exists to
+# prevent.
+REQUIRED_COLUMNS: tuple[tuple[str, str], ...] = (
+    ("mentorship_requests", "duration_minutes"),
+)
+
 SCHEMA_HINT = (
     "Apply the database migrations before starting the API: "
     "`supabase db push` (or `supabase migration up --local`). "
@@ -43,15 +52,24 @@ SCHEMA_HINT = (
 )
 
 
-def _missing_tables(sync_conn: Connection) -> list[str]:
-    present = set(inspect(sync_conn).get_table_names())
-    return [name for name in REQUIRED_TABLES if name not in present]
+def _missing_schema(sync_conn: Connection) -> list[str]:
+    inspector = inspect(sync_conn)
+    present = set(inspector.get_table_names())
+    missing = [name for name in REQUIRED_TABLES if name not in present]
+
+    for table, column in REQUIRED_COLUMNS:
+        if table not in present:
+            continue  # already reported as a missing table
+        columns = {col["name"] for col in inspector.get_columns(table)}
+        if column not in columns:
+            missing.append(f"{table}.{column}")
+    return missing
 
 
 async def verify_schema(target: AsyncEngine | None = None) -> list[str]:
-    """Return the required tables that are missing from the database."""
+    """Return the required tables and columns missing from the database."""
     async with (target or engine).connect() as conn:
-        return await conn.run_sync(_missing_tables)
+        return await conn.run_sync(_missing_schema)
 
 
 @asynccontextmanager
@@ -62,7 +80,7 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
     if get_settings().app_env != "test":
         missing = await verify_schema()
         if missing:
-            raise RuntimeError(f"Database is missing required tables: {', '.join(missing)}. {SCHEMA_HINT}")
+            raise RuntimeError(f"Database is missing required schema: {', '.join(missing)}. {SCHEMA_HINT}")
     yield
     await engine.dispose()
 
@@ -139,7 +157,7 @@ def create_app() -> FastAPI:
         if missing:
             raise HTTPException(
                 status_code=503,
-                detail=f"database is missing required tables: {', '.join(missing)}",
+                detail=f"database is missing required schema: {', '.join(missing)}",
             )
         return {"status": "ready"}
 
