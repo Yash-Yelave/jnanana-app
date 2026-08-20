@@ -345,14 +345,6 @@ class Event(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
 
-class EventMentor(Base):
-    __tablename__ = "event_mentors"
-
-    event_id: Mapped[UUID] = mapped_column(ForeignKey("events.id", ondelete="CASCADE"), primary_key=True)
-    mentor_id: Mapped[UUID] = mapped_column(ForeignKey("mentor_profiles.profile_id", ondelete="CASCADE"), primary_key=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
-
-
 class EventParticipant(Base):
     __tablename__ = "event_participants"
     __table_args__ = (UniqueConstraint("event_id", "user_id"),)

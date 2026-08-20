@@ -5,8 +5,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.auth import get_current_user_id
 from app.db import get_db_session
-from app.models import Event, EventMentor, EventParticipant, JuleTransaction, JuleWallet, MentorProfile, Profile
-from app.schemas import EventCreate, EventRead, MentorRead
+from app.models import Event, EventParticipant, JuleTransaction, JuleWallet, Profile
+from app.schemas import EventCreate, EventRead
 
 router = APIRouter(prefix="/events", tags=["events"])
 
@@ -29,7 +29,6 @@ async def list_events(db: AsyncSession = Depends(get_db_session)) -> list[EventR
                 image_path=ev.image_path,
                 status=ev.status,
                 created_at=ev.created_at,
-                participating_mentors=[],
             )
         )
     return out
@@ -43,33 +42,6 @@ async def get_event(event_id: UUID, db: AsyncSession = Depends(get_db_session)) 
     if not ev:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Event not found")
 
-    # Fetch participating mentors
-    m_stmt = (
-        select(Profile, MentorProfile)
-        .join(MentorProfile, Profile.id == MentorProfile.profile_id)
-        .join(EventMentor, MentorProfile.profile_id == EventMentor.mentor_id)
-        .where(EventMentor.event_id == event_id)
-    )
-    m_res = await db.execute(m_stmt)
-    mentors = []
-    for p, mp in m_res.all():
-        mentors.append(
-            MentorRead(
-                id=p.id,
-                first_name=p.first_name,
-                last_name=p.last_name,
-                username=p.username,
-                avatar_path=p.avatar_path,
-                headline=mp.headline,
-                bio=mp.bio,
-                hourly_rate_minor=mp.hourly_rate_minor,
-                currency=mp.currency,
-                languages=mp.languages,
-                professions=mp.professions,
-                companies=mp.companies,
-            )
-        )
-
     return EventRead(
         id=ev.id,
         slug=ev.slug,
@@ -80,7 +52,6 @@ async def get_event(event_id: UUID, db: AsyncSession = Depends(get_db_session)) 
         image_path=ev.image_path,
         status=ev.status,
         created_at=ev.created_at,
-        participating_mentors=mentors,
     )
 
 
@@ -122,15 +93,15 @@ async def checkin_event(
         participant.tokens_allocated = True
         tokens_granted = 50
 
-        # Get or create JuleWallet
+        # Get or create JuleWallet (initial balance 0)
         w_stmt = select(JuleWallet).where(JuleWallet.user_id == user_id)
         w_res = await db.execute(w_stmt)
         wallet = w_res.scalar_one_or_none()
         if not wallet:
-            wallet = JuleWallet(user_id=user_id, balance=50)
+            wallet = JuleWallet(user_id=user_id, balance=0)
             db.add(wallet)
-        else:
-            wallet.balance += 50
+        
+        wallet.balance += 50
 
         # Add JuleTransaction log
         txn = JuleTransaction(
@@ -148,3 +119,4 @@ async def checkin_event(
         "checkin_status": "checked_in",
         "tokens_granted": tokens_granted,
     }
+

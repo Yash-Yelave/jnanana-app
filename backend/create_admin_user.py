@@ -4,7 +4,10 @@ from app.config import get_settings
 
 def setup_admin():
     settings = get_settings()
-    secret_key = settings.supabase_secret_key.get_secret_value()
+    secret_key = settings.supabase_secret_key.get_secret_value() if settings.supabase_secret_key else ""
+    admin_email = settings.admin_email or "admin@jnanana.org"
+    admin_password = settings.admin_password.get_secret_value() if settings.admin_password else "Jarvisyash1@1"
+
     url = f"{settings.supabase_url.rstrip('/')}/auth/v1/admin/users"
     headers = {
         "apikey": secret_key,
@@ -13,8 +16,8 @@ def setup_admin():
     }
     
     payload = {
-        "email": "rostopedia@gmail.com",
-        "password": "Jarvisyash1@1",
+        "email": admin_email,
+        "password": admin_password,
         "email_confirm": True,
         "user_metadata": {
             "first_name": "admin",
@@ -33,7 +36,7 @@ def setup_admin():
             users_data = res.json()
             users = users_data.get("users", []) if isinstance(users_data, dict) else users_data
             for u in users:
-                if u.get("email") == "rostopedia@gmail.com":
+                if u.get("email") == admin_email:
                     user_id = u.get("id")
                     break
         
@@ -41,7 +44,7 @@ def setup_admin():
             print(f"Updating admin user {user_id}...")
             update_url = f"{url}/{user_id}"
             update_payload = {
-                "password": "Jarvisyash1@1",
+                "password": admin_password,
                 "email_confirm": True,
                 "user_metadata": {
                     "first_name": "admin",
@@ -88,8 +91,8 @@ def setup_admin():
         "Content-Type": "application/json",
     }
     login_body = {
-        "email": "rostopedia@gmail.com",
-        "password": "Jarvisyash1@1"
+        "email": admin_email,
+        "password": admin_password
     }
     with httpx.Client() as client:
         res = client.post(token_url, headers=token_headers, json=login_body)

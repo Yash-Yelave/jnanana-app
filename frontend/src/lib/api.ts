@@ -59,7 +59,6 @@ export interface EventItem {
   image_path?: string;
   status: string;
   created_at: string;
-  participating_mentors?: any[];
 }
 
 export interface JuleWallet {
@@ -147,12 +146,6 @@ export function createAdminEvent(data: { slug: string; name: string; description
   return apiFetch<EventItem>("/admin/events", {
     method: "POST",
     body: JSON.stringify(data),
-  });
-}
-
-export function assignMentorToEvent(eventId: string, mentorId: string) {
-  return apiFetch<{ message: string }>(`/admin/events/${eventId}/mentors/${mentorId}`, {
-    method: "POST",
   });
 }
 

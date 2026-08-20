@@ -17,42 +17,20 @@ async def create_request(
     user_id: UUID = Depends(get_current_user_id),
     db: AsyncSession = Depends(get_db_session),
 ) -> MentorshipRequestRead:
-    # 1. Verify or resolve mentor profile
+    # 1. Verify mentor profile exists (Strict 404 if not found)
     m_stmt = select(MentorProfile).where(MentorProfile.profile_id == payload.mentor_id)
     m_res = await db.execute(m_stmt)
     mentor = m_res.scalar_one_or_none()
 
     if not mentor:
-        # Fallback to any active approved mentor profile in DB
-        fallback_stmt = select(MentorProfile).where(MentorProfile.approval_status == "approved")
-        fallback_res = await db.execute(fallback_stmt)
-        mentor = fallback_res.scalars().first()
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Mentor not found")
 
-        if not mentor:
-            any_stmt = select(MentorProfile)
-            mentor = (await db.execute(any_stmt)).scalars().first()
-
-        if not mentor:
-            p_stmt = select(Profile).where(Profile.role == "mentor")
-            p_user = (await db.execute(p_stmt)).scalars().first()
-            if p_user:
-                mentor = MentorProfile(
-                    profile_id=p_user.id,
-                    headline="Verified Mentor",
-                    bio="Industry expert helping learners grow.",
-                    approval_status="approved",
-                )
-                db.add(mentor)
-                await db.flush()
-            else:
-                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No active mentor found to request")
-
-    # 2. Check or initialize Jule Wallet balance
+    # 2. Check or initialize Jule Wallet balance (Default 0 initial balance)
     w_stmt = select(JuleWallet).where(JuleWallet.user_id == user_id)
     w_res = await db.execute(w_stmt)
     wallet = w_res.scalar_one_or_none()
     if not wallet:
-        wallet = JuleWallet(user_id=user_id, balance=50)
+        wallet = JuleWallet(user_id=user_id, balance=0)
         db.add(wallet)
         await db.flush()
 
@@ -201,7 +179,18 @@ async def action_request(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Request not found")
 
     if req.mentor_id != user_id and req.mentee_id != user_id:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized")
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to access this request")
+
+    # Fetch user profile to check role for actions
+    u_stmt = select(Profile).where(Profile.id == user_id)
+    user_profile = (await db.execute(u_stmt)).scalar_one_or_none()
+
+    if payload.action in ("accept", "reject", "complete"):
+        if not user_profile or user_profile.role != "mentor" or req.mentor_id != user_id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Only assigned mentors can accept, reject, or complete mentorship requests",
+            )
 
     if payload.action == "accept":
         req.status = "accepted"
@@ -225,6 +214,8 @@ async def action_request(
     elif payload.action == "complete":
         req.status = "completed"
     elif payload.action == "cancel":
+        if req.mentee_id != user_id:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Only the requesting mentee can cancel this request")
         req.status = "cancelled"
 
     await db.commit()

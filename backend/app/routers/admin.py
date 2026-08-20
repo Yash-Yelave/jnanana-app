@@ -4,26 +4,19 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.auth import get_current_user_id
+from app.auth import CurrentUser, require_admin
 from app.db import get_db_session
-from app.models import Event, EventMentor, EventParticipant, JuleTransaction, JuleWallet, MentorProfile, MentorshipRequest, Profile
+from app.models import Event, EventParticipant, JuleTransaction, JuleWallet, MentorProfile, MentorshipRequest, Profile
 from app.schemas import EventCreate, EventRead, TokenAdjustInput
 
 router = APIRouter(prefix="/admin", tags=["admin"])
 
 
-async def verify_admin(user_id: UUID = Depends(get_current_user_id), db: AsyncSession = Depends(get_db_session)) -> Profile:
-    stmt = select(Profile).where(Profile.id == user_id)
-    res = await db.execute(stmt)
-    user = res.scalar_one_or_none()
-    if not user or user.role not in ("admin", "superadmin"):
-        # For MVP testing flexibility, allow current users if admin override
-        pass
-    return user
-
-
 @router.get("/metrics")
-async def get_admin_metrics(db: AsyncSession = Depends(get_db_session)) -> dict[str, int]:
+async def get_admin_metrics(
+    admin: CurrentUser = Depends(require_admin),
+    db: AsyncSession = Depends(get_db_session),
+) -> dict[str, int]:
     u_cnt = (await db.execute(select(func.count(Profile.id)))).scalar() or 0
     m_cnt = (await db.execute(select(func.count(MentorProfile.profile_id)))).scalar() or 0
     e_cnt = (await db.execute(select(func.count(Event.id)))).scalar() or 0
@@ -45,7 +38,11 @@ async def get_admin_metrics(db: AsyncSession = Depends(get_db_session)) -> dict[
 
 
 @router.post("/events", response_model=EventRead)
-async def create_event(payload: EventCreate, db: AsyncSession = Depends(get_db_session)) -> EventRead:
+async def create_event(
+    payload: EventCreate,
+    admin: CurrentUser = Depends(require_admin),
+    db: AsyncSession = Depends(get_db_session),
+) -> EventRead:
     ev = Event(
         slug=payload.slug,
         name=payload.name,
@@ -68,20 +65,15 @@ async def create_event(payload: EventCreate, db: AsyncSession = Depends(get_db_s
         image_path=ev.image_path,
         status=ev.status,
         created_at=ev.created_at,
-        participating_mentors=[],
     )
 
 
-@router.post("/events/{event_id}/mentors/{mentor_id}")
-async def assign_mentor_to_event(event_id: UUID, mentor_id: UUID, db: AsyncSession = Depends(get_db_session)) -> dict[str, str]:
-    em = EventMentor(event_id=event_id, mentor_id=mentor_id)
-    db.add(em)
-    await db.commit()
-    return {"message": "Mentor assigned to event"}
-
-
 @router.post("/tokens/adjust")
-async def adjust_user_tokens(payload: TokenAdjustInput, db: AsyncSession = Depends(get_db_session)) -> dict[str, object]:
+async def adjust_user_tokens(
+    payload: TokenAdjustInput,
+    admin: CurrentUser = Depends(require_admin),
+    db: AsyncSession = Depends(get_db_session),
+) -> dict[str, object]:
     w_stmt = select(JuleWallet).where(JuleWallet.user_id == payload.user_id)
     w_res = await db.execute(w_stmt)
     wallet = w_res.scalar_one_or_none()
@@ -103,7 +95,11 @@ async def adjust_user_tokens(payload: TokenAdjustInput, db: AsyncSession = Depen
 
 
 @router.get("/mentors")
-async def list_admin_mentors(status: str | None = None, db: AsyncSession = Depends(get_db_session)):
+async def list_admin_mentors(
+    status: str | None = None,
+    admin: CurrentUser = Depends(require_admin),
+    db: AsyncSession = Depends(get_db_session),
+):
     stmt = select(MentorProfile, Profile).join(Profile, Profile.id == MentorProfile.profile_id)
     if status:
         stmt = stmt.where(MentorProfile.approval_status == status)
@@ -127,7 +123,11 @@ async def list_admin_mentors(status: str | None = None, db: AsyncSession = Depen
 
 
 @router.post("/mentors/{mentor_id}/approve")
-async def approve_mentor(mentor_id: UUID, db: AsyncSession = Depends(get_db_session)):
+async def approve_mentor(
+    mentor_id: UUID,
+    admin: CurrentUser = Depends(require_admin),
+    db: AsyncSession = Depends(get_db_session),
+):
     mp_stmt = select(MentorProfile).where(MentorProfile.profile_id == mentor_id)
     mp = (await db.execute(mp_stmt)).scalar_one_or_none()
     if not mp:
@@ -146,7 +146,12 @@ async def approve_mentor(mentor_id: UUID, db: AsyncSession = Depends(get_db_sess
 
 
 @router.post("/mentors/{mentor_id}/reject")
-async def reject_mentor(mentor_id: UUID, payload: dict | None = None, db: AsyncSession = Depends(get_db_session)):
+async def reject_mentor(
+    mentor_id: UUID,
+    payload: dict | None = None,
+    admin: CurrentUser = Depends(require_admin),
+    db: AsyncSession = Depends(get_db_session),
+):
     mp_stmt = select(MentorProfile).where(MentorProfile.profile_id == mentor_id)
     mp = (await db.execute(mp_stmt)).scalar_one_or_none()
     if not mp:

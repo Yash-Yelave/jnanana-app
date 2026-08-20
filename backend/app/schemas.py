@@ -356,7 +356,6 @@ class EventRead(ORMModel):
     image_path: str | None
     status: str
     created_at: datetime
-    participating_mentors: list[MentorRead] = Field(default_factory=list)
 
 
 class JuleWalletRead(BaseModel):
