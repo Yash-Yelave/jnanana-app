@@ -40,7 +40,7 @@ export function Events() {
         <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {events.slice(0, 3).map((event, i) => (
             <Reveal key={event.id} delay={i * 80}>
-              <article className="flex h-full flex-col rounded-2xl border-2 border-edge bg-paper-2 p-7">
+              <article className="flex h-full flex-col border-2 border-edge bg-paper-2 p-7">
                 <time
                   dateTime={event.event_date}
                   className="font-mono text-[11px] tracking-[0.2em] text-emerald uppercase"
@@ -76,7 +76,7 @@ export function AppCta() {
     <Section id="app" className="pt-0!">
       <Wrap>
         <Reveal variant="fade-up">
-          <div className="rounded-3xl border-2 border-edge bg-paper-2 p-[clamp(28px,5vw,64px)]">
+          <div className="border-2 border-edge bg-paper-2 p-[clamp(28px,5vw,64px)]">
             <Eyebrow className="mb-5.5">The App</Eyebrow>
             <h2 className="mb-5 text-[clamp(30px,4.4vw,56px)]">
               Experience Jṉanana

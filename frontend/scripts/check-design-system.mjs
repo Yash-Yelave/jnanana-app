@@ -74,6 +74,20 @@ for (const file of files) {
     if (radius && !/^0/.test(radius) && !isPill) {
       problems.push(`${at}  rounded corner: ${radius}`);
     }
+
+    // §4 again, via Tailwind utilities. The property check above only sees
+    // `border-radius:` pairs, so `rounded-2xl` in a className used to sail
+    // straight through — which is exactly how two rounded cards survived on
+    // the landing page. `rounded-full` is the pill/avatar shape §4 allows.
+    for (const utility of line.match(/(?:^|[\s"'`{])(-?rounded(?:-[a-z]+)?(?:-(?:none|full|sm|md|lg|xl|\d?xl)|-\[[^\]]+\])?)/g) ?? []) {
+      const name = utility.trim().replace(/^["'`{]/, "");
+      if (/^rounded(-(t|b|l|r|tl|tr|bl|br|s|e|ss|se|es|ee))?-(none|full)$/.test(name)) continue;
+      // Arbitrary values are fine when they resolve to a pill or a circle.
+      const arbitrary = name.match(/-\[([^\]]+)\]$/)?.[1];
+      if (arbitrary && /(999|99px|50%)/.test(arbitrary)) continue;
+      if (arbitrary && /^0/.test(arbitrary)) continue;
+      problems.push(`${at}  rounded corner: ${name}`);
+    }
   });
 }
 
