@@ -24,18 +24,16 @@ export default function DashboardPage() {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [minRating, setMinRating] = useState<number>(0);
 
-  const mentorsList = (mentorData?.items && mentorData.items.length > 0)
-    ? mentorData.items.map((m, index) => ({
-        id: m.id,
-        name: `${m.first_name} ${m.last_name}`,
-        headline: m.headline || "Verified Mentor",
-        rating: m.average_rating || 4.9,
-        reviews: m.review_count || 12,
-        bio: m.bio || "Experienced industry mentor helping students build real-world skills and advance their tech careers.",
-        tags: m.professions && m.professions.length > 0 ? m.professions : ["Mentorship", "Career Advice"],
-        image: publicAsset("avatars", m.avatar_path) ?? `/assets/app/mentor-${(index % 4) + 1}.png`,
-      }))
-    : [];
+  const mentorsList = (mentorData?.items || []).map((m, index) => ({
+    id: m.id,
+    name: `${m.first_name} ${m.last_name}`,
+    headline: m.headline || "Verified Mentor",
+    rating: m.average_rating || 4.9,
+    reviews: m.review_count || 12,
+    bio: m.bio || "Experienced industry mentor helping students build real-world skills and advance their tech careers.",
+    tags: m.professions && m.professions.length > 0 ? m.professions : ["Mentorship", "Career Advice"],
+    image: publicAsset("avatars", m.avatar_path) ?? `/assets/app/mentor-${(index % 4) + 1}.png`,
+  }));
 
   const filteredMentors = mentorsList.filter((m) => {
     // 1. Search Query

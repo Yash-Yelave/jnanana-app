@@ -22,8 +22,36 @@
 .empty h2{margin:0;font:800 24px var(--font-display)}
 .empty p{margin:0;color:#6A675F}
 
+
+/* Section headings above the platform events and the featured conclaves. */
+.sectionTitle{margin:0 0 18px;font:800 20px var(--font-display);color:#0B6B44}
+
+/* Editorial conclave cards. Same form language as the platform cards above:
+   square corners, ink border, hard offset shadow (section 4). */
+.conclaves{display:grid;gap:24px}
+.conclave{padding:28px;border:1.5px solid #141210;border-radius:0;background:#fff;box-shadow:6px 6px 0 #141210}
+.conclave h3{margin:14px 0 12px;font:800 24px/1.25 var(--font-display)}
+.tag{display:inline-block;padding:4px 12px;border:1.5px solid #141210;border-radius:999px;background:#F6EBDB;color:#0B6B44;font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase}
+.conclaveBlurb{margin:16px 0;color:#6A675F;font-size:15px;line-height:1.6}
+
+.speaker{display:grid;gap:2px;margin:18px 0;padding:16px 18px;border-left:3px solid #F5B921;background:#F6EBDB}
+.speaker strong{font:800 16px var(--font-display)}
+.speaker span{color:#6A675F;font-size:13px}
+
+.highlights{margin:18px 0;padding-left:20px;color:#6A675F;font-size:14px;line-height:1.7}
+
+.audience{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0}
+.audience span{padding:4px 12px;border:1.5px solid #141210;border-radius:999px;font-size:12px;font-weight:700}
+
+.conclaveFoot{display:flex;flex-wrap:wrap;align-items:center;gap:16px;margin-top:22px}
+.seats{color:#D6206A;font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase}
+
 @media(max-width:767px){
   .page{padding:14px;gap:16px}
+  .sectionTitle{font-size:17px}
+  .conclave{padding:18px;box-shadow:4px 4px 0 #141210}
+  .conclave h3{font-size:19px}
+  .conclaveFoot{gap:12px}
   .head h1{font-size:24px}
   .head p{font-size:14px}
   .grid{grid-template-columns:1fr;gap:14px}

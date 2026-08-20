@@ -6,7 +6,7 @@
 -- Writes happen through the FastAPI service role. The policies below grant read
 -- access only, matching the pattern used by the initial platform schema.
 
-create table public.events (
+create table if not exists public.events (
   id uuid primary key default gen_random_uuid(),
   slug text not null unique,
   name text not null,
@@ -18,7 +18,7 @@ create table public.events (
   created_at timestamptz not null default now()
 );
 
-create table public.event_participants (
+create table if not exists public.event_participants (
   id uuid primary key default gen_random_uuid(),
   event_id uuid not null references public.events (id) on delete cascade,
   user_id uuid not null references public.profiles (id) on delete cascade,
@@ -31,13 +31,13 @@ create table public.event_participants (
   unique (event_id, user_id)
 );
 
-create table public.jule_wallets (
+create table if not exists public.jule_wallets (
   user_id uuid primary key references public.profiles (id) on delete cascade,
   balance integer not null default 0 check (balance >= 0),
   updated_at timestamptz not null default now()
 );
 
-create table public.jule_transactions (
+create table if not exists public.jule_transactions (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references public.profiles (id) on delete cascade,
   event_id uuid references public.events (id) on delete set null,
@@ -50,7 +50,7 @@ create table public.jule_transactions (
   created_at timestamptz not null default now()
 );
 
-create table public.mentorship_requests (
+create table if not exists public.mentorship_requests (
   id uuid primary key default gen_random_uuid(),
   mentee_id uuid not null references public.profiles (id) on delete cascade,
   mentor_id uuid not null references public.mentor_profiles (profile_id) on delete cascade,
@@ -64,14 +64,14 @@ create table public.mentorship_requests (
   constraint mentorship_request_not_self check (mentee_id <> mentor_id)
 );
 
-create index event_participants_event_idx on public.event_participants (event_id);
-create index event_participants_user_idx on public.event_participants (user_id);
-create index jule_transactions_user_idx on public.jule_transactions (user_id, created_at desc);
-create index mentorship_requests_mentor_idx on public.mentorship_requests (mentor_id, created_at desc);
-create index mentorship_requests_mentee_idx on public.mentorship_requests (mentee_id, created_at desc);
+create index if not exists event_participants_event_idx on public.event_participants (event_id);
+create index if not exists event_participants_user_idx on public.event_participants (user_id);
+create index if not exists jule_transactions_user_idx on public.jule_transactions (user_id, created_at desc);
+create index if not exists mentorship_requests_mentor_idx on public.mentorship_requests (mentor_id, created_at desc);
+create index if not exists mentorship_requests_mentee_idx on public.mentorship_requests (mentee_id, created_at desc);
 
 -- One pending request per mentee/mentor pair; enforced in the DB, not only in the router.
-create unique index mentorship_requests_one_pending
+create unique index if not exists mentorship_requests_one_pending
   on public.mentorship_requests (mentee_id, mentor_id)
   where status = 'pending';
 
@@ -81,17 +81,22 @@ alter table public.jule_wallets enable row level security;
 alter table public.jule_transactions enable row level security;
 alter table public.mentorship_requests enable row level security;
 
+drop policy if exists "published events read" on public.events;
 create policy "published events read" on public.events for select to anon, authenticated
 using (status = 'published');
 
+drop policy if exists "participation own read" on public.event_participants;
 create policy "participation own read" on public.event_participants for select to authenticated
 using ((select auth.uid()) = user_id);
 
+drop policy if exists "jule wallet own read" on public.jule_wallets;
 create policy "jule wallet own read" on public.jule_wallets for select to authenticated
 using ((select auth.uid()) = user_id);
 
+drop policy if exists "jule transactions own read" on public.jule_transactions;
 create policy "jule transactions own read" on public.jule_transactions for select to authenticated
 using ((select auth.uid()) = user_id);
 
+drop policy if exists "mentorship requests parties read" on public.mentorship_requests;
 create policy "mentorship requests parties read" on public.mentorship_requests for select to authenticated
 using ((select auth.uid()) in (mentee_id, mentor_id));

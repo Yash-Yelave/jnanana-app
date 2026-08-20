@@ -7,6 +7,12 @@ Everything the ledger depends on — constraints, defaults, transaction boundari
 router logic — is the production code path.
 """
 
+import sys
+import asyncio
+
+if sys.platform == "win32":
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+
 import os
 from collections.abc import AsyncIterator
 from datetime import UTC, datetime

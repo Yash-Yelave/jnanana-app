@@ -16,7 +16,7 @@ dependencies = [
 [dependency-groups]
 dev = [
   # The test suite materialises the schema on SQLite; see tests/conftest.py.
-  "aiosqlite",
+  "aiosqlite>=0.22.1",
   "httpx",
   "mypy",
   "pytest",

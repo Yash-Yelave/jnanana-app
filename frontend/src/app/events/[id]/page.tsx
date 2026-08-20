@@ -25,9 +25,7 @@ export default function EventDetailPage() {
           setEvent(detail);
           setCheckedIn(participation?.checkin_status === "checked_in");
         })
-        .catch((err: unknown) =>
-          setError(friendlyError(err, "Unable to load this event")),
-        )
+        .catch((err: unknown) => setError(friendlyError(err, "Unable to load this event")))
         .finally(() => setLoading(false)),
     [id],
   );
@@ -54,7 +52,7 @@ export default function EventDetailPage() {
   if (loading) {
     return (
       <AppShell active="/events">
-        <p className="data-state">Loading event details…</p>
+        <p className="data-state">Loading event…</p>
       </AppShell>
     );
   }
@@ -62,10 +60,10 @@ export default function EventDetailPage() {
   if (error || !event) {
     return (
       <AppShell active="/events">
-        <div className={styles.empty} role="alert">
+        <div className={styles.empty}>
           <h2>Event not found</h2>
           <p>{error ?? "We couldn't load this event."}</p>
-          <Link className="button button-primary" href="/events">
+          <Link className={styles.checkinButton} href="/events">
             Back to events
           </Link>
         </div>
@@ -76,43 +74,40 @@ export default function EventDetailPage() {
   return (
     <AppShell active="/events">
       <div className={styles.page}>
-        <section className={styles.banner}>
-          <span className={styles.tag}>Jnanana Event</span>
+        <article className={styles.banner}>
+          <span className={styles.tag}>Jnanana event</span>
           <h1>{event.name}</h1>
 
           <div className={styles.meta}>
             <span>
-              <Calendar size={18} aria-hidden /> {new Date(event.event_date).toLocaleDateString("en-IN", { dateStyle: "full" })}
+              <Calendar size={18} aria-hidden />
+              {new Date(event.event_date).toLocaleDateString("en-IN", { dateStyle: "full" })}
             </span>
             <span>
-              <MapPin size={18} aria-hidden /> {event.location}
+              <MapPin size={18} aria-hidden />
+              {event.location}
             </span>
           </div>
 
           <p className={styles.description}>{event.description}</p>
 
-          {/* B1: the check-in that grants the 50 Jule Token base allocation. */}
+          {/* B1 — check-in is what puts Jule Tokens in a mentee's wallet. */}
           {checkedIn ? (
             <div className={styles.checkedIn}>
-              <CheckCircle size={20} aria-hidden />
+              <CheckCircle size={24} aria-hidden />
               <div>
-                <strong>You&apos;re checked in</strong>
-                {tokensGranted ? (
-                  <p>{tokensGranted} Jule Tokens have been added to your wallet.</p>
-                ) : (
-                  <p>Your Jule Tokens are ready to spend on mentorship.</p>
-                )}
+                <strong>You&rsquo;re checked in</strong>
+                <p>
+                  {tokensGranted
+                    ? `${tokensGranted} Jule Tokens have been added to your wallet.`
+                    : "Your attendance is verified."}
+                </p>
               </div>
             </div>
           ) : (
-            <button
-              type="button"
-              className={styles.checkinButton}
-              onClick={() => void handleCheckin()}
-              disabled={checkingIn}
-            >
+            <button type="button" className={styles.checkinButton} onClick={handleCheckin} disabled={checkingIn}>
               <Sparkles size={18} aria-hidden />
-              {checkingIn ? "Checking in…" : "Check in & claim 50 Jule Tokens"}
+              {checkingIn ? "Checking in…" : "Check in & claim your Jule Tokens"}
             </button>
           )}
 
@@ -121,16 +116,15 @@ export default function EventDetailPage() {
               {actionError}
             </p>
           )}
-        </section>
+        </article>
 
-        {/* Mentors are not scoped to events — discovery is global. */}
         <section className={styles.discover}>
           <div>
-            <h2>Find a mentor</h2>
-            <p>Browse every approved Jnanana mentor and spend your Jule Tokens on the guidance you need.</p>
+            <h2>Ready to find a mentor?</h2>
+            <p>Connect directly with startup founders, tech leaders and industry guides using your Jule Tokens.</p>
           </div>
-          <Link className="button button-primary" href="/mentors">
-            Browse all mentors <ArrowRight size={16} aria-hidden />
+          <Link className={styles.discoverLink} href="/dashboard">
+            Browse mentors <ArrowRight size={18} aria-hidden />
           </Link>
         </section>
       </div>

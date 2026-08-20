@@ -15,7 +15,7 @@ import {
 import { AppShell } from "@/components/app-shell";
 import { Brand } from "@/components/brand";
 import { PageTitle, ProfileView, StarRating } from "@/components/student-pages";
-import { apiFetch, type MentorshipRequestItem } from "@/lib/api";
+import { apiFetch, actionMentorshipRequest, type MentorshipRequestItem } from "@/lib/api";
 import type { Booking, LessonRequest, Mentor } from "@/lib/types";
 import { useApi, clearApiCache } from "@/lib/use-api";
 import styles from "./mentor-pages.module.css";

@@ -30,6 +30,7 @@ type AdminMentor = {
   created_at: string | null;
 };
 
+
 export function AdminDashboard() {
   const users = useApi<{ items: Profile[] }>("/admin/users");
   const mentorsApi = useApi<{ items: AdminMentor[] }>("/admin/mentors");
@@ -153,9 +154,7 @@ export function AdminDashboard() {
     window.location.href = "/login";
   };
 
-  const allMentors = (mentorsApi.data?.items && mentorsApi.data.items.length > 0)
-    ? mentorsApi.data.items
-    : [];
+  const allMentors = mentorsApi.data?.items || [];
 
   const filteredMentors = mentorFilter === "all"
     ? allMentors

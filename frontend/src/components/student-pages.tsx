@@ -21,7 +21,7 @@ import {
   LogOut,
 } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
-import { apiFetch, friendlyError } from "@/lib/api";
+import { apiFetch, actionMentorshipRequest, friendlyError, type MentorshipRequestItem } from "@/lib/api";
 import { createClient, publicAsset } from "@/lib/supabase/client";
 import type { Booking, LessonRequest, Mentor, MentorProfile, Offer, Profile, Review } from "@/lib/types";
 import { useApi, clearApiCache } from "@/lib/use-api";
@@ -225,6 +225,7 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
       const targetId = mentorId || (data && "id" in data ? (data as any).id : undefined);
       if (!targetId) {
         setRequestError("We couldn't identify this mentor. Please reopen their profile and try again.");
+        setSubmittingRequest(false);
         return;
       }
       await apiFetch("/mentorship-requests", {
@@ -708,54 +709,11 @@ function Feedback({ mentorId }: { mentorId?: string }) {
   );
 }
 
-export function DashboardPage() {
-  const { data: dashboard } = useApi<{ completed_bookings: number; active_courses: number }>("/dashboard/student");
-  const { data: wallet } = useApi<{ currency: string; balance_minor: number }>("/wallet");
-  return (
-    <AppShell active="/dashboard">
-      <main className={styles.main}>
-        <PageTitle>Statistics</PageTitle>
-        <section className={styles.stats}>
-          <div>
-            <Banknote size={24} color="var(--lime)" /> <b>{wallet?.currency ?? "INR"} {((wallet?.balance_minor ?? 0) / 100).toLocaleString()}</b>
-            <span>Wallet balance</span>
-          </div>
-          <div>
-            <Clock size={24} color="var(--lime)" /> <b>{dashboard?.active_courses ?? 0}</b>
-            <span>Active courses</span>
-          </div>
-          <div>
-            <BookOpen size={24} color="var(--lime)" /> <b>{dashboard?.completed_bookings ?? 0}</b>
-            <span>Completed lessons</span>
-          </div>
-        </section>
-        <section className={styles.dashboardGrid}>
-          <article className={styles.whitePanel}>
-            <h2>Hours Spent</h2>
-            <p className="data-state">Detailed activity analytics appear as lessons are completed.</p>
-          </article>
-          <aside className={styles.credit}>
-            <h2>Available Credit</h2>
-            <strong>{wallet?.currency ?? "INR"} {((wallet?.balance_minor ?? 0) / 100).toLocaleString()}</strong>
-            <p>Your current balance</p>
-            <Link href="/payment">
-              Add Credits <ArrowUpRight size={16} />
-            </Link>
-          </aside>
-          <article className={styles.whitePanel}>
-            <h2>Leader Board</h2>
-            <p className="data-state">Leaderboard data is not available yet.</p>
-          </article>
-          <aside className={styles.score}>
-            <h2>Credit score</h2>
-            <strong>0</strong>
-            <p>Reputation points</p>
-          </aside>
-        </section>
-      </main>
-    </AppShell>
-  );
-}
+/* DashboardPage lived here. No route imported it - app/dashboard/page.tsx
+   has its own - and it called endpoints outside Phase 1 (/dashboard/student
+   and a rupee /wallet) plus an "Add Credits" link to /payment, a page that
+   does not exist. Cancelling a mentorship request, the one live thing it
+   did, is on /requests in mentorship-requests.tsx. */
 
 export function SettingsPage() {
   const router = useRouter();

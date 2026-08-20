@@ -22,7 +22,8 @@ def setup_admin() -> None:
         sys.exit("ADMIN_EMAIL and ADMIN_PASSWORD must be set in the environment.")
 
     settings = get_settings()
-    secret_key = settings.supabase_secret_key.get_secret_value()
+    secret_key = settings.supabase_secret_key.get_secret_value() if settings.supabase_secret_key else ""
+
     url = f"{settings.supabase_url.rstrip('/')}/auth/v1/admin/users"
     headers = {
         "apikey": secret_key,

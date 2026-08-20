@@ -356,8 +356,6 @@ class EventRead(ORMModel):
     image_path: str | None
     status: str
     created_at: datetime
-
-
 class EventUpdate(BaseModel):
     name: str | None = Field(default=None, min_length=3, max_length=160)
     description: str | None = Field(default=None, min_length=10, max_length=5000)

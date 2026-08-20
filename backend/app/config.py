@@ -15,6 +15,8 @@ class Settings(BaseSettings):
     supabase_publishable_key: str = ""
     supabase_secret_key: SecretStr | None = None
     supabase_jwt_audience: str = "authenticated"
+    admin_email: str = "admin@jnanana.org"
+    admin_password: SecretStr | None = None
     frontend_url: str = "http://localhost:3000"
     cors_origins: str = "http://localhost:3000"
 
