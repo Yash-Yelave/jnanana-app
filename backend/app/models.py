@@ -390,6 +390,10 @@ class MentorshipRequest(Base):
     mentor_id: Mapped[UUID] = mapped_column(ForeignKey("mentor_profiles.profile_id", ondelete="CASCADE"))
     event_id: Mapped[UUID | None] = mapped_column(ForeignKey("events.id", ondelete="SET NULL"))
     tokens_used: Mapped[int] = mapped_column(Integer, default=10)
+    # Minutes actually given, recorded when the mentor marks the request
+    # complete. Null until then — the public hours counter sums only what was
+    # really logged rather than assuming a session length.
+    duration_minutes: Mapped[int | None] = mapped_column(Integer)
     status: Mapped[str] = mapped_column(default="pending")
     note: Mapped[str | None] = mapped_column(Text)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())

@@ -11,7 +11,16 @@ from sqlalchemy.ext.asyncio import AsyncEngine
 
 from app.config import get_settings
 from app.db import SessionFactory, engine
-from app.routers import accounts, admin, events, jule, mentors, mentorship_requests, notifications
+from app.routers import (
+    accounts,
+    admin,
+    events,
+    jule,
+    mentors,
+    mentorship_requests,
+    notifications,
+    stats,
+)
 
 # Tables the Phase 1 product cannot operate without. The schema is owned by
 # supabase/migrations — the app never creates tables at boot, because tables
@@ -110,6 +119,7 @@ def create_app() -> FastAPI:
         mentors.router,
         mentorship_requests.router,
         notifications.router,
+        stats.router,
     ):
         app.include_router(router, prefix=settings.api_prefix)
 

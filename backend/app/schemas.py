@@ -431,6 +431,7 @@ class MentorshipRequestRead(ORMModel):
     tokens_used: int
     status: str
     note: str | None
+    duration_minutes: int | None = None
     created_at: datetime
     updated_at: datetime
     mentee_name: str | None = None
@@ -442,6 +443,8 @@ class MentorshipRequestRead(ORMModel):
 class MentorshipRequestActionInput(BaseModel):
     action: Literal["accept", "reject", "complete", "cancel"]
     reason: str | None = Field(default=None, max_length=1000)
+    # Sent with `complete` so the public hours counter has a real figure to sum.
+    duration_minutes: int | None = Field(default=None, gt=0, le=1440)
 
 
 class CreateMentorInput(BaseModel):

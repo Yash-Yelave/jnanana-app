@@ -52,6 +52,7 @@ def _to_read(
         tokens_used=req.tokens_used,
         status=req.status,
         note=req.note,
+        duration_minutes=req.duration_minutes,
         created_at=req.created_at,
         updated_at=req.updated_at,
         mentee_name=_full_name(mentee),
@@ -198,6 +199,9 @@ async def action_request(
     new_status = ACTION_STATUS[payload.action]
     req.status = new_status
     req.updated_at = datetime.now(UTC)
+
+    if payload.action == "complete" and payload.duration_minutes is not None:
+        req.duration_minutes = payload.duration_minutes
 
     # Refund on reject or cancel — the mentorship never happened.
     if payload.action in {"reject", "cancel"}:
