@@ -20,7 +20,8 @@ export default function EventsPage() {
   return (
     <AppShell active="/events">
       <div className={styles.page}>
-        <header className={styles.head}>
+        <header className="app-head">
+          <p className="eyebrow">Jnanana</p>
           <h1>Events</h1>
           <p>Check in at a Jnanana event to receive your Jule Tokens and start requesting mentorship.</p>
         </header>

@@ -1,3 +1,7 @@
+/* The authenticated shell, built from the same rules as the website:
+   paper canvas with the graph grid, emerald-deep surfaces, ink borders and hard
+   offset shadows, and mono for every label (§2, §3, §4). */
+
 .shell {
   display: grid;
   min-height: 100vh;
@@ -5,7 +9,7 @@
   grid-template-columns: 280px minmax(0, 1fr);
   grid-template-rows: auto 1fr;
   gap: 24px;
-  background-color: var(--color-paper, #FBF3E7);
+  background-color: var(--color-paper, #fbf3e7);
   color: var(--color-ink, #141210);
   background-image:
     linear-gradient(rgba(11, 107, 68, 0.09) 1px, transparent 1px),
@@ -26,11 +30,10 @@
   height: calc(100vh - 48px);
   padding: 28px 20px 24px;
   flex-direction: column;
-  border-radius:0;
-  background: #062E24;
-  border:1.5px solid #141210;
-  box-shadow: 4px 4px 0 #141210;
-  color: #E2E8F0;
+  background: #064730;
+  border: 1.5px solid #141210;
+  box-shadow: 6px 6px 0 #141210;
+  color: #fbf3e7;
   overflow-y: auto;
   scrollbar-width: none;
 }
@@ -51,49 +54,50 @@
   justify-content: space-between;
 }
 
+/* §3: navigation is mono, uppercase, wide-tracked — the same label treatment
+   the website nav uses. */
 .nav a {
   display: flex;
-  height: 48px;
-  padding: 0 16px;
+  min-height: 44px;
+  padding: 0 14px;
   align-items: center;
   gap: 14px;
-  border-radius: 999px;
-  font-weight: 700;
-  font-size: 0.925rem;
-  color: #CBD5E1;
+  border: 1.5px solid transparent;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(251, 243, 231, 0.78);
   text-decoration: none;
-  transition: all 160ms ease;
-  border: 1px solid transparent;
+  transition:
+    transform 0.16s ease,
+    color 0.16s ease,
+    background-color 0.16s ease;
 }
 
 .nav a:hover {
   transform: translateX(4px);
-  color: #F5B921;
-  background: rgba(255, 184, 0, 0.08);
+  color: #f5b921;
+  background: rgba(245, 185, 33, 0.1);
 }
 
 .navIcon {
-  transition: transform 160ms ease, color 160ms ease;
-  color: inherit;
   flex-shrink: 0;
+  color: inherit;
+  transition: transform 0.16s ease;
 }
 
 .nav a:hover .navIcon {
   transform: scale(1.1);
-  color: #F5B921;
 }
 
 .nav a.active,
 .nav .active {
-  background: rgba(255, 184, 0, 0.18);
-  border-color: #F5B921;
-  color: #F5B921;
-  font-weight: 800;
-}
-
-.nav a.active .navIcon,
-.nav .active .navIcon {
-  color: #F5B921;
+  background: rgba(245, 185, 33, 0.16);
+  border-color: #f5b921;
+  color: #f5b921;
+  font-weight: 700;
 }
 
 .topbarHeader {
@@ -109,24 +113,25 @@
 .searchBox {
   display: flex;
   width: 360px;
-  height: 50px;
+  height: 48px;
   padding: 0 18px;
   align-items: center;
   gap: 12px;
-  border:1.5px solid #141210;
-  border-radius: 999px;
-  background: #FFFFFF;
+  border: 1.5px solid #141210;
+  background: #fff;
   box-shadow: 3px 3px 0 #141210;
-  transition: border-color 160ms ease, box-shadow 160ms ease;
+  transition:
+    transform 0.16s ease,
+    box-shadow 0.16s ease;
 }
 
 .searchBox:focus-within {
-  border-color: #0B6B44;
-  box-shadow: 0 0 0 3px rgba(11, 107, 68, 0.2);
+  transform: translate(3px, 3px);
+  box-shadow: 0 0 0 #141210;
 }
 
 .searchBox svg {
-  color: #6A675F;
+  color: #6a675f;
 }
 
 .searchBox input {
@@ -144,14 +149,16 @@
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  border:1.5px solid #141210;
+  border: 1.5px solid #141210;
   box-shadow: 3px 3px 0 #141210;
-  transition: transform 160ms ease, box-shadow 160ms ease;
+  transition:
+    transform 0.16s ease,
+    box-shadow 0.16s ease;
 }
 
 .profileBtn:hover {
-  transform: scale(1.06);
-  box-shadow: 4px 4px 0 #141210;
+  transform: translate(3px, 3px);
+  box-shadow: 0 0 0 #141210;
 }
 
 .profileBtn img {
@@ -187,18 +194,14 @@
   .withoutRail {
     display: block;
     padding: 0 0 84px;
-    background-color: var(--color-paper, #FBF3E7);
-    background-image:
-      linear-gradient(rgba(11, 107, 68, 0.09) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(11, 107, 68, 0.09) 1px, transparent 1px);
     background-size: 26px 26px;
   }
+
   .sidebar,
   .topbarHeader {
     display: none;
   }
 
-  /* Top Mobile Header */
   .mobileHeader {
     position: sticky;
     z-index: 50;
@@ -206,17 +209,16 @@
     display: flex;
     height: 60px;
     margin: 0 12px 16px;
-    padding: 0 16px;
+    padding: 0 14px;
     align-items: center;
     justify-content: space-between;
-    border-radius:0;
-    background: #062E24;
-    border:1.5px solid #141210;
+    gap: 10px;
+    background: #064730;
+    border: 1.5px solid #141210;
     box-shadow: 3px 3px 0 #141210;
-    color: #fff;
+    color: #fbf3e7;
   }
 
-  /* Fixed Bottom Mobile App Nav Bar */
   .mobileBottomNav {
     position: fixed;
     bottom: 0;
@@ -227,35 +229,35 @@
     align-items: center;
     justify-content: space-around;
     height: 66px;
-    padding: 4px 10px 8px;
-    background: #062E24;
+    padding: 4px 8px calc(8px + env(safe-area-inset-bottom));
+    background: #064730;
+    /* §4: hard edge, never a blurred lift. */
     border-top: 1.5px solid #141210;
-    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.35);
   }
 
   .mobileNavItem {
     display: flex;
+    min-width: 56px;
+    min-height: 46px;
+    padding: 5px 8px;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 3px;
-    padding: 6px 12px;
-    border-radius:0;
-    color: #CBD5E1;
+    border: 1.5px solid transparent;
+    color: rgba(251, 243, 231, 0.78);
     text-decoration: none;
-    transition: all 160ms ease;
-    border: 1px solid transparent;
+    transition: color 0.16s ease;
   }
 
   .mobileNavItem:hover {
-    color: #F5B921;
+    color: #f5b921;
   }
 
   .mobileActiveItem {
-    background: rgba(255, 184, 0, 0.18);
-    border-color: #F5B921;
-    color: #F5B921;
-    font-weight: 800;
+    background: rgba(245, 185, 33, 0.16);
+    border-color: #f5b921;
+    color: #f5b921;
   }
 
   .mobileNavIcon {
@@ -263,12 +265,53 @@
   }
 
   .mobileNavLabel {
-    font-size: 0.675rem;
+    font-family: var(--font-mono);
+    font-size: 9px;
     font-weight: 700;
-    letter-spacing: 0.2px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
   }
 
   .content {
     padding: 16px;
+  }
+}
+
+/* The Jule balance chip. A pill per §4, amber carrying ink text per §2.3, with
+   the mono label treatment every other piece of chrome uses. */
+.juleChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 34px;
+  padding: 0 15px;
+  border: 1.5px solid #141210;
+  border-radius: 999px;
+  background: #f5b921;
+  color: #141210;
+  box-shadow: 3px 3px 0 #141210;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    transform 0.16s ease,
+    box-shadow 0.16s ease;
+}
+
+.juleChip:hover {
+  transform: translate(3px, 3px);
+  box-shadow: 0 0 0 #141210;
+}
+
+@media (max-width: 767px) {
+  .juleChip {
+    min-height: 30px;
+    padding: 0 11px;
+    font-size: 9.5px;
+    box-shadow: 2px 2px 0 #141210;
   }
 }

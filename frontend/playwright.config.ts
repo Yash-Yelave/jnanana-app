@@ -10,6 +10,10 @@ import { defineConfig, devices } from "@playwright/test";
 export default defineConfig({
   testDir: "./e2e",
   fullyParallel: true,
+  // Each responsive test scrolls the whole page with waits so the reveals
+  // settle. Too many at once starves them and they time out on the shared
+  // dev server rather than on anything real.
+  workers: 2,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
   reporter: process.env.CI ? "github" : [["list"]],

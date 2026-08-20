@@ -3,7 +3,7 @@
 .head h1{margin:0;font:800 32px var(--font-display)}
 .head p{margin:8px 0 0;max-width:62ch;color:#6A675F;font-size:15px;line-height:1.55}
 
-.error{margin:0;padding:12px 16px;border-radius:0;background:#fdecea;color:#c0392b;font-size:14px;font-weight:600}
+.error{margin:0;padding:12px 16px;border-radius:0;background:#F6EBDB;color:#B42318;font-size:14px;font-weight:600}
 
 .list{display:grid;gap:16px}
 
@@ -19,11 +19,11 @@
 
 .side{display:flex;flex-direction:column;align-items:flex-end;gap:12px}
 
-.pill{padding:5px 14px;border-radius:999px;background:#eee;color:#6A675F;font-size:12px;font-weight:800;white-space:nowrap}
-.pending{background:#fff4d6;color:#a1730a}
+.pill{padding:5px 14px;border-radius:999px;background:#F6EBDB;color:#6A675F;font-size:12px;font-weight:800;white-space:nowrap}
+.pending{background:#F6EBDB;color:#6A675F}
 .accepted{background:#F6EBDB;color:#0B6B44}
-.rejected,.cancelled{background:#fdecea;color:#c0392b}
-.completed{background:#e6f0fb;color:#2a6bb5}
+.rejected,.cancelled{background:#F6EBDB;color:#B42318}
+.completed{background:#F6EBDB;color:#6A675F}
 
 .actions{display:flex;gap:8px}
 

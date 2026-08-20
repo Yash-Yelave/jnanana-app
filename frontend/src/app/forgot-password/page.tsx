@@ -65,8 +65,8 @@ export default function ForgotPasswordPage() {
                   fontSize: "0.9rem",
                   marginTop: "12px",
                   background: isSuccess ? "rgba(16, 185, 129, 0.15)" : "rgba(239, 68, 68, 0.15)",
-                  color: isSuccess ? "#10B981" : "#EF4444",
-                  border: `1px solid ${isSuccess ? "#10B981" : "#EF4444"}`,
+                  color: isSuccess ? "#0B6B44" : "#B42318",
+                  border: `1px solid ${isSuccess ? "#0B6B44" : "#B42318"}`,
                 }}
                 role="status"
               >

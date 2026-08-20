@@ -79,7 +79,8 @@ export function MentorshipRequestsPage() {
   return (
     <AppShell active={isMentor ? "/mentor/requests" : "/requests"} mentor={isMentor}>
       <div className={styles.page}>
-        <header className={styles.head}>
+        <header className="app-head">
+          <p className="eyebrow">{isMentor ? "Your inbox" : "Your activity"}</p>
           <h1>{isMentor ? "Mentorship requests" : "My requests"}</h1>
           <p>
             {isMentor

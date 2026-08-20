@@ -116,7 +116,7 @@ export default function DashboardPage() {
                   border: "1.5px solid #141210",
                   fontSize: "0.925rem",
                   outline: "none",
-                  background: "#FAFAFA",
+                  background: "#F6EBDB",
                 }}
               />
               {searchQuery && (
@@ -152,7 +152,7 @@ export default function DashboardPage() {
                   border: "1.5px solid #141210",
                   fontSize: "0.9rem",
                   fontWeight: 600,
-                  background: "#FAFAFA",
+                  background: "#F6EBDB",
                   color: "#141210",
                   cursor: "pointer",
                 }}
@@ -303,7 +303,7 @@ export default function DashboardPage() {
                   </div>
 
                   {/* Description / Bio */}
-                  <p style={{ fontSize: "0.925rem", color: "#333", lineHeight: 1.5, marginBottom: "18px" }}>
+                  <p style={{ fontSize: "0.925rem", color: "#141210", lineHeight: 1.5, marginBottom: "18px" }}>
                     {m.bio}
                   </p>
 

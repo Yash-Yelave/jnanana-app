@@ -177,7 +177,7 @@ export function AdminDashboard() {
               padding: "8px 16px",
               borderRadius: "0",
               background: "#F5B921",
-              color: "#000",
+              color: "#141210",
               fontWeight: 700,
               textDecoration: "none",
               fontSize: "14px",
@@ -218,14 +218,20 @@ export function AdminDashboard() {
             key={tab}
             onClick={() => setActiveTab(tab)}
             style={{
-              padding: "10px 20px",
+              padding: "11px 18px",
               borderRadius: "0",
-              background: activeTab === tab ? "#F5B921" : "#F6EBDB",
-              color: activeTab === tab ? "#000" : "#6A675F",
+              background: activeTab === tab ? "#F5B921" : "#fff",
+              color: "#141210",
+              border: "1.5px solid #141210",
+              boxShadow: activeTab === tab ? "0 0 0 #141210" : "3px 3px 0 #141210",
+              transform: activeTab === tab ? "translate(3px, 3px)" : "none",
+              transition: "transform .16s ease, box-shadow .16s ease",
+              fontFamily: "var(--font-mono)",
+              fontSize: "10.5px",
               fontWeight: 700,
-              border: "none",
+              letterSpacing: "0.14em",
+              textTransform: "uppercase",
               cursor: "pointer",
-              textTransform: "capitalize",
               display: "flex",
               alignItems: "center",
               gap: "8px",
@@ -246,25 +252,40 @@ export function AdminDashboard() {
           <h2 style={{ fontSize: "1.25rem", marginBottom: "16px" }}>Platform Overview Metrics</h2>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: "16px" }}>
             {[
-              { label: "Total Users", val: metrics?.total_users ?? 0, color: "#0B6B44" },
-              { label: "Total Mentors", val: metrics?.total_mentors ?? 0, color: "#10B981" },
-              { label: "Active Events", val: metrics?.active_events ?? 0, color: "#F59E0B" },
-              { label: "Event Participants", val: metrics?.event_participants ?? 0, color: "#8B5CF6" },
-              { label: "Pending Requests", val: metrics?.pending_requests ?? 0, color: "#EC4899" },
-              { label: "Jule Tokens Issued", val: metrics?.jule_tokens_issued ?? 0, color: "#F5B921" },
-              { label: "Jule Tokens Spent", val: metrics?.jule_tokens_spent ?? 0, color: "#0B6B44" },
+              { label: "Total users", val: metrics?.total_users ?? 0 },
+              { label: "Total mentors", val: metrics?.total_mentors ?? 0 },
+              { label: "Active events", val: metrics?.active_events ?? 0 },
+              { label: "Event participants", val: metrics?.event_participants ?? 0 },
+              { label: "Pending requests", val: metrics?.pending_requests ?? 0 },
+              { label: "Jule Tokens issued", val: metrics?.jule_tokens_issued ?? 0 },
+              { label: "Jule Tokens spent", val: metrics?.jule_tokens_spent ?? 0 },
             ].map((m) => (
               <div
                 key={m.label}
                 style={{
-                  background: "#F6EBDB",
-                  borderRadius: "0",
-                  padding: "20px",
-                  borderLeft: `4px solid ${m.color}`,
+                  background: "#fff",
+                  border: "1.5px solid #141210",
+                  boxShadow: "4px 4px 0 #141210",
+                  padding: "22px",
                 }}
               >
-                <span style={{ fontSize: "0.875rem", color: "#6A675F", display: "block" }}>{m.label}</span>
-                <strong style={{ fontSize: "1.75rem", fontWeight: 800 }}>{m.val}</strong>
+                <strong
+                  style={{
+                    display: "block",
+                    fontFamily: "var(--font-display)",
+                    fontSize: "clamp(30px, 4vw, 42px)",
+                    fontWeight: 800,
+                    lineHeight: 1,
+                    letterSpacing: "-0.03em",
+                    color: "#F5B921",
+                    WebkitTextStroke: "1.5px #141210",
+                  }}
+                >
+                  {m.val}
+                </strong>
+                <span className="mono" style={{ display: "block", marginTop: "12px", color: "#6A675F" }}>
+                  {m.label}
+                </span>
               </div>
             ))}
           </div>
@@ -284,8 +305,8 @@ export function AdminDashboard() {
                   style={{
                     padding: "6px 14px",
                     borderRadius: "0",
-                    background: mentorFilter === f ? "#38BDF8" : "#141210",
-                    color: mentorFilter === f ? "#000" : "#6A675F",
+                    background: mentorFilter === f ? "#0B6B44" : "#141210",
+                    color: mentorFilter === f ? "#141210" : "#6A675F",
                     fontWeight: 600,
                     fontSize: "0.85rem",
                     border: "none",
@@ -327,7 +348,7 @@ export function AdminDashboard() {
                   >
                     <div>
                       <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                        <strong style={{ fontSize: "1.1rem", color: "#F8FAFC" }}>
+                        <strong style={{ fontSize: "1.1rem", color: "#FBF3E7" }}>
                           {m.first_name} {m.last_name}
                         </strong>
                         <span
@@ -342,15 +363,15 @@ export function AdminDashboard() {
                               : isRejected
                               ? "rgba(239, 68, 68, 0.2)"
                               : "rgba(255, 184, 0, 0.2)",
-                            color: isApproved ? "#0B6B44" : isRejected ? "#EF4444" : "#F5B921",
-                            border: `1px solid ${isApproved ? "#0B6B44" : isRejected ? "#EF4444" : "#F5B921"}`,
+                            color: isApproved ? "#0B6B44" : isRejected ? "#B42318" : "#F5B921",
+                            border: `1px solid ${isApproved ? "#0B6B44" : isRejected ? "#B42318" : "#F5B921"}`,
                           }}
                         >
                           {m.approval_status}
                         </span>
                       </div>
 
-                      <p style={{ margin: "4px 0 8px", color: "#38BDF8", fontSize: "0.9rem", fontWeight: 600 }}>
+                      <p style={{ margin: "4px 0 8px", color: "#0B6B44", fontSize: "0.9rem", fontWeight: 600 }}>
                         {m.headline || "Mentor Application"}
                       </p>
                       {m.bio && <p style={{ margin: "0 0 8px", color: "#6A675F", fontSize: "0.85rem", maxWidth: "600px" }}>{m.bio}</p>}
@@ -385,8 +406,8 @@ export function AdminDashboard() {
                             style={{
                               padding: "10px 20px",
                               borderRadius: "0",
-                              background: "#10B981",
-                              color: "#000",
+                              background: "#0B6B44",
+                              color: "#141210",
                               fontWeight: 700,
                               fontSize: "0.875rem",
                               border: "none",
@@ -403,8 +424,8 @@ export function AdminDashboard() {
                               padding: "10px 20px",
                               borderRadius: "0",
                               background: "rgba(239, 68, 68, 0.15)",
-                              color: "#EF4444",
-                              border: "1px solid #EF4444",
+                              color: "#B42318",
+                              border: "1px solid #B42318",
                               fontWeight: 700,
                               fontSize: "0.875rem",
                               cursor: "pointer",
@@ -420,7 +441,7 @@ export function AdminDashboard() {
                         </span>
                       )}
                       {isRejected && (
-                        <span style={{ color: "#EF4444", fontWeight: 600, fontSize: "0.875rem" }}>
+                        <span style={{ color: "#B42318", fontWeight: 600, fontSize: "0.875rem" }}>
                           ✕ Application Rejected
                         </span>
                       )}
@@ -497,7 +518,7 @@ export function AdminDashboard() {
                 padding: "12px",
                 borderRadius: "0",
                 background: "#F5B921",
-                color: "#000",
+                color: "#141210",
                 fontWeight: 700,
                 border: "none",
                 cursor: "pointer",
@@ -555,7 +576,7 @@ export function AdminDashboard() {
                 padding: "12px",
                 borderRadius: "0",
                 background: "#F5B921",
-                color: "#000",
+                color: "#141210",
                 fontWeight: 700,
                 border: "none",
                 cursor: "pointer",

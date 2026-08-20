@@ -1,30 +1,22 @@
-import Image from "next/image";
 import Link from "next/link";
+import { Wordmark } from "@/components/website/ui";
 
+/**
+ * The mark in the authenticated shell.
+ *
+ * Uses the same Wordmark as the website, so the brand reads identically on both
+ * sides of the login. It previously carried a gold gradient lockup — the
+ * "heritage club" theme §0.4 retires by name — set in a system sans rather than
+ * the display face.
+ */
 export function Brand({ inverse = false, href = "/dashboard" }: { inverse?: boolean; href?: string }) {
   return (
-    <Link className="inline-flex items-center gap-4 shrink-0 py-1" href={href} aria-label="Jnanana Foundation home">
-      <Image
-        src="/assets/brand/logo-icon.png"
-        alt="Jnanana Logo"
-        width={100}
-        height={160}
-        className="h-16 w-auto object-contain transition-transform hover:scale-105"
-        priority
-      />
-      <div className="flex flex-col justify-center">
-        <span
-          className="font-sans text-[26px] font-extrabold tracking-tight leading-tight"
-          style={{
-            background: "linear-gradient(135deg, #FFE066 0%, #D4AF37 50%, #B38728 100%)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            filter: "drop-shadow(0 2px 8px rgba(212, 175, 55, 0.25))",
-          }}
-        >
-          Jnanana Foundation
-        </span>
-      </div>
+    <Link
+      className="inline-flex shrink-0 items-center py-1 transition-transform duration-200 hover:scale-105"
+      href={href}
+      aria-label="Jṉanana Foundation home"
+    >
+      <Wordmark onDark={inverse} />
     </Link>
   );
 }

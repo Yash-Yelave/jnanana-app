@@ -87,7 +87,7 @@ export default function JuleTransactionsPage() {
                 padding: "12px 20px",
                 borderRadius: "0",
                 background: "#F5B921",
-                color: "#000",
+                color: "#141210",
                 fontWeight: 700,
                 textDecoration: "none",
                 fontSize: "0.95rem",
@@ -102,14 +102,14 @@ export default function JuleTransactionsPage() {
         </div>
 
         {/* Transactions Section */}
-        <h2 style={{ fontSize: "1.25rem", fontWeight: 700, marginBottom: "16px", color: "#F8FAFC" }}>
+        <h2 style={{ fontSize: "1.25rem", fontWeight: 700, marginBottom: "16px", color: "#FBF3E7" }}>
           Transaction History ({transactions.length})
         </h2>
 
         {loading ? (
           <div style={{ padding: "40px", textAlign: "center", color: "#6A675F" }}>Loading transaction history...</div>
         ) : error ? (
-          <div style={{ padding: "20px", background: "rgba(239, 68, 68, 0.15)", borderRadius: "0", color: "#EF4444" }}>
+          <div style={{ padding: "20px", background: "rgba(239, 68, 68, 0.15)", borderRadius: "0", color: "#B42318" }}>
             {error}
           </div>
         ) : transactions.length === 0 ? (
@@ -158,13 +158,13 @@ export default function JuleTransactionsPage() {
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        color: isPositive ? "#0B6B44" : "#EF4444",
+                        color: isPositive ? "#0B6B44" : "#B42318",
                       }}
                     >
                       {isPositive ? <ArrowDownRight size={22} /> : <ArrowUpRight size={22} />}
                     </div>
                     <div>
-                      <strong style={{ fontSize: "1rem", display: "block", color: "#F8FAFC" }}>
+                      <strong style={{ fontSize: "1rem", display: "block", color: "#FBF3E7" }}>
                         {tx.notes || (isPositive ? "Jule Token Allocation" : "Mentorship Request")}
                       </strong>
                       <span style={{ fontSize: "0.85rem", color: "#6A675F" }}>
@@ -178,7 +178,7 @@ export default function JuleTransactionsPage() {
                       style={{
                         fontSize: "1.25rem",
                         fontWeight: 800,
-                        color: isPositive ? "#0B6B44" : "#EF4444",
+                        color: isPositive ? "#0B6B44" : "#B42318",
                       }}
                     >
                       {isPositive ? `+${tx.amount}` : tx.amount} Jule Tokens

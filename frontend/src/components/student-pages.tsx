@@ -294,7 +294,7 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
               </div>
 
               {currentBalance < 10 ? (
-                <div style={{ padding: "12px", borderRadius: "0", background: "rgba(239, 68, 68, 0.2)", border: "1px solid #EF4444", color: "#EF4444", marginBottom: "20px" }}>
+                <div style={{ padding: "12px", borderRadius: "0", background: "rgba(239, 68, 68, 0.2)", border: "1px solid #B42318", color: "#B42318", marginBottom: "20px" }}>
                   Insufficient Jule Tokens. You have {currentBalance}, but 10 are required. Check in at an event to claim 50.
                 </div>
               ) : (
@@ -320,7 +320,7 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
               )}
 
               {requestMsg && <div style={{ color: "#0B6B44", marginBottom: "16px", fontWeight: "600" }}>{requestMsg}</div>}
-              {requestError && <div style={{ color: "#EF4444", marginBottom: "16px" }}>{requestError}</div>}
+              {requestError && <div style={{ color: "#B42318", marginBottom: "16px" }}>{requestError}</div>}
 
               <div style={{ display: "flex", gap: "12px", justifyContent: "flex-end" }}>
                 <button
@@ -344,7 +344,7 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
                       padding: "10px 24px",
                       borderRadius: "0",
                       background: "#F5B921",
-                      color: "#000",
+                      color: "#141210",
                       fontWeight: "700",
                       border: "none",
                       cursor: submittingRequest ? "not-allowed" : "pointer"
@@ -375,7 +375,7 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
                   <span className={styles.mentorBadge}>
                     <Crown size={14} /> {mentor ? "Verified mentor" : "Learner"}
                   </span>
-                  {mentor?.headline && <span style={{ color: "#555", fontWeight: "600" }}>• {mentor.headline}</span>}
+                  {mentor?.headline && <span style={{ color: "#6A675F", fontWeight: "600" }}>• {mentor.headline}</span>}
                 </p>
               </div>
               {mentorDetail && (
@@ -386,7 +386,7 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
                       padding: "12px 24px",
                       borderRadius: "0",
                       background: "#F5B921",
-                      color: "#000",
+                      color: "#141210",
                       fontWeight: 700,
                       fontSize: "1rem",
                       border: "none",
@@ -434,7 +434,7 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
                   style={{
                     padding: "12px 32px",
                     borderRadius: "0",
-                    background: "#EF4444",
+                    background: "#B42318",
                     color: "#FFFFFF",
                     fontWeight: 700,
                     fontSize: "1rem",
@@ -582,7 +582,7 @@ function Lessons({ mentorId }: { mentorId?: string }) {
   return (
     <div style={{ display: "grid", gap: "28px" }}>
       {actionMsg && (
-        <p style={{ padding: "14px 20px", borderRadius: "0", background: "#efffde", color: "#5c9822", fontWeight: 800 }}>
+        <p style={{ padding: "14px 20px", borderRadius: "0", background: "#F6EBDB", color: "#0B6B44", fontWeight: 800 }}>
           ✓ {actionMsg}
         </p>
       )}
@@ -597,32 +597,32 @@ function Lessons({ mentorId }: { mentorId?: string }) {
               {requests.map((req) => {
                 const reqOffers = offers.filter((o) => o.request_id === req.id && o.status === "pending");
                 return (
-                  <div key={req.id} style={{ padding: "20px", borderRadius: "0", border: "1px solid #eee", background: "#fafafa" }}>
+                  <div key={req.id} style={{ padding: "20px", borderRadius: "0", border: "1px solid #F6EBDB", background: "#F6EBDB" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                       <h3 style={{ margin: 0, fontSize: "18px" }}>{req.title}</h3>
-                      <span style={{ padding: "4px 14px", borderRadius: "999px", background: req.status === "accepted" ? "#efffde" : "#e9e9e9", color: req.status === "accepted" ? "#5c9822" : "#333", fontWeight: 800, fontSize: "13px" }}>
+                      <span style={{ padding: "4px 14px", borderRadius: "999px", background: req.status === "accepted" ? "#F6EBDB" : "#F6EBDB", color: req.status === "accepted" ? "#0B6B44" : "#141210", fontWeight: 800, fontSize: "13px" }}>
                         {req.status.toUpperCase()}
                       </span>
                     </div>
-                    <p style={{ color: "#666", margin: "10px 0 14px", fontSize: "14px" }}>{req.description}</p>
-                    <p style={{ fontWeight: 700, color: "#111", fontSize: "14px" }}>
+                    <p style={{ color: "#6A675F", margin: "10px 0 14px", fontSize: "14px" }}>{req.description}</p>
+                    <p style={{ fontWeight: 700, color: "#141210", fontSize: "14px" }}>
                       Proposed Rate: {req.currency} {(req.proposed_amount_minor / 100).toLocaleString()}
                     </p>
 
                     {reqOffers.length > 0 && (
-                      <div style={{ marginTop: "16px", paddingTop: "16px", borderTop: "1px solid #ddd" }}>
-                        <h4 style={{ fontSize: "14px", color: "#555", marginBottom: "10px" }}>Offers Received from Mentors:</h4>
+                      <div style={{ marginTop: "16px", paddingTop: "16px", borderTop: "1px solid #F6EBDB" }}>
+                        <h4 style={{ fontSize: "14px", color: "#6A675F", marginBottom: "10px" }}>Offers Received from Mentors:</h4>
                         {reqOffers.map((off) => (
-                          <div key={off.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px", borderRadius: "0", background: "#fff", border: "1px solid #e0e0e0" }}>
+                          <div key={off.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px", borderRadius: "0", background: "#fff", border: "1px solid #F6EBDB" }}>
                             <div>
                               <p style={{ margin: 0, fontWeight: 800, fontSize: "15px" }}>Rate: {off.currency} {(off.amount_minor / 100).toLocaleString()}</p>
-                              {off.note && <small style={{ color: "#666" }}>"{off.note}"</small>}
+                              {off.note && <small style={{ color: "#6A675F" }}>"{off.note}"</small>}
                             </div>
                             <button
                               type="button"
                               disabled={actingOfferId === off.id}
                               onClick={() => void handleAcceptOffer(off.id)}
-                              style={{ padding: "10px 20px", borderRadius: "999px", background: "#a3dc58", color: "#111", border: 0, fontWeight: 800, cursor: "pointer" }}
+                              style={{ padding: "10px 20px", borderRadius: "999px", background: "#0B6B44", color: "#141210", border: 0, fontWeight: 800, cursor: "pointer" }}
                             >
                               {actingOfferId === off.id ? "Accepting…" : "Accept Offer & Book →"}
                             </button>
@@ -646,21 +646,21 @@ function Lessons({ mentorId }: { mentorId?: string }) {
         <div style={{ display: "grid", gap: "16px" }}>
           {bookings.map((booking) => (
             <div className={styles.review} key={booking.id} style={{ alignItems: "center" }}>
-              <Clock size={24} color="#5c9822" />
+              <Clock size={24} color="#0B6B44" />
               <div style={{ flex: 1 }}>
                 <b>Mentoring session</b>
                 <br />
                 <span>{new Date(booking.starts_at).toLocaleString()} · </span>
-                <span style={{ padding: "3px 10px", borderRadius: "999px", background: "#efffde", color: "#5c9822", fontWeight: 800, fontSize: "12px" }}>
+                <span style={{ padding: "3px 10px", borderRadius: "999px", background: "#F6EBDB", color: "#0B6B44", fontWeight: 800, fontSize: "12px" }}>
                   {booking.status.replaceAll("_", " ").toUpperCase()}
                 </span>
               </div>
               <div style={{ display: "flex", gap: "10px" }}>
-                <Link href={`/chat?mentorId=${booking.mentor_id}`} style={{ padding: "10px 18px", borderRadius: "999px", background: "#111", color: "#fff", fontWeight: 700, textDecoration: "none", fontSize: "14px" }}>
+                <Link href={`/chat?mentorId=${booking.mentor_id}`} style={{ padding: "10px 18px", borderRadius: "999px", background: "#141210", color: "#fff", fontWeight: 700, textDecoration: "none", fontSize: "14px" }}>
                   Chat with Mentor →
                 </Link>
                 {booking.status === "completed" && !mentorId && (
-                  <button type="button" onClick={() => void review(booking)} style={{ padding: "10px 18px", borderRadius: "999px", background: "#a3dc58", border: 0, fontWeight: 800, cursor: "pointer" }}>
+                  <button type="button" onClick={() => void review(booking)} style={{ padding: "10px 18px", borderRadius: "999px", background: "#0B6B44", border: 0, fontWeight: 800, cursor: "pointer" }}>
                     Leave review
                   </button>
                 )}

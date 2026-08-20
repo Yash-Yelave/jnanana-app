@@ -125,25 +125,12 @@ export function AppShell({
       {/* Top Header for Mobile */}
       <header className={styles.mobileHeader}>
         <Brand inverse href={brandHref} />
-        <button
-          type="button"
-          onClick={handleJuleClick}
-          style={{
-            padding: "4px 10px",
-            borderRadius: "9999px",
-            background: "#F5B921",
-            color: "#000",
-            fontWeight: "700",
-            fontSize: "0.75rem",
-            border: "none",
-            cursor: "pointer",
-          }}
-        >
+        <button type="button" onClick={handleJuleClick} className={styles.juleChip}>
           ⚡ {juleBalance} Jule
         </button>
         <NotificationBell />
         <Link href={profileTarget} aria-label="Open profile">
-          <Image src={avatar} alt={name} width={40} height={40} style={{ borderRadius: "50%", border: "1.5px solid #F5B921" }} />
+          <Image src={avatar} alt={name} width={40} height={40} style={{ borderRadius: "50%", border: "1.5px solid #141210" }} />
         </Link>
       </header>
 
@@ -157,24 +144,7 @@ export function AppShell({
           <input type="search" placeholder="Search mentors, events..." aria-label="Search mentors, events" />
         </label>
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <button
-            type="button"
-            onClick={handleJuleClick}
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "6px",
-              padding: "6px 14px",
-              borderRadius: "9999px",
-              background: "#F5B921",
-              color: "#000",
-              fontWeight: "700",
-              fontSize: "0.875rem",
-              border: "none",
-              boxShadow: "4px 4px 0 #141210",
-              cursor: "pointer",
-            }}
-          >
+          <button type="button" onClick={handleJuleClick} className={styles.juleChip}>
             ⚡ {juleBalance} Jule
           </button>
           <NotificationBell />

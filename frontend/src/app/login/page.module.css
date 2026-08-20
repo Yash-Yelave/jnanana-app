@@ -76,7 +76,7 @@
   border:1.5px solid #141210;
   border-radius:0;
   outline: none;
-  background: #FAFAFA;
+  background: #F6EBDB;
   font-size: 16px; /* 16px prevents mobile iOS auto-zoom */
   transition: border-color 160ms ease, box-shadow 160ms ease;
 }
@@ -128,7 +128,7 @@
 
 .error {
   margin: 0;
-  color: #EF4444;
+  color: #B42318;
   font-weight: 700;
 }
 
@@ -152,7 +152,7 @@
   position: relative;
   margin: 18px;
   border-radius:0;
-  background: #062E24;
+  background: #064730;
   border:1.5px solid #141210;
   overflow: hidden;
   display: flex;

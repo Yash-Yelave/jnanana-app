@@ -123,8 +123,8 @@ export default function ResetPasswordPage() {
                   padding: "16px",
                   borderRadius: "0",
                   background: "rgba(239, 68, 68, 0.15)",
-                  border: "1px solid #EF4444",
-                  color: "#EF4444",
+                  border: "1px solid #B42318",
+                  color: "#B42318",
                   display: "flex",
                   alignItems: "flex-start",
                   gap: "12px",
@@ -133,7 +133,7 @@ export default function ResetPasswordPage() {
                 <AlertCircle size={20} style={{ flexShrink: 0, marginTop: "2px" }} />
                 <div style={{ fontSize: "0.9rem", lineHeight: 1.5 }}>
                   <strong>Reset link expired or invalid</strong>
-                  <p style={{ margin: "4px 0 0", color: "#F8FAFC" }}>
+                  <p style={{ margin: "4px 0 0", color: "#FBF3E7" }}>
                     Your password reset link may have expired or already been used. Please request a new link below.
                   </p>
                 </div>
@@ -144,7 +144,7 @@ export default function ResetPasswordPage() {
                   padding: "12px 20px",
                   borderRadius: "0",
                   background: "#F5B921",
-                  color: "#000",
+                  color: "#141210",
                   fontWeight: 700,
                   textAlign: "center",
                   textDecoration: "none",
@@ -166,13 +166,13 @@ export default function ResetPasswordPage() {
               </label>
 
               {error && (
-                <div style={{ padding: "10px 14px", borderRadius: "0", background: "rgba(239, 68, 68, 0.15)", border: "1px solid #EF4444", color: "#EF4444", fontSize: "0.9rem", marginTop: "12px" }} role="alert">
+                <div style={{ padding: "10px 14px", borderRadius: "0", background: "rgba(239, 68, 68, 0.15)", border: "1px solid #B42318", color: "#B42318", fontSize: "0.9rem", marginTop: "12px" }} role="alert">
                   {error}
                 </div>
               )}
 
               {successMsg && (
-                <div style={{ padding: "12px 16px", borderRadius: "0", background: "rgba(16, 185, 129, 0.15)", border: "1px solid #10B981", color: "#10B981", fontSize: "0.95rem", marginTop: "12px", display: "flex", alignItems: "center", gap: "8px" }} role="status">
+                <div style={{ padding: "12px 16px", borderRadius: "0", background: "rgba(16, 185, 129, 0.15)", border: "1px solid #0B6B44", color: "#0B6B44", fontSize: "0.95rem", marginTop: "12px", display: "flex", alignItems: "center", gap: "8px" }} role="status">
                   <CheckCircle2 size={18} />
                   {successMsg}
                 </div>

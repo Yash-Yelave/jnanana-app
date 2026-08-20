@@ -113,7 +113,7 @@ export function ParticipantsTab() {
                   padding: "10px 18px",
                   borderRadius: "0",
                   background: selected.status === "published" ? "#141210" : "#F5B921",
-                  color: selected.status === "published" ? "#fff" : "#000",
+                  color: selected.status === "published" ? "#fff" : "#141210",
                   fontWeight: 700,
                   border: "none",
                   cursor: "pointer",
@@ -130,7 +130,7 @@ export function ParticipantsTab() {
 
           {note && <p style={{ color: "#0B6B44", fontWeight: 600, marginBottom: "12px" }}>{note}</p>}
           {error && (
-            <p style={{ color: "#EF4444", marginBottom: "12px" }} role="alert">
+            <p style={{ color: "#B42318", marginBottom: "12px" }} role="alert">
               {error}
             </p>
           )}
@@ -194,7 +194,7 @@ export function ParticipantsTab() {
                                 padding: "8px 16px",
                                 borderRadius: "0",
                                 background: "#F5B921",
-                                color: "#000",
+                                color: "#141210",
                                 fontWeight: 700,
                                 border: "none",
                                 cursor: busyId === p.user_id ? "not-allowed" : "pointer",

@@ -8,7 +8,7 @@ const STATUSES = ["pending", "accepted", "rejected", "completed", "cancelled"] a
 const STATUS_COLOR: Record<string, string> = {
   pending: "#F5B921",
   accepted: "#0B6B44",
-  rejected: "#EF4444",
+  rejected: "#B42318",
   completed: "#0B6B44",
   cancelled: "#6A675F",
 };
@@ -58,7 +58,7 @@ export function RequestsTab() {
 
       {note && <p style={{ color: "#0B6B44", fontWeight: 600, marginBottom: "12px" }}>{note}</p>}
       {error && (
-        <p style={{ color: "#EF4444", marginBottom: "12px" }} role="alert">
+        <p style={{ color: "#B42318", marginBottom: "12px" }} role="alert">
           {error}
         </p>
       )}

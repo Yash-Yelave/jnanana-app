@@ -63,7 +63,7 @@
   position: relative;
   margin: 18px;
   border-radius:0;
-  background: #062E24;
+  background: #064730;
   border:1.5px solid #141210;
   overflow: hidden;
 }
@@ -134,7 +134,7 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #D1D5DB;
+  background: #F6EBDB;
 }
 
 .dots b {
@@ -199,7 +199,7 @@
   padding: 0 18px;
   border:1.5px solid #141210;
   border-radius:0;
-  background: #FAFAFA;
+  background: #F6EBDB;
   outline: none;
   font-size: 16px; /* 16px prevents mobile iOS auto-zoom */
   transition: border-color 160ms ease, box-shadow 160ms ease;
@@ -215,7 +215,7 @@
   display: flex;
   border:1.5px solid #141210;
   border-radius:0;
-  background: #FAFAFA;
+  background: #F6EBDB;
   overflow: hidden;
 }
 
@@ -325,8 +325,8 @@
 }
 
 .roles article:not(.selected) button {
-  background: #E2E8F0;
-  color: #64748B;
+  background: #FBF3E7;
+  color: #6A675F;
   box-shadow: none;
 }
 
@@ -432,7 +432,7 @@
 
 .error {
   margin: 16px 0 0;
-  color: #EF4444;
+  color: #B42318;
   font-weight: 700;
 }
 
