@@ -5,16 +5,11 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import {
-  Home,
   LayoutDashboard,
   GraduationCap,
-  MessageSquare,
-  Mic,
   Settings,
   BookOpen,
-  ArrowUpRight,
   Search,
-  Menu,
   Calendar,
   Sparkles,
 } from "lucide-react";
@@ -58,11 +53,7 @@ function Navigation({ active, mentor = false }: { active: string; mentor?: boole
 
       {settingsItem && (
         <div style={{ marginTop: "auto", paddingTop: "24px" }}>
-          <Link
-            className={active === settingsItem.href ? styles.active : ""}
-            href={settingsItem.href}
-            key={settingsItem.href}
-          >
+          <Link className={active === settingsItem.href ? styles.active : ""} href={settingsItem.href}>
             <settingsItem.icon className={styles.navIcon} size={22} />
             <span>{settingsItem.label}</span>
           </Link>
@@ -72,21 +63,45 @@ function Navigation({ active, mentor = false }: { active: string; mentor?: boole
   );
 }
 
+function MobileBottomNav({ active, mentor = false }: { active: string; mentor?: boolean }) {
+  const links = mentor ? mentorNav : studentNav;
+
+  return (
+    <nav className={styles.mobileBottomNav} aria-label="Mobile bottom navigation">
+      {links.map(({ label, href, icon: Icon }) => {
+        const isActive = active === href;
+        return (
+          <Link
+            key={href}
+            href={href}
+            className={`${styles.mobileNavItem} ${isActive ? styles.mobileActiveItem : ""}`}
+            aria-label={label}
+          >
+            <Icon size={22} className={styles.mobileNavIcon} />
+            <span className={styles.mobileNavLabel}>{label}</span>
+          </Link>
+        );
+      })}
+    </nav>
+  );
+}
+
 export function AppShell({
-  children,
   active,
   rightRail,
   mentor = false,
+  children,
 }: {
-  children: ReactNode;
   active: string;
   rightRail?: ReactNode;
   mentor?: boolean;
+  children: ReactNode;
 }) {
   const router = useRouter();
   const { data: profile } = useApi<Profile>("/me");
   const { data: wallet } = useApi<{ balance: number }>("/jule/wallet");
-  const isMentor = mentor || profile?.role === "mentor";
+
+  const isMentor = profile?.role === "mentor" || mentor;
   const avatar = publicAsset("avatars", profile?.avatar_path) ?? "/assets/app/mentor-1.png";
   const name = profile ? `${profile.first_name} ${profile.last_name}` : "Profile";
   const profileTarget = isMentor ? "/mentor/profile" : "/profile";
@@ -100,11 +115,13 @@ export function AppShell({
 
   return (
     <div className={`${styles.shell} ${rightRail ? "" : styles.withoutRail}`}>
+      {/* Sidebar for Desktop */}
       <aside className={styles.sidebar}>
         <Brand inverse href={brandHref} />
         <Navigation active={active} mentor={isMentor} />
       </aside>
 
+      {/* Top Header for Mobile */}
       <header className={styles.mobileHeader}>
         <Brand inverse href={brandHref} />
         <button
@@ -118,22 +135,20 @@ export function AppShell({
             fontWeight: "700",
             fontSize: "0.75rem",
             border: "none",
-            cursor: "pointer"
+            cursor: "pointer",
           }}
         >
           ⚡ {juleBalance} Jools
         </button>
-        <details>
-          <summary aria-label="Open menu">
-            <Menu size={24} />
-          </summary>
-          <Navigation active={active} mentor={isMentor} />
-        </details>
         <Link href={profileTarget} aria-label="Open profile">
-          <Image src={avatar} alt={name} width={44} height={44} />
+          <Image src={avatar} alt={name} width={40} height={40} style={{ borderRadius: "50%", border: "1.5px solid #FFB800" }} />
         </Link>
       </header>
 
+      {/* Bottom Bar for Mobile */}
+      <MobileBottomNav active={active} mentor={isMentor} />
+
+      {/* Topbar Header for Desktop */}
       <header className={styles.topbarHeader}>
         <label className={styles.searchBox}>
           <Search size={18} />
@@ -155,7 +170,7 @@ export function AppShell({
               fontSize: "0.875rem",
               border: "none",
               boxShadow: "0 2px 8px rgba(255, 184, 0, 0.3)",
-              cursor: "pointer"
+              cursor: "pointer",
             }}
           >
             ⚡ {juleBalance} Jools
