@@ -36,7 +36,7 @@ export function Nav() {
   const target = profile?.role === "mentor" ? "/mentor/home" : "/dashboard";
   const avatar = publicAsset("avatars", profile?.avatar_path) ?? "/assets/app/mentor-1.png";
 
-  // Lock the page behind the mobile panel, and let Escape close it.
+  // Lock scroll when mobile menu is open, handle Escape key
   useEffect(() => {
     if (!open) return;
 
@@ -55,9 +55,11 @@ export function Nav() {
   }, [open]);
 
   return (
-    <nav className={`sticky top-0 z-50 border-b-[1.5px] border-edge bg-paper/90 backdrop-blur-[12px] transition-all duration-300 ${
-      scrolled ? "shadow-soft" : ""
-    }`}>
+    <nav
+      className={`sticky top-0 z-50 border-b-[1.5px] border-edge bg-paper/95 backdrop-blur-[12px] transition-all duration-300 ${
+        scrolled ? "shadow-soft" : ""
+      }`}
+    >
       <div
         className={`wrap flex items-center justify-between transition-all duration-300 ${
           scrolled ? "py-2.5" : "py-4"
@@ -67,6 +69,7 @@ export function Nav() {
           <Wordmark />
         </Link>
 
+        {/* Desktop Navigation Links & Auth Buttons */}
         <div className="hidden items-center gap-7 lg:flex">
           {nav.map((item) => (
             <Link
@@ -105,62 +108,93 @@ export function Nav() {
           )}
         </div>
 
+        {/* Mobile Hamburger Toggle Button */}
         <button
           type="button"
-          onClick={() => setOpen((v) => !v)}
+          onClick={() => setOpen((prev) => !prev)}
           aria-expanded={open}
-          aria-controls="mobile-nav"
+          aria-controls="mobile-nav-panel"
           aria-label={open ? "Close menu" : "Open menu"}
-          className="flex h-11 w-11 shrink-0 flex-col items-center justify-center gap-[5px] border-[1.5px] border-edge bg-white shadow-hard-sm transition-transform active:translate-[3px] active:shadow-none lg:hidden"
+          className="flex h-11 w-11 shrink-0 flex-col items-center justify-center gap-[5px] border-[1.5px] border-edge bg-white shadow-hard-sm transition-transform active:translate-[2px] active:shadow-none lg:hidden cursor-pointer"
         >
           <span
-            className={`h-[2px] w-5 bg-ink transition-transform duration-250 ${
-              open ? "translate-y-[7px] rotate-45" : ""
+            className={`h-[2.5px] w-5 bg-ink transition-all duration-200 ${
+              open ? "translate-y-[7.5px] rotate-45" : ""
             }`}
           />
           <span
-            className={`h-[2px] w-5 bg-ink transition-opacity duration-250 ${
-              open ? "opacity-0" : ""
+            className={`h-[2.5px] w-5 bg-ink transition-all duration-200 ${
+              open ? "opacity-0 scale-50" : "opacity-100"
             }`}
           />
           <span
-            className={`h-[2px] w-5 bg-ink transition-transform duration-250 ${
-              open ? "-translate-y-[7px] -rotate-45" : ""
+            className={`h-[2.5px] w-5 bg-ink transition-all duration-200 ${
+              open ? "-translate-y-[7.5px] -rotate-45" : ""
             }`}
           />
         </button>
       </div>
 
-      {/* Mobile panel */}
-      <div
-        id="mobile-nav"
-        className={`max-h-[calc(100dvh-72px)] overflow-y-auto border-t-[1.5px] border-edge bg-paper transition-all duration-300 lg:hidden ${
-          open ? "block opacity-100 translate-y-0" : "hidden opacity-0 -translate-y-2"
-        }`}
-      >
-        <div className="wrap flex flex-col gap-1 py-5">
-          {nav.map((item, i) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={() => setOpen(false)}
-              style={{ transitionDelay: `${i * 30}ms` }}
-              className="mono border-b border-line py-4 text-ink transition-all duration-200 hover:translate-x-2 hover:text-magenta"
-            >
-              {item.label}
-            </Link>
-          ))}
-          <Button
-            href="#join"
-            variant="magenta"
-            className="mt-5 w-full"
-            onClick={() => setOpen(false)}
-          >
-            Join Jṉanana
-          </Button>
+      {/* Mobile Navigation Panel Overlay */}
+      {open && (
+        <div
+          id="mobile-nav-panel"
+          className="absolute left-0 right-0 top-full z-50 max-h-[calc(100vh-70px)] overflow-y-auto border-b-[1.5px] border-edge bg-[#FBF3E7] p-5 shadow-2xl lg:hidden"
+        >
+          <div className="flex flex-col gap-2">
+            {nav.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={() => setOpen(false)}
+                className="mono border-b border-[#141210]/15 py-3.5 text-base font-bold text-ink transition-colors hover:text-magenta"
+              >
+                {item.label}
+              </Link>
+            ))}
+
+            <div className="mt-4 flex flex-col gap-3 pt-2">
+              {isLoggedIn ? (
+                <Button
+                  href={target}
+                  variant="magenta"
+                  className="w-full justify-center"
+                  onClick={() => setOpen(false)}
+                >
+                  Go to Dashboard →
+                </Button>
+              ) : (
+                <>
+                  <Button
+                    href="/login"
+                    variant="ghost"
+                    className="w-full justify-center border-[1.5px] border-edge bg-white"
+                    onClick={() => setOpen(false)}
+                  >
+                    Sign In
+                  </Button>
+                  <Button
+                    href="/onboarding/student"
+                    variant="magenta"
+                    className="w-full justify-center"
+                    onClick={() => setOpen(false)}
+                  >
+                    Join as Mentee
+                  </Button>
+                  <Button
+                    href="/onboarding/mentor"
+                    variant="amber"
+                    className="w-full justify-center"
+                    onClick={() => setOpen(false)}
+                  >
+                    Join as Mentor
+                  </Button>
+                </>
+              )}
+            </div>
+          </div>
         </div>
-      </div>
+      )}
     </nav>
   );
 }
-
