@@ -101,10 +101,6 @@ export function Nav() {
                 <Button href="/login" variant="ghost" size="sm" className="transition-transform duration-200 hover:scale-105">
                   Sign In
                 </Button>
-                {/* SRS §32: both registration paths, since mentors self-register too. */}
-                <Button href="/onboarding/mentor" variant="ghost" size="sm" className="transition-transform duration-200 hover:scale-105">
-                  Join as Mentor
-                </Button>
                 <Button href="/onboarding/student" variant="magenta" size="sm" className="transition-transform duration-200 hover:scale-105">
                   Join as Mentee
                 </Button>

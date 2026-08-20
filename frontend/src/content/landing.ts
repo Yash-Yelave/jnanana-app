@@ -4,11 +4,11 @@
  */
 
 export const nav = [
+  { label: "The Gap", href: "#gap" },
   { label: "How It Works", href: "#how" },
-  { label: "Mentors", href: "#faculty" },
-  { label: "Programs", href: "#tracks" },
-  { label: "Events", href: "#events" },
-  { label: "About", href: "#gap" },
+  { label: "J-Spotlight", href: "#spotlight" },
+  { label: "Tracks", href: "#tracks" },
+  { label: "Faculty", href: "#faculty" },
 ];
 
 export const ticker = [
