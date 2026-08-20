@@ -47,8 +47,8 @@
 .formSide form > h1,
 .rolePanel > h1 {
   max-width: 760px;
-  margin: 8vh 0 36px;
-  font: 800 clamp(34px, 3.25vw, 62px)/1.16 var(--font-manrope, sans-serif);
+  margin: 6vh 0 32px;
+  font: 800 clamp(32px, 3.25vw, 62px) / 1.16 var(--font-manrope, sans-serif);
   letter-spacing: -0.04em;
   color: #0B6B44;
 }
@@ -152,9 +152,9 @@
 
 .actions button,
 .roles button {
-  min-width: 150px;
-  height: 56px;
-  padding: 0 28px;
+  min-width: 140px;
+  height: 54px;
+  padding: 0 24px;
   border: 1.5px solid #141210;
   border-radius: 999px;
   background: linear-gradient(135deg, #FFB800 0%, #FF8A00 100%);
@@ -195,13 +195,13 @@
 
 .fields input {
   width: 100%;
-  height: 54px;
+  height: 52px;
   padding: 0 18px;
   border: 1.5px solid #141210;
   border-radius: 12px;
   background: #FAFAFA;
   outline: none;
-  font-size: 0.95rem;
+  font-size: 16px; /* 16px prevents mobile iOS auto-zoom */
   transition: border-color 160ms ease, box-shadow 160ms ease;
 }
 
@@ -236,7 +236,7 @@
 
 .fields .code {
   grid-column: 1 / -1;
-  padding: 20px;
+  padding: 18px;
   border: 1.5px dashed #0B6B44;
   border-radius: 14px;
   background: #F6EBDB;
@@ -249,8 +249,8 @@
 
 .code > div span {
   display: grid;
-  width: 40px;
-  height: 40px;
+  width: 38px;
+  height: 38px;
   place-items: center;
   border-radius: 50%;
   background: #0B6B44;
@@ -339,64 +339,94 @@
   }
   .formSide > h1,
   .formSide form > h1 {
-    margin-top: 6vh;
+    margin-top: 4vh;
   }
   .fields {
     grid-template-columns: 1fr;
   }
 }
 
+/* Optimized Clean Mobile View for Onboarding */
 @media (max-width: 767px) {
   .page {
-    padding: 0;
-    background: #FBF3E7;
+    padding: 16px 12px 32px;
+    min-height: 100vh;
   }
+
   .panel {
     display: block;
-    min-height: 100vh;
-    border-radius: 0;
-    border: none;
-    box-shadow: none;
+    min-height: auto;
+    border-radius: 24px;
+    border: 1.5px solid #141210;
+    box-shadow: 4px 4px 0 #141210;
+    background: #FFFFFF;
   }
+
   .formSide,
   .rolePanel {
-    padding: 24px 20px 36px;
+    padding: 24px 18px 28px;
   }
+
   .figure {
     display: none;
   }
+
   .formSide > h1,
   .formSide form > h1 {
-    margin: 40px 0 28px;
-    font-size: 34px;
+    margin: 16px 0 20px;
+    font-size: clamp(26px, 6.5vw, 34px);
   }
+
   .skills {
+    grid-template-columns: 1fr 1fr;
     gap: 12px;
   }
+
   .skills button {
-    min-height: 145px;
-    padding: 18px 14px;
+    min-height: 125px;
+    padding: 16px 14px;
     font-size: 14px;
   }
+
   .skills button > span {
-    width: 46px;
-    height: 46px;
+    width: 44px;
+    height: 44px;
+    font-size: 20px;
   }
+
   .fields {
-    gap: 16px;
+    grid-template-columns: 1fr;
+    gap: 14px;
   }
+
+  .fields input {
+    height: 50px;
+    font-size: 16px;
+  }
+
+  .actions button,
+  .roles button {
+    height: 50px;
+    font-size: 0.925rem;
+    min-width: 120px;
+  }
+
   .roles {
     grid-template-columns: 1fr;
+    gap: 20px;
   }
+
   .rolePanel > h1 {
-    margin: 40px 0 24px;
-    font-size: 32px;
+    margin: 20px 0 20px;
+    font-size: 28px;
   }
+
   .roles article {
-    padding: 16px;
+    padding: 18px;
   }
+
   .roles img {
-    height: 130px;
+    height: 120px;
   }
 }
 
