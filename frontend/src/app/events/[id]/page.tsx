@@ -1,39 +1,50 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { Calendar, MapPin, ArrowRight, CheckCircle, Sparkles } from "lucide-react";
-import { getEvent, checkinEvent, type EventItem } from "@/lib/api";
+import { getEvent, getMyParticipation, checkinEvent, type EventItem } from "@/lib/api";
 import { AppShell } from "@/components/app-shell";
 
 export default function EventDetailPage() {
   const { id } = useParams() as { id: string };
   const [event, setEvent] = useState<EventItem | null>(null);
+  const [checkedIn, setCheckedIn] = useState(false);
   const [loading, setLoading] = useState(true);
   const [checkingIn, setCheckingIn] = useState(false);
-  const [checkinMessage, setCheckinMessage] = useState<string | null>(null);
   const [tokensGranted, setTokensGranted] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
+
+  const load = useCallback(
+    () =>
+      Promise.all([getEvent(id), getMyParticipation(id).catch(() => null)])
+        .then(([detail, participation]) => {
+          setEvent(detail);
+          setCheckedIn(participation?.checkin_status === "checked_in");
+        })
+        .catch((err: unknown) =>
+          setError(err instanceof Error ? err.message : "Unable to load this event"),
+        )
+        .finally(() => setLoading(false)),
+    [id],
+  );
 
   useEffect(() => {
     if (!id) return;
-    getEvent(id)
-      .then(setEvent)
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
-  }, [id]);
+    load();
+  }, [id, load]);
 
   const handleCheckin = async () => {
-    if (!id) return;
     setCheckingIn(true);
-    setError(null);
+    setActionError(null);
     try {
       const res = await checkinEvent(id);
-      setCheckinMessage(res.message);
+      setCheckedIn(true);
       setTokensGranted(res.tokens_granted);
-    } catch (err: any) {
-      setError(err.message || "Failed to check in");
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : "Check-in failed. Please try again.");
     } finally {
       setCheckingIn(false);
     }
@@ -92,7 +103,7 @@ export default function EventDetailPage() {
             </span>
 
             {/* Check-In Button (B1) */}
-            {checkinMessage ? (
+            {checkedIn ? (
               <span
                 style={{
                   display: "inline-flex",
@@ -108,7 +119,7 @@ export default function EventDetailPage() {
                 }}
               >
                 <CheckCircle size={16} />
-                Checked In ✓ ({tokensGranted ? `+${tokensGranted} Jools` : "Verified"})
+                Checked In ✓ ({tokensGranted ? `+${tokensGranted} Jule Tokens` : "Verified"})
               </span>
             ) : (
               <button
@@ -131,10 +142,14 @@ export default function EventDetailPage() {
                 }}
               >
                 <Sparkles size={16} />
-                {checkingIn ? "Checking In..." : "Check In to Event (+50 Jools)"}
+                {checkingIn ? "Checking In..." : "Check In & Claim 50 Jule Tokens"}
               </button>
             )}
           </div>
+
+          {actionError && (
+            <p style={{ color: "#EF4444", fontWeight: 700, margin: "0 0 16px" }}>{actionError}</p>
+          )}
 
           <h1 style={{ fontSize: "2.5rem", fontWeight: "800", marginBottom: "16px", lineHeight: 1.15, color: "#0B6B44" }}>
             {event.name}

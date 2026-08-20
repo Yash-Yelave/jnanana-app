@@ -345,6 +345,7 @@ class Event(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
 
+
 class EventParticipant(Base):
     __tablename__ = "event_participants"
     __table_args__ = (UniqueConstraint("event_id", "user_id"),)
@@ -374,7 +375,9 @@ class JuleTransaction(Base):
     event_id: Mapped[UUID | None] = mapped_column(ForeignKey("events.id", ondelete="SET NULL"))
     amount: Mapped[int] = mapped_column(Integer)
     transaction_type: Mapped[str]
-    related_mentor_id: Mapped[UUID | None] = mapped_column(ForeignKey("mentor_profiles.profile_id", ondelete="SET NULL"))
+    related_mentor_id: Mapped[UUID | None] = mapped_column(
+        ForeignKey("mentor_profiles.profile_id", ondelete="SET NULL")
+    )
     notes: Mapped[str | None] = mapped_column(Text)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 

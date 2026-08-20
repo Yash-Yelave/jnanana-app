@@ -76,7 +76,7 @@ export default function DashboardPage() {
             Explore Verified Mentors
           </h1>
           <p style={{ color: "#6A675F", margin: "6px 0 0", fontSize: "1rem" }}>
-            Connect 1-on-1 with industry leaders to accelerate your skills using your Jools.
+            Connect 1-on-1 with industry leaders to accelerate your skills using your Jule Tokens.
           </p>
         </div>
 
@@ -343,7 +343,7 @@ export default function DashboardPage() {
                     display: "block",
                   }}
                 >
-                  ⚡ Request Mentorship (10 Jools)
+                  ⚡ Request Mentorship (10 Jule Tokens)
                 </Link>
               </article>
             ))}

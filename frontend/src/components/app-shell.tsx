@@ -8,7 +8,7 @@ import {
   LayoutDashboard,
   GraduationCap,
   Settings,
-  BookOpen,
+  HeartHandshake,
   Search,
   Calendar,
   Sparkles,
@@ -17,11 +17,13 @@ import { Brand } from "@/components/brand";
 import type { Profile } from "@/lib/types";
 import { useApi } from "@/lib/use-api";
 import { publicAsset } from "@/lib/supabase/client";
+import { NotificationBell } from "@/components/notification-bell";
 import styles from "./app-shell.module.css";
 
 const studentNav = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { label: "Wallet", href: "/jule/transactions", icon: Sparkles },
+  { label: "My Requests", href: "/requests", icon: HeartHandshake },
   { label: "Events", href: "/events", icon: Calendar },
   { label: "Settings", href: "/settings", icon: Settings },
 ] as const;
@@ -29,8 +31,7 @@ const studentNav = [
 const mentorNav = [
   { label: "Dashboard", href: "/mentor/dashboard", icon: LayoutDashboard },
   { label: "Wallet", href: "/jule/transactions", icon: Sparkles },
-  { label: "Bookings", href: "/mentor/bookings", icon: GraduationCap },
-  { label: "Lessons", href: "/mentor/lessons", icon: BookOpen },
+  { label: "Requests", href: "/mentor/requests", icon: HeartHandshake },
   { label: "Events", href: "/events", icon: Calendar },
   { label: "Settings", href: "/settings", icon: Settings },
 ] as const;
@@ -138,8 +139,9 @@ export function AppShell({
             cursor: "pointer",
           }}
         >
-          ⚡ {juleBalance} Jools
+          ⚡ {juleBalance} Jule
         </button>
+        <NotificationBell />
         <Link href={profileTarget} aria-label="Open profile">
           <Image src={avatar} alt={name} width={40} height={40} style={{ borderRadius: "50%", border: "1.5px solid #FFB800" }} />
         </Link>
@@ -173,8 +175,9 @@ export function AppShell({
               cursor: "pointer",
             }}
           >
-            ⚡ {juleBalance} Jools
+            ⚡ {juleBalance} Jule
           </button>
+          <NotificationBell />
           <Link className={styles.profileBtn} href={profileTarget} aria-label="Open profile">
             <Image src={avatar} alt={name} width={46} height={46} priority />
           </Link>

@@ -1,0 +1,181 @@
+"use client";
+
+import { useCallback, useEffect, useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { Check, X, Clock, Sparkles } from "lucide-react";
+import {
+  getMyMentorshipRequests,
+  actionMentorshipRequest,
+  type MentorshipRequestItem,
+} from "@/lib/api";
+import { AppShell } from "@/components/app-shell";
+import { useApi } from "@/lib/use-api";
+import { publicAsset } from "@/lib/supabase/client";
+import type { Profile } from "@/lib/types";
+import styles from "./mentorship-requests.module.css";
+
+const STATUS_LABEL: Record<string, string> = {
+  pending: "Pending",
+  accepted: "Accepted",
+  rejected: "Declined",
+  completed: "Completed",
+  cancelled: "Cancelled",
+};
+
+export function MentorshipRequestsPage() {
+  const { data: profile } = useApi<Profile>("/me");
+  const isMentor = profile?.role === "mentor";
+
+  const [requests, setRequests] = useState<MentorshipRequestItem[] | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [busyId, setBusyId] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
+
+  const load = useCallback(
+    () =>
+      getMyMentorshipRequests()
+        .then(setRequests)
+        .catch((err: unknown) =>
+          setError(err instanceof Error ? err.message : "Unable to load your mentorship requests"),
+        ),
+    [],
+  );
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  const act = async (id: string, action: "accept" | "reject" | "cancel") => {
+    setBusyId(id);
+    setActionError(null);
+    try {
+      await actionMentorshipRequest(id, action);
+      await load();
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : "That action didn't go through. Please try again.");
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  return (
+    <AppShell active={isMentor ? "/mentor/requests" : "/requests"} mentor={isMentor}>
+      <div className={styles.page}>
+        <header className={styles.head}>
+          <h1>{isMentor ? "Mentorship requests" : "My requests"}</h1>
+          <p>
+            {isMentor
+              ? "Mentees who have spent their Jule Tokens to reach you. Accepting lets the Jnanana team coordinate the connection."
+              : "Every mentorship request you've made, and where it stands."}
+          </p>
+        </header>
+
+        {!requests && !error && <p className="data-state">Loading requests…</p>}
+
+        {error && (
+          <p className="data-state" role="alert">
+            {error}
+          </p>
+        )}
+
+        {actionError && (
+          <p className={styles.error} role="alert">
+            {actionError}
+          </p>
+        )}
+
+        {requests?.length === 0 && (
+          <div className={styles.empty}>
+            <Sparkles size={28} aria-hidden />
+            <h2>{isMentor ? "No requests yet" : "You haven't made any requests yet"}</h2>
+            <p>
+              {isMentor
+                ? "When a mentee requests mentorship with you, it will appear here."
+                : "Check in at an event to receive Jule Tokens, then request mentorship from any mentor."}
+            </p>
+            {!isMentor && (
+              <Link className="button button-primary" href="/mentors">
+                Browse mentors
+              </Link>
+            )}
+          </div>
+        )}
+
+        <div className={styles.list}>
+          {requests?.map((request) => {
+            const counterparty = isMentor ? request.mentee_name : request.mentor_name;
+            const avatar = publicAsset("avatars", request.mentor_avatar) ?? "/assets/app/mentor-1.png";
+            return (
+              <article className={styles.card} key={request.id}>
+                <Image
+                  src={isMentor ? "/assets/app/mentor-1.png" : avatar}
+                  alt=""
+                  width={56}
+                  height={56}
+                  className={styles.avatar}
+                />
+
+                <div className={styles.body}>
+                  <h3>{counterparty ?? "Jnanana member"}</h3>
+                  {!isMentor && request.mentor_headline && <p className={styles.headline}>{request.mentor_headline}</p>}
+                  {request.note && <p className={styles.note}>&ldquo;{request.note}&rdquo;</p>}
+                  <div className={styles.meta}>
+                    <span>
+                      <Clock size={14} aria-hidden /> {new Date(request.created_at).toLocaleDateString("en-IN", { dateStyle: "medium" })}
+                    </span>
+                    <span>
+                      <Sparkles size={14} aria-hidden /> {request.tokens_used} Jule Tokens
+                    </span>
+                  </div>
+                </div>
+
+                <div className={styles.side}>
+                  <span className={`${styles.pill} ${styles[request.status] ?? ""}`}>
+                    {STATUS_LABEL[request.status] ?? request.status}
+                  </span>
+
+                  {request.status === "pending" && isMentor && (
+                    <div className={styles.actions}>
+                      <button
+                        type="button"
+                        className={styles.accept}
+                        onClick={() => void act(request.id, "accept")}
+                        disabled={busyId === request.id}
+                      >
+                        <Check size={16} aria-hidden /> Accept
+                      </button>
+                      <button
+                        type="button"
+                        className={styles.reject}
+                        onClick={() => void act(request.id, "reject")}
+                        disabled={busyId === request.id}
+                      >
+                        <X size={16} aria-hidden /> Decline
+                      </button>
+                    </div>
+                  )}
+
+                  {request.status === "pending" && !isMentor && (
+                    <button
+                      type="button"
+                      className={styles.reject}
+                      onClick={() => void act(request.id, "cancel")}
+                      disabled={busyId === request.id}
+                    >
+                      Cancel request
+                    </button>
+                  )}
+
+                  {request.status === "rejected" && (
+                    <small className={styles.refund}>{request.tokens_used} Jule Tokens refunded</small>
+                  )}
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      </div>
+    </AppShell>
+  );
+}

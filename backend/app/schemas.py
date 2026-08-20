@@ -356,6 +356,39 @@ class EventRead(ORMModel):
     image_path: str | None
     status: str
     created_at: datetime
+class EventUpdate(BaseModel):
+    name: str | None = Field(default=None, min_length=3, max_length=160)
+    description: str | None = Field(default=None, min_length=10, max_length=5000)
+    event_date: datetime | None = None
+    location: str | None = Field(default=None, max_length=200)
+    image_path: str | None = None
+    status: Literal["draft", "published", "completed"] | None = None
+
+
+class ParticipantRead(BaseModel):
+    user_id: UUID
+    first_name: str
+    last_name: str
+    phone: str | None
+    role: str
+    registration_status: str
+    checkin_status: str
+    tokens_allocated: bool
+    jule_balance: int
+
+
+class AdminRequestRead(BaseModel):
+    id: UUID
+    mentee_name: str
+    mentor_name: str
+    event_name: str | None
+    tokens_used: int
+    status: str
+    created_at: datetime
+
+
+class RequestStatusOverride(BaseModel):
+    status: Literal["pending", "accepted", "rejected", "completed", "cancelled"]
 
 
 class JuleWalletRead(BaseModel):

@@ -1,122 +1,123 @@
+from datetime import UTC, datetime
+from typing import Annotated
 from uuid import UUID
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.auth import get_current_user_id
 from app.db import get_db_session
-from app.models import Event, EventParticipant, JuleTransaction, JuleWallet, Profile
-from app.schemas import EventCreate, EventRead
+from app.models import Event, EventParticipant, JuleTransaction, JuleWallet
+from app.schemas import EventRead
 
 router = APIRouter(prefix="/events", tags=["events"])
 
+Db = Annotated[AsyncSession, Depends(get_db_session)]
+UserId = Annotated[UUID, Depends(get_current_user_id)]
 
-@router.get("", response_model=list[EventRead])
-async def list_events(db: AsyncSession = Depends(get_db_session)) -> list[EventRead]:
-    stmt = select(Event).where(Event.status == "published").order_by(Event.event_date.asc())
-    res = await db.execute(stmt)
-    events = res.scalars().all()
-    out = []
-    for ev in events:
-        out.append(
-            EventRead(
-                id=ev.id,
-                slug=ev.slug,
-                name=ev.name,
-                description=ev.description,
-                event_date=ev.event_date,
-                location=ev.location,
-                image_path=ev.image_path,
-                status=ev.status,
-                created_at=ev.created_at,
-            )
+BASE_ALLOCATION = 50
+
+
+async def check_in_participant(db: AsyncSession, event: Event, user_id: UUID) -> dict[str, object]:
+    """Check a user into an event and grant the base Jule allocation exactly once.
+
+    Shared by the participant's own check-in and the admin's manual check-in so the
+    two paths cannot drift apart.
+    """
+    participant = (
+        await db.execute(
+            select(EventParticipant)
+            .where(EventParticipant.event_id == event.id, EventParticipant.user_id == user_id)
+            .with_for_update()
         )
-    return out
+    ).scalar_one_or_none()
 
-
-@router.get("/{event_id}", response_model=EventRead)
-async def get_event(event_id: UUID, db: AsyncSession = Depends(get_db_session)) -> EventRead:
-    stmt = select(Event).where(Event.id == event_id)
-    res = await db.execute(stmt)
-    ev = res.scalar_one_or_none()
-    if not ev:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Event not found")
-
-    return EventRead(
-        id=ev.id,
-        slug=ev.slug,
-        name=ev.name,
-        description=ev.description,
-        event_date=ev.event_date,
-        location=ev.location,
-        image_path=ev.image_path,
-        status=ev.status,
-        created_at=ev.created_at,
-    )
-
-
-@router.post("/{event_id}/checkin")
-async def checkin_event(
-    event_id: UUID,
-    user_id: UUID = Depends(get_current_user_id),
-    db: AsyncSession = Depends(get_db_session),
-) -> dict[str, object]:
-    # Check event exists
-    stmt = select(Event).where(Event.id == event_id)
-    res = await db.execute(stmt)
-    ev = res.scalar_one_or_none()
-    if not ev:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Event not found")
-
-    # Get or create EventParticipant
-    p_stmt = select(EventParticipant).where(
-        EventParticipant.event_id == event_id, EventParticipant.user_id == user_id
-    )
-    p_res = await db.execute(p_stmt)
-    participant = p_res.scalar_one_or_none()
-
-    if not participant:
+    if participant is None:
         participant = EventParticipant(
-            event_id=event_id,
+            event_id=event.id,
             user_id=user_id,
             registration_status="registered",
             checkin_status="checked_in",
-            tokens_allocated=False,
         )
         db.add(participant)
+        await db.flush()
     else:
         participant.checkin_status = "checked_in"
 
-    # Allocate 50 Jule Tokens if not yet allocated
     tokens_granted = 0
     if not participant.tokens_allocated:
         participant.tokens_allocated = True
-        tokens_granted = 50
+        tokens_granted = BASE_ALLOCATION
 
-        # Get or create JuleWallet (initial balance 0)
-        w_stmt = select(JuleWallet).where(JuleWallet.user_id == user_id)
-        w_res = await db.execute(w_stmt)
-        wallet = w_res.scalar_one_or_none()
-        if not wallet:
+        wallet = (
+            await db.execute(select(JuleWallet).where(JuleWallet.user_id == user_id).with_for_update())
+        ).scalar_one_or_none()
+        if wallet is None:
             wallet = JuleWallet(user_id=user_id, balance=0)
             db.add(wallet)
-        
-        wallet.balance += 50
+            await db.flush()
+        wallet.balance += BASE_ALLOCATION
+        wallet.updated_at = datetime.now(UTC)
 
-        # Add JuleTransaction log
-        txn = JuleTransaction(
-            user_id=user_id,
-            event_id=event_id,
-            amount=50,
-            transaction_type="event_allocation",
-            notes=f"Base token allocation for {ev.name}",
+        db.add(
+            JuleTransaction(
+                user_id=user_id,
+                event_id=event.id,
+                amount=BASE_ALLOCATION,
+                transaction_type="event_allocation",
+                notes=f"Base token allocation for {event.name}",
+            )
         )
-        db.add(txn)
 
-    await db.commit()
     return {
-        "message": f"Successfully checked into {ev.name}",
+        "message": f"Checked in to {event.name}",
         "checkin_status": "checked_in",
         "tokens_granted": tokens_granted,
     }
 
+
+@router.get("", response_model=list[EventRead])
+async def list_events(db: Db) -> list[Event]:
+    stmt = select(Event).where(Event.status == "published").order_by(Event.event_date.asc())
+    return list((await db.scalars(stmt)).all())
+
+
+@router.get("/{event_id}", response_model=EventRead)
+async def get_event(event_id: UUID, db: Db) -> Event:
+    event = await db.get(Event, event_id)
+    if event is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Event not found")
+    return event
+
+
+@router.get("/{event_id}/me")
+async def my_participation(event_id: UUID, db: Db, user_id: UserId) -> dict[str, object]:
+    """Lets the event page render the right check-in state instead of guessing."""
+    participant = (
+        await db.execute(
+            select(EventParticipant).where(
+                EventParticipant.event_id == event_id, EventParticipant.user_id == user_id
+            )
+        )
+    ).scalar_one_or_none()
+    if participant is None:
+        return {"registered": False, "checkin_status": "pending", "tokens_allocated": False}
+    return {
+        "registered": True,
+        "checkin_status": participant.checkin_status,
+        "tokens_allocated": participant.tokens_allocated,
+    }
+
+
+@router.post("/{event_id}/checkin")
+async def checkin_event(event_id: UUID, db: Db, user_id: UserId) -> dict[str, object]:
+    event = await db.get(Event, event_id)
+    if event is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Event not found")
+    if event.status != "published":
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="This event is not open for check-in")
+
+    result = await check_in_participant(db, event, user_id)
+    await db.commit()
+    return result
