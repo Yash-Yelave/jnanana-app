@@ -107,13 +107,14 @@ export interface EventItem {
   created_at: string;
 }
 
-export interface JuleWallet {
+export interface JoolsWallet {
   user_id: string;
   balance: number;
   updated_at: string;
 }
+export type JuleWallet = JoolsWallet;
 
-export interface JuleTransaction {
+export interface JoolsTransaction {
   id: string;
   user_id: string;
   event_id?: string;
@@ -123,6 +124,7 @@ export interface JuleTransaction {
   notes?: string;
   created_at: string;
 }
+export type JuleTransaction = JoolsTransaction;
 
 export interface MentorshipRequestItem {
   id: string;
@@ -162,14 +164,16 @@ export function checkinEvent(id: string) {
   });
 }
 
-// Jule Token API
-export function getJuleWallet() {
-  return apiFetch<JuleWallet>("/jule/wallet");
+// Jools Token API
+export function getJoolsWallet() {
+  return apiFetch<JoolsWallet>("/jools/wallet");
 }
+export const getJuleWallet = getJoolsWallet;
 
-export function getJuleTransactions() {
-  return apiFetch<JuleTransaction[]>("/jule/transactions");
+export function getJoolsTransactions() {
+  return apiFetch<JoolsTransaction[]>("/jools/transactions");
 }
+export const getJuleTransactions = getJoolsTransactions;
 
 // Mentorship Requests API
 export function createMentorshipRequest(data: { mentor_id: string; event_id?: string; tokens_used?: number; note?: string }) {

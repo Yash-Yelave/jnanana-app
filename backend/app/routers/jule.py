@@ -12,12 +12,14 @@ from app.models import JuleTransaction, JuleWallet
 from app.schemas import JuleTransactionRead, JuleWalletRead
 
 router = APIRouter(prefix="/jule", tags=["jule"])
+jools_router = APIRouter(prefix="/jools", tags=["jools"])
 
 Db = Annotated[AsyncSession, Depends(get_db_session)]
 UserId = Annotated[UUID, Depends(get_current_user_id)]
 
 
 @router.get("/wallet", response_model=JuleWalletRead)
+@jools_router.get("/wallet", response_model=JuleWalletRead)
 async def get_wallet(db: Db, user_id: UserId) -> JuleWalletRead:
     wallet = (
         await db.execute(select(JuleWallet).where(JuleWallet.user_id == user_id))
@@ -30,6 +32,7 @@ async def get_wallet(db: Db, user_id: UserId) -> JuleWalletRead:
 
 
 @router.get("/transactions", response_model=list[JuleTransactionRead])
+@jools_router.get("/transactions", response_model=list[JuleTransactionRead])
 async def list_transactions(db: Db, user_id: UserId) -> list[JuleTransactionRead]:
     stmt = (
         select(JuleTransaction)

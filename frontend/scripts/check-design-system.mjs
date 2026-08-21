@@ -30,6 +30,8 @@ const PALETTE = new Set(
     "#fff",
     "#ffffff",
     "#b42318", // error — functional, not decorative
+    "#dcfce7", // success badge fill — functional
+    "#fee2e2", // error badge fill — functional
     "#ffc107", // star fill in the rating control
   ].map((c) => c.toLowerCase()),
 );

@@ -101,7 +101,7 @@ async def create_request(payload: MentorshipRequestCreate, db: Db, user_id: User
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=(
-                f"Insufficient Jule Tokens. You have {wallet.balance}, "
+                f"Insufficient Jools Tokens. You have {wallet.balance}, "
                 f"but {payload.tokens_used} are required. Check in at an event to receive tokens."
             ),
         )

@@ -25,7 +25,7 @@ import styles from "./app-shell.module.css";
    that one item taller than its neighbours. */
 const studentNav = [
   { label: "Dashboard", short: "Home", href: "/dashboard", icon: LayoutDashboard },
-  { label: "Wallet", short: "Wallet", href: "/jule/transactions", icon: Sparkles },
+  { label: "Wallet", short: "Wallet", href: "/jools/transactions", icon: Sparkles },
   { label: "My Requests", short: "Requests", href: "/requests", icon: HeartHandshake },
   { label: "Events", short: "Events", href: "/events", icon: Calendar },
   { label: "Settings", short: "Settings", href: "/settings", icon: Settings },
@@ -33,7 +33,7 @@ const studentNav = [
 
 const mentorNav = [
   { label: "Dashboard", short: "Home", href: "/mentor/dashboard", icon: LayoutDashboard },
-  { label: "Wallet", short: "Wallet", href: "/jule/transactions", icon: Sparkles },
+  { label: "Wallet", short: "Wallet", href: "/jools/transactions", icon: Sparkles },
   { label: "Requests", short: "Requests", href: "/mentor/requests", icon: HeartHandshake },
   { label: "Events", short: "Events", href: "/events", icon: Calendar },
   { label: "Settings", short: "Settings", href: "/settings", icon: Settings },
@@ -110,11 +110,11 @@ export function AppShell({
   const name = profile ? `${profile.first_name} ${profile.last_name}` : "Profile";
   const profileTarget = isMentor ? "/mentor/profile" : "/profile";
   const brandHref = isMentor ? "/mentor/dashboard" : "/dashboard";
-  const juleBalance = wallet?.balance ?? 0;
+  const joolsBalance = wallet?.balance ?? 0;
 
-  const handleJuleClick = (e: React.MouseEvent) => {
+  const handleJoolsClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    router.push("/jule/transactions");
+    router.push("/jools/transactions");
   };
 
   return (
@@ -128,8 +128,8 @@ export function AppShell({
       {/* Top Header for Mobile */}
       <header className={styles.mobileHeader}>
         <Brand inverse href={brandHref} />
-        <button type="button" onClick={handleJuleClick} className={styles.juleChip}>
-          ⚡ {juleBalance} Jule
+        <button type="button" onClick={handleJoolsClick} className={styles.joolsChip}>
+          ⚡ {joolsBalance} Jools
         </button>
         <NotificationBell />
         <Link href={profileTarget} aria-label="Open profile">
@@ -147,8 +147,8 @@ export function AppShell({
           <input type="search" placeholder="Search mentors, events..." aria-label="Search mentors, events" />
         </label>
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <button type="button" onClick={handleJuleClick} className={styles.juleChip}>
-            ⚡ {juleBalance} Jule
+          <button type="button" onClick={handleJoolsClick} className={styles.joolsChip}>
+            ⚡ {joolsBalance} Jools
           </button>
           <NotificationBell />
           <Link className={styles.profileBtn} href={profileTarget} aria-label="Open profile">

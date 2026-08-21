@@ -28,7 +28,7 @@
 ## Test Account Seeding
 
 - Script: `backend/seed_test_accounts.py`
-- Mentee account: `test.mentee@jnanana.org` / `TestMentee123!` (Role: `student`, Initial balance: 50 Jule Tokens)
+- Mentee account: `test.mentee@jnanana.org` / `TestMentee123!` (Role: `student`, Initial balance: 50 Jools Tokens)
 - Mentor account: `test.mentor@jnanana.org` / `TestMentor123!` (Role: `mentor`, Status: `approved`)
 
 ## Quality gates

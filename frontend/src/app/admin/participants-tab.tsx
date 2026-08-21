@@ -51,7 +51,7 @@ export function ParticipantsTab() {
       const res = await adminCheckinParticipant(eventId, userId);
       setNote(
         res.tokens_granted > 0
-          ? `${name} checked in — ${res.tokens_granted} Jule Tokens granted.`
+          ? `${name} checked in — ${res.tokens_granted} Jools Tokens granted.`
           : `${name} was already checked in. No further tokens granted.`,
       );
       await loadParticipants();
@@ -151,7 +151,7 @@ export function ParticipantsTab() {
                     <th style={{ padding: "10px" }}>Phone</th>
                     <th style={{ padding: "10px" }}>Role</th>
                     <th style={{ padding: "10px" }}>Check-in</th>
-                    <th style={{ padding: "10px" }}>Jule</th>
+                    <th style={{ padding: "10px" }}>Jools</th>
                     <th style={{ padding: "10px" }} />
                   </tr>
                 </thead>

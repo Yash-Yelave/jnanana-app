@@ -84,7 +84,7 @@ export default function EventsPage() {
         <header className="app-head">
           <p className="eyebrow">J-Spotlight &amp; Junicorn Conclaves</p>
           <h1>Events</h1>
-          <p>Check in at a Jnanana event to receive your Jule Tokens and start requesting mentorship.</p>
+          <p>Check in at a Jnanana event to receive your Jools Tokens and start requesting mentorship.</p>
         </header>
 
         {!events && !error && <p className="data-state">Loading events…</p>}

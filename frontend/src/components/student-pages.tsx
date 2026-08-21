@@ -167,7 +167,7 @@ export function MentorDirectory() {
                   <b>Mentorship</b>
                   <b>Tutorials</b>
                   <span>
-                    Mentorship Fee<strong>10 Jule Tokens</strong>
+                    Mentorship Fee<strong>10 Jools Tokens</strong>
                   </span>
                   <Link className={styles.button} href={`/mentors/${mentor.id}`}>
                     Request Mentorship <ArrowUpRight size={16} />
@@ -185,16 +185,16 @@ export function MentorDirectory() {
 const tabs = [
   ["About", "/profile"],
   ["My Requests", "/requests"],
-  ["Wallet", "/jule/transactions"],
+  ["Wallet", "/jools/transactions"],
 ] as const;
 
 export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = false, mentorId }: { mode?: "about" | "lessons" | "feedback"; mentorDetail?: boolean; mentorApp?: boolean; mentorId?: string }) {
   const router = useRouter();
   const active = mentorDetail ? "/mentors" : mentorApp ? "/mentor/profile" : "/profile";
   const { data, error, loading } = useApi<Profile | Mentor>(mentorDetail && mentorId ? `/mentors/${mentorId}` : "/me");
-  const { data: walletData } = useApi<{ balance: number }>("/jule/wallet");
+  const { data: walletData } = useApi<{ balance: number }>("/jools/wallet");
 
-  const [showJuleModal, setShowJuleModal] = useState(false);
+  const [showJoolsModal, setShowJoolsModal] = useState(false);
   const [requestNote, setRequestNote] = useState("");
   const [submittingRequest, setSubmittingRequest] = useState(false);
   const [requestMsg, setRequestMsg] = useState("");
@@ -213,7 +213,7 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
       const searchParams = new URLSearchParams(window.location.search);
       if (searchParams.get("request") === "true") {
         queueMicrotask(() => {
-          setShowJuleModal(true);
+          setShowJoolsModal(true);
         });
       }
     }
@@ -239,8 +239,8 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
         }),
       });
       clearApiCache();
-      setRequestMsg("Request sent. 10 Jule Tokens deducted — track it under My Requests.");
-      setTimeout(() => setShowJuleModal(false), 2000);
+      setRequestMsg("Request sent. 10 Jools Tokens deducted — track it under My Requests.");
+      setTimeout(() => setShowJoolsModal(false), 2000);
     } catch (err: unknown) {
       setRequestError(err instanceof Error ? err.message : "Failed to submit mentorship request");
     } finally {
@@ -251,8 +251,8 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
   return (
     <AppShell active={active} mentor={mentorApp}>
       <main className={styles.main}>
-        {/* JULE TOKEN REQUEST MODAL */}
-        {showJuleModal && (
+        {/* JOOLS TOKEN REQUEST MODAL */}
+        {showJoolsModal && (
           <div style={{
             position: "fixed",
             top: 0,
@@ -279,7 +279,7 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
                 ⚡ Request Mentorship
               </h2>
               <p style={{ color: "#6A675F", marginBottom: "20px", lineHeight: 1.5 }}>
-                Use <strong>10 Jule Tokens</strong> to request a mentorship connection with <strong>{formattedName || "Mentor"}</strong>?
+                Use <strong>10 Jools Tokens</strong> to request a mentorship connection with <strong>{formattedName || "Mentor"}</strong>?
               </p>
 
               <div style={{
@@ -292,13 +292,13 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
                 justifyContent: "space-between",
                 alignItems: "center"
               }}>
-                <span style={{ fontSize: "0.9rem", color: "#141210" }}>Your Jule Token balance:</span>
-                <strong style={{ fontSize: "1.2rem", color: "#F5B921" }}>⚡ {currentBalance} Jule Tokens</strong>
+                <span style={{ fontSize: "0.9rem", color: "#141210" }}>Your Jools Token balance:</span>
+                <strong style={{ fontSize: "1.2rem", color: "#F5B921" }}>⚡ {currentBalance} Jools Tokens</strong>
               </div>
 
               {currentBalance < 10 ? (
                 <div style={{ padding: "12px", borderRadius: "0", background: "rgba(239, 68, 68, 0.2)", border: "1px solid #B42318", color: "#B42318", marginBottom: "20px" }}>
-                  Insufficient Jule Tokens. You have {currentBalance}, but 10 are required. Check in at an event to claim 50.
+                  Insufficient Jools Tokens. You have {currentBalance}, but 10 are required. Check in at an event to claim 50.
                 </div>
               ) : (
                 <div style={{ marginBottom: "20px" }}>
@@ -327,7 +327,7 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
 
               <div style={{ display: "flex", gap: "12px", justifyContent: "flex-end" }}>
                 <button
-                  onClick={() => setShowJuleModal(false)}
+                  onClick={() => setShowJoolsModal(false)}
                   style={{
                     padding: "10px 20px",
                     borderRadius: "0",
@@ -353,7 +353,7 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
                       cursor: submittingRequest ? "not-allowed" : "pointer"
                     }}
                   >
-                    {submittingRequest ? "Submitting..." : "Confirm (spend 10 Jule Tokens)"}
+                    {submittingRequest ? "Submitting..." : "Confirm (spend 10 Jools Tokens)"}
                   </button>
                 )}
               </div>
@@ -384,7 +384,7 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
               {mentorDetail && (
                 <div style={{ marginLeft: "auto", display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
                   <button
-                    onClick={() => setShowJuleModal(true)}
+                    onClick={() => setShowJoolsModal(true)}
                     style={{
                       padding: "12px 24px",
                       borderRadius: "0",
@@ -400,7 +400,7 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
                       boxShadow: "4px 4px 0 #141210",
                     }}
                   >
-                    Request Mentorship (10 Jule Tokens)
+                    Request Mentorship (10 Jools Tokens)
                   </button>
                 </div>
               )}

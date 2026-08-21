@@ -101,7 +101,7 @@ async def test_request_without_tokens_is_refused_and_costs_nothing(client, seed,
     )
 
     assert response.status_code == 400
-    assert "Insufficient Jule Tokens" in response.json()["detail"]
+    assert "Insufficient Jools Tokens" in response.json()["detail"]
     assert await _balance(session_factory, seed["mentee"]) == 0
     assert await _transactions(session_factory, seed["mentee"]) == []
 

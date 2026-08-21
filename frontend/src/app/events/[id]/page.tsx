@@ -91,7 +91,7 @@ export default function EventDetailPage() {
 
           <p className={styles.description}>{event.description}</p>
 
-          {/* B1 — check-in is what puts Jule Tokens in a mentee's wallet. */}
+          {/* B1 — check-in is what puts Jools Tokens in a mentee's wallet. */}
           {checkedIn ? (
             <div className={styles.checkedIn}>
               <CheckCircle size={24} aria-hidden />
@@ -99,7 +99,7 @@ export default function EventDetailPage() {
                 <strong>You&rsquo;re checked in</strong>
                 <p>
                   {tokensGranted
-                    ? `${tokensGranted} Jule Tokens have been added to your wallet.`
+                    ? `${tokensGranted} Jools Tokens have been added to your wallet.`
                     : "Your attendance is verified."}
                 </p>
               </div>
@@ -107,7 +107,7 @@ export default function EventDetailPage() {
           ) : (
             <button type="button" className={styles.checkinButton} onClick={handleCheckin} disabled={checkingIn}>
               <Sparkles size={18} aria-hidden />
-              {checkingIn ? "Checking in…" : "Check in & claim your Jule Tokens"}
+              {checkingIn ? "Checking in…" : "Check in & claim 50 Jools Tokens"}
             </button>
           )}
 
@@ -121,7 +121,7 @@ export default function EventDetailPage() {
         <section className={styles.discover}>
           <div>
             <h2>Ready to find a mentor?</h2>
-            <p>Connect directly with startup founders, tech leaders and industry guides using your Jule Tokens.</p>
+            <p>Connect directly with startup founders, tech leaders and industry guides using your Jools Tokens.</p>
           </div>
           <Link className={styles.discoverLink} href="/dashboard">
             Browse mentors <ArrowRight size={18} aria-hidden />

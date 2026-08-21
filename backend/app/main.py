@@ -134,6 +134,7 @@ def create_app() -> FastAPI:
         admin.router,
         events.router,
         jule.router,
+        jule.jools_router,
         mentors.router,
         mentorship_requests.router,
         notifications.router,

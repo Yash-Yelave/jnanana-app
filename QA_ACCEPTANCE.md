@@ -13,7 +13,7 @@ Use this as the final completion checklist.
 ## Visual fidelity
 
 - [x] Correct typography or documented font limitation (Manrope, Public Sans, Sue Ellen Francisco).
-- [x] Correct colors (Neo-brutalist palette: #0B6B44, #FFB800, #D6206A, #F6EBDB, #141210).
+- [x] Correct colors (Neo-brutalist palette: #0B6B44, #FFB800 (Jools gold), #D6206A, #F6EBDB, #141210).
 - [x] Correct section order.
 - [x] Correct content/copy.
 - [x] Correct container widths.
