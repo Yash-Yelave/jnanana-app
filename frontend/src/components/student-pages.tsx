@@ -19,6 +19,7 @@ import {
   Monitor,
   Banknote,
   LogOut,
+  Sparkles,
 } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { apiFetch, actionMentorshipRequest, friendlyError, type MentorshipRequestItem } from "@/lib/api";
@@ -338,35 +339,20 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
 
               <div style={{ display: "flex", gap: "12px", justifyContent: "flex-end" }}>
                 <button
+                  type="button"
                   onClick={() => setShowJoolsModal(false)}
-                  style={{
-                    padding: "10px 20px",
-                    borderRadius: "0",
-                    background: "#fff",
-                    color: "#fff",
-                    border: "none",
-                    cursor: "pointer"
-                  }}
+                  className="button button-secondary"
                 >
                   Cancel
                 </button>
                 {currentBalance >= 10 && (
                   <button
+                    type="button"
                     disabled={submittingRequest}
                     onClick={() => void handleConfirmRequest()}
-                    style={{
-                      padding: "12px 24px",
-                      borderRadius: "0",
-                      background: "#F5B921",
-                      color: "#141210",
-                      fontWeight: 700,
-                      fontSize: "1rem",
-                      border: "1.5px solid #141210",
-                      cursor: submittingRequest ? "not-allowed" : "pointer",
-                      boxShadow: "3px 3px 0 #141210",
-                    }}
+                    className="button button-primary"
                   >
-                    {submittingRequest ? "Submitting..." : "Confirm (spend 10 Jools)"}
+                    <Sparkles size={16} /> {submittingRequest ? "Submitting..." : "Confirm (spend 10 Jools)"}
                   </button>
                 )}
               </div>
@@ -397,23 +383,11 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
               {mentorDetail && (
                 <div style={{ marginLeft: "auto", display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
                   <button
+                    type="button"
                     onClick={() => setShowJoolsModal(true)}
-                    style={{
-                      padding: "12px 24px",
-                      borderRadius: "0",
-                      background: "#F5B921",
-                      color: "#141210",
-                      fontWeight: 700,
-                      fontSize: "1rem",
-                      border: "none",
-                      cursor: "pointer",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "8px",
-                      boxShadow: "4px 4px 0 #141210",
-                    }}
+                    className="button button-primary"
                   >
-                    Request Mentorship (10 Jools)
+                    <Sparkles size={16} /> Request Mentorship (10 Jools)
                   </button>
                 </div>
               )}
