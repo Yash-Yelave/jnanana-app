@@ -24,33 +24,37 @@ export default function JoolsTransactionsPage() {
 
   return (
     <AppShell active="/jools/transactions">
-      <div style={{ maxWidth: "900px", margin: "0 auto", padding: "24px", color: "#141210" }}>
-        {/* Header Title */}
-        <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "24px" }}>
-          <Link
-            href="/dashboard"
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              justifyContent: "center",
-              width: "40px",
-              height: "40px",
-              borderRadius: "0",
-              background: "#F6EBDB",
-              color: "#141210",
-              textDecoration: "none",
-              border: "1.5px solid #141210",
-            }}
-            aria-label="Back to dashboard"
-          >
-            <ArrowLeft size={20} />
-          </Link>
-          <div>
-            <h1 style={{ fontSize: "1.75rem", fontWeight: 800, margin: 0, color: "#141210" }}>Jools Token Ledger</h1>
-            <p style={{ color: "#6A675F", margin: 0, fontSize: "0.9rem" }}>
-              Complete history of your Jools Token allocations, mentorship requests, and refunds.
-            </p>
+      <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "16px 0", color: "#141210" }}>
+        {/* Page Header */}
+        <div style={{ marginBottom: "24px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+            <Link
+              href="/dashboard"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: "42px",
+                height: "42px",
+                borderRadius: "9999px",
+                background: "#F6EBDB",
+                color: "#141210",
+                textDecoration: "none",
+                border: "1.5px solid #141210",
+                boxShadow: "2px 2px 0 #141210",
+                flexShrink: 0,
+              }}
+              aria-label="Back to dashboard"
+            >
+              <ArrowLeft size={20} />
+            </Link>
+            <h1 style={{ fontSize: "2rem", fontWeight: 800, margin: 0, color: "#141210" }}>
+              Jools Token Ledger
+            </h1>
           </div>
+          <p style={{ color: "#6A675F", margin: "6px 0 0", fontSize: "1rem" }}>
+            Complete history of your Jools Token allocations, mentorship requests, and refunds.
+          </p>
         </div>
 
         {/* Balance Overview Card */}
@@ -82,24 +86,8 @@ export default function JoolsTransactionsPage() {
           </div>
 
           <div style={{ display: "flex", gap: "12px" }}>
-            <Link
-              href="/events"
-              style={{
-                padding: "12px 20px",
-                borderRadius: "9999px",
-                background: "#F5B921",
-                color: "#141210",
-                fontWeight: 800,
-                textDecoration: "none",
-                fontSize: "0.95rem",
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "8px",
-                border: "1.5px solid #141210",
-                boxShadow: "2px 2px 0 #141210",
-              }}
-            >
-              Check in to Event (+50 Jools Tokens)
+            <Link href="/events" className="button button-primary">
+              <Sparkles size={16} /> Check in to Event (+50 Jools Tokens)
             </Link>
           </div>
         </div>
