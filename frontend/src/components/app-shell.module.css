@@ -224,7 +224,8 @@
     bottom: 0;
     left: 0;
     right: 0;
-    z-index: 100;
+    width: 100%;
+    z-index: 9999;
     display: flex;
     align-items: center;
     justify-content: space-around;
@@ -233,6 +234,7 @@
     background: #064730;
     /* §4: hard edge, never a blurred lift. */
     border-top: 1.5px solid #141210;
+    box-sizing: border-box;
   }
 
   .mobileNavItem {

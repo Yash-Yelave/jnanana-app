@@ -137,9 +137,6 @@ export function AppShell({
         </Link>
       </header>
 
-      {/* Bottom Bar for Mobile */}
-      <MobileBottomNav active={active} mentor={isMentor} />
-
       {/* Topbar Header for Desktop */}
       <header className={styles.topbarHeader}>
         <label className={styles.searchBox}>
@@ -159,6 +156,9 @@ export function AppShell({
 
       <section className={styles.content}>{children}</section>
       {rightRail && <aside className={styles.rightRail}>{rightRail}</aside>}
+
+      {/* Bottom Bar for Mobile */}
+      <MobileBottomNav active={active} mentor={isMentor} />
     </div>
   );
 }
