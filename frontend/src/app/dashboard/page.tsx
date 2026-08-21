@@ -60,7 +60,7 @@ export default function DashboardPage() {
   };
 
   return (
-    <AppShell active="/dashboard">
+    <AppShell active="/dashboard" domain={selectedCategory} onDomainChange={setSelectedCategory}>
       <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "16px 0", color: "#141210" }}>
         {/* Page Header */}
         <div style={{ marginBottom: "24px" }}>
@@ -70,68 +70,6 @@ export default function DashboardPage() {
           <p style={{ color: "#6A675F", margin: "6px 0 0", fontSize: "1rem" }}>
             Connect 1-on-1 with industry leaders to accelerate your skills using your Jools Tokens.
           </p>
-        </div>
-
-        {/* Filter Controls Bar */}
-        <div
-          style={{
-            background: "#FFFFFF",
-            padding: "16px 20px",
-            border: "1.5px solid #141210",
-            boxShadow: "3px 3px 0 #141210",
-            marginBottom: "28px",
-            display: "flex",
-            justifyContent: "flex-end",
-            alignItems: "center",
-            gap: "12px",
-          }}
-        >
-          <span style={{ fontSize: "0.9rem", fontWeight: 700, color: "#141210" }}>
-            Domain:
-          </span>
-          <select
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-            style={{
-              padding: "10px 16px",
-              borderRadius: "0",
-              border: "1.5px solid #141210",
-              fontSize: "0.9rem",
-              fontWeight: 700,
-              background: "#F6EBDB",
-              color: "#141210",
-              cursor: "pointer",
-              minWidth: "190px",
-            }}
-          >
-            <option value="All">All Domains</option>
-            <option value="Design">Design &amp; UI/UX</option>
-            <option value="Engineering">Engineering &amp; Tech</option>
-            <option value="Marketing">Marketing &amp; Growth</option>
-            <option value="Product">Product Strategy</option>
-          </select>
-
-          {hasActiveFilters && (
-            <button
-              type="button"
-              onClick={resetFilters}
-              style={{
-                padding: "8px 14px",
-                borderRadius: "0",
-                background: "transparent",
-                border: "1.5px solid #D6206A",
-                color: "#D6206A",
-                fontSize: "0.825rem",
-                fontWeight: 700,
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                gap: "4px",
-              }}
-            >
-              <X size={14} /> Clear
-            </button>
-          )}
         </div>
 
         {/* Results Counter */}

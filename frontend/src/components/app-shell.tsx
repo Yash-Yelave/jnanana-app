@@ -93,12 +93,16 @@ function MobileBottomNav({ active, mentor = false }: { active: string; mentor?: 
 export function AppShell({
   active,
   rightRail,
-  mentor = false,
+  mentor,
+  domain,
+  onDomainChange,
   children,
 }: {
-  active: string;
+  active?: string;
   rightRail?: ReactNode;
   mentor?: boolean;
+  domain?: string;
+  onDomainChange?: (val: string) => void;
   children: ReactNode;
 }) {
   const router = useRouter();
@@ -122,7 +126,7 @@ export function AppShell({
       {/* Sidebar for Desktop */}
       <aside className={styles.sidebar}>
         <Brand inverse href={brandHref} />
-        <Navigation active={active} mentor={isMentor} />
+        <Navigation active={active ?? ""} mentor={!!isMentor} />
       </aside>
 
       {/* Top Header for Mobile */}
@@ -139,10 +143,41 @@ export function AppShell({
 
       {/* Topbar Header for Desktop */}
       <header className={styles.topbarHeader}>
-        <label className={styles.searchBox}>
-          <Search size={18} />
-          <input type="search" placeholder="Search mentors, events..." aria-label="Search mentors, events" />
-        </label>
+        <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+          <label className={styles.searchBox}>
+            <Search size={18} />
+            <input type="search" placeholder="Search mentors, events..." aria-label="Search mentors, events" />
+          </label>
+
+          {active === "/dashboard" && !isMentor && (
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "#141210" }}>Domain:</span>
+              <select
+                value={domain ?? "All"}
+                onChange={(e) => onDomainChange?.(e.target.value)}
+                style={{
+                  padding: "8px 14px",
+                  borderRadius: "0",
+                  border: "1.5px solid #141210",
+                  fontSize: "0.85rem",
+                  fontWeight: 700,
+                  background: "#F6EBDB",
+                  color: "#141210",
+                  cursor: "pointer",
+                  outline: "none",
+                  boxShadow: "2px 2px 0 #141210",
+                }}
+              >
+                <option value="All">All Domains</option>
+                <option value="Design">Design &amp; UI/UX</option>
+                <option value="Engineering">Engineering &amp; Tech</option>
+                <option value="Marketing">Marketing &amp; Growth</option>
+                <option value="Product">Product Strategy</option>
+              </select>
+            </div>
+          )}
+        </div>
+
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
           <button type="button" onClick={handleJoolsClick} className={styles.joolsChip}>
             ⚡ {joolsBalance} Jools
@@ -158,7 +193,7 @@ export function AppShell({
       {rightRail && <aside className={styles.rightRail}>{rightRail}</aside>}
 
       {/* Bottom Bar for Mobile */}
-      <MobileBottomNav active={active} mentor={isMentor} />
+      <MobileBottomNav active={active ?? ""} mentor={!!isMentor} />
     </div>
   );
 }
