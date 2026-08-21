@@ -3,19 +3,11 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Search, SlidersHorizontal, Star, X } from "lucide-react";
+import { Star, X } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import type { Mentor } from "@/lib/types";
 import { useApi } from "@/lib/use-api";
 import { publicAsset } from "@/lib/supabase/client";
-
-const categoryFilters = [
-  { label: "All", id: "All" },
-  { label: "Design & UI/UX", id: "Design" },
-  { label: "Engineering & Tech", id: "Engineering" },
-  { label: "Marketing & Growth", id: "Marketing" },
-  { label: "Product Strategy", id: "Product" },
-];
 
 export default function DashboardPage() {
   const { data: mentorData, loading } = useApi<{ items: Mentor[] }>("/mentors");
@@ -84,136 +76,62 @@ export default function DashboardPage() {
         <div
           style={{
             background: "#FFFFFF",
-            borderRadius: "0",
-            padding: "20px",
+            padding: "16px 20px",
             border: "1.5px solid #141210",
             boxShadow: "3px 3px 0 #141210",
             marginBottom: "28px",
             display: "flex",
-            flexDirection: "column",
-            gap: "16px",
+            justifyContent: "flex-end",
+            alignItems: "center",
+            gap: "12px",
           }}
         >
-          {/* Top Row: Search Input & Rating Select */}
-          <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
-            <div style={{ position: "relative", flex: 1, minWidth: "260px" }}>
-              <Search
-                size={18}
-                color="#6A675F"
-                style={{ position: "absolute", left: "14px", top: "50%", transform: "translateY(-50%)" }}
-              />
-              <input
-                type="text"
-                placeholder="Search mentors by name, company, or skills (e.g. React, UI/UX)..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                style={{
-                  width: "100%",
-                  padding: "12px 14px 12px 42px",
-                  borderRadius: "0",
-                  border: "1.5px solid #141210",
-                  fontSize: "0.925rem",
-                  outline: "none",
-                  background: "#F6EBDB",
-                }}
-              />
-              {searchQuery && (
-                <button
-                  type="button"
-                  onClick={() => setSearchQuery("")}
-                  style={{
-                    position: "absolute",
-                    right: "12px",
-                    top: "50%",
-                    transform: "translateY(-50%)",
-                    background: "none",
-                    border: "none",
-                    cursor: "pointer",
-                    padding: "4px",
-                    display: "flex",
-                  }}
-                >
-                  <X size={16} color="#6A675F" />
-                </button>
-              )}
-            </div>
+          <span style={{ fontSize: "0.9rem", fontWeight: 700, color: "#141210" }}>
+            Domain:
+          </span>
+          <select
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+            style={{
+              padding: "10px 16px",
+              borderRadius: "0",
+              border: "1.5px solid #141210",
+              fontSize: "0.9rem",
+              fontWeight: 700,
+              background: "#F6EBDB",
+              color: "#141210",
+              cursor: "pointer",
+              minWidth: "190px",
+            }}
+          >
+            <option value="All">All Domains</option>
+            <option value="Design">Design &amp; UI/UX</option>
+            <option value="Engineering">Engineering &amp; Tech</option>
+            <option value="Marketing">Marketing &amp; Growth</option>
+            <option value="Product">Product Strategy</option>
+          </select>
 
-            {/* Rating Dropdown */}
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-              <SlidersHorizontal size={18} color="#141210" />
-              <select
-                value={minRating}
-                onChange={(e) => setMinRating(Number(e.target.value))}
-                style={{
-                  padding: "12px 16px",
-                  borderRadius: "0",
-                  border: "1.5px solid #141210",
-                  fontSize: "0.9rem",
-                  fontWeight: 600,
-                  background: "#F6EBDB",
-                  color: "#141210",
-                  cursor: "pointer",
-                }}
-              >
-                <option value={0}>★ All Ratings</option>
-                <option value={4.9}>★ 4.9 & above</option>
-                <option value={4.8}>★ 4.8 & above</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Bottom Row: Category Chips */}
-          <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", alignItems: "center" }}>
-            <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "#6A675F", marginRight: "4px" }}>
-              Domain:
-            </span>
-            {categoryFilters.map((cat) => {
-              const active = selectedCategory === cat.id;
-              return (
-                <button
-                  key={cat.id}
-                  type="button"
-                  onClick={() => setSelectedCategory(cat.id)}
-                  style={{
-                    padding: "6px 14px",
-                    borderRadius: "0",
-                    border: "1.5px solid #141210",
-                    background: active ? "#0B6B44" : "#F6EBDB",
-                    color: active ? "#FFFFFF" : "#141210",
-                    fontWeight: 700,
-                    fontSize: "0.825rem",
-                    cursor: "pointer",
-                    transition: "all 0.15s ease",
-                  }}
-                >
-                  {cat.label}
-                </button>
-              );
-            })}
-
-            {hasActiveFilters && (
-              <button
-                type="button"
-                onClick={resetFilters}
-                style={{
-                  marginLeft: "auto",
-                  padding: "6px 12px",
-                  borderRadius: "0",
-                  background: "transparent",
-                  border: "1px solid #D6206A",
-                  color: "#D6206A",
-                  fontSize: "0.825rem",
-                  fontWeight: 700,
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "4px",
-                }}
-              >
-                <X size={14} /> Clear Filters
-              </button>
-            )}
-          </div>
+          {hasActiveFilters && (
+            <button
+              type="button"
+              onClick={resetFilters}
+              style={{
+                padding: "8px 14px",
+                borderRadius: "0",
+                background: "transparent",
+                border: "1.5px solid #D6206A",
+                color: "#D6206A",
+                fontSize: "0.825rem",
+                fontWeight: 700,
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: "4px",
+              }}
+            >
+              <X size={14} /> Clear
+            </button>
+          )}
         </div>
 
         {/* Results Counter */}
