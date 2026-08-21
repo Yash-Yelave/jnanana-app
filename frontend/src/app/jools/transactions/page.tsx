@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Sparkles, ArrowDownRight, ArrowUpRight, Clock } from "lucide-react";
+import { Sparkles, ArrowDownRight, ArrowUpRight, Clock } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
+import { PageTitle } from "@/components/student-pages";
 import { getJoolsWallet, getJoolsTransactions, type JoolsWallet, type JoolsTransaction } from "@/lib/api";
 
 export default function JoolsTransactionsPage() {
@@ -26,36 +27,10 @@ export default function JoolsTransactionsPage() {
     <AppShell active="/jools/transactions">
       <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "16px 0", color: "#141210" }}>
         {/* Page Header */}
-        <div style={{ marginBottom: "24px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-            <Link
-              href="/dashboard"
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                justifyContent: "center",
-                width: "42px",
-                height: "42px",
-                borderRadius: "9999px",
-                background: "#F6EBDB",
-                color: "#141210",
-                textDecoration: "none",
-                border: "1.5px solid #141210",
-                boxShadow: "2px 2px 0 #141210",
-                flexShrink: 0,
-              }}
-              aria-label="Back to dashboard"
-            >
-              <ArrowLeft size={20} />
-            </Link>
-            <h1 style={{ fontSize: "2rem", fontWeight: 800, margin: 0, color: "#141210" }}>
-              Jools Token Ledger
-            </h1>
-          </div>
-          <p style={{ color: "#6A675F", margin: "6px 0 0", fontSize: "1rem" }}>
-            Complete history of your Jools Token allocations, mentorship requests, and refunds.
-          </p>
-        </div>
+        <PageTitle backHref="/dashboard">Jools Token Ledger</PageTitle>
+        <p style={{ color: "#6A675F", margin: "-16px 0 24px", fontSize: "1rem", maxWidth: "60ch" }}>
+          Complete history of your Jools Token allocations, mentorship requests, and refunds.
+        </p>
 
         {/* Balance Overview Card */}
         <div
