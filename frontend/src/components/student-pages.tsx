@@ -136,10 +136,15 @@ export function MentorDirectory() {
             return (
               <article className={styles.mentorCard} key={mentor.id}>
                 <div className={styles.mentorBio}>
-                  <Image src={avatar} alt={name} width={76} height={76} style={{ borderRadius: "50%", objectFit: "cover" }} />
+                  <Link href={`/mentors/${mentor.id}`} style={{ display: "block", flexShrink: 0 }}>
+                    <Image src={avatar} alt={name} width={76} height={76} style={{ borderRadius: "50%", objectFit: "cover", cursor: "pointer" }} />
+                  </Link>
                   <div>
                     <h2>
-                      {name} <StarRating rating={5} />
+                      <Link href={`/mentors/${mentor.id}`} style={{ textDecoration: "none", color: "inherit" }}>
+                        {name}
+                      </Link>{" "}
+                      <StarRating rating={5} />
                     </h2>
                     <strong className={styles.verifiedTag}>
                       <GraduationCap size={15} /> Professional <CheckCircle2 size={15} /> Verified
@@ -173,7 +178,7 @@ export function MentorDirectory() {
                   <b>Mentorship</b>
                   <b>Tutorials</b>
                   <span>
-                    Mentorship Fee<strong>10 Jools Tokens</strong>
+                    Mentorship Fee<strong>10 Jools</strong>
                   </span>
                   <Link className={styles.button} href={`/mentors/${mentor.id}`}>
                     Request Mentorship <ArrowUpRight size={16} />
@@ -347,19 +352,21 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
                 </button>
                 {currentBalance >= 10 && (
                   <button
-                    onClick={handleConfirmRequest}
                     disabled={submittingRequest}
+                    onClick={() => void handleConfirmRequest()}
                     style={{
-                      padding: "10px 24px",
+                      padding: "12px 24px",
                       borderRadius: "0",
                       background: "#F5B921",
                       color: "#141210",
-                      fontWeight: "700",
-                      border: "none",
-                      cursor: submittingRequest ? "not-allowed" : "pointer"
+                      fontWeight: 700,
+                      fontSize: "1rem",
+                      border: "1.5px solid #141210",
+                      cursor: submittingRequest ? "not-allowed" : "pointer",
+                      boxShadow: "3px 3px 0 #141210",
                     }}
                   >
-                    {submittingRequest ? "Submitting..." : "Confirm (spend 10 Jools Tokens)"}
+                    {submittingRequest ? "Submitting..." : "Confirm (spend 10 Jools)"}
                   </button>
                 )}
               </div>
@@ -406,7 +413,7 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
                       boxShadow: "4px 4px 0 #141210",
                     }}
                   >
-                    Request Mentorship (10 Jools Tokens)
+                    Request Mentorship (10 Jools)
                   </button>
                 </div>
               )}

@@ -136,16 +136,20 @@ export default function DashboardPage() {
                 <div>
                   {/* Avatar & Title Row */}
                   <div style={{ display: "flex", gap: "16px", alignItems: "center", marginBottom: "16px" }}>
-                    <Image
-                      src={m.image}
-                      alt={m.name}
-                      width={72}
-                      height={72}
-                      style={{ borderRadius: "50%", objectFit: "cover", border: "2px solid #0B6B44" }}
-                    />
+                    <Link href={`/mentors/${m.id}`} style={{ display: "block", flexShrink: 0 }}>
+                      <Image
+                        src={m.image}
+                        alt={m.name}
+                        width={72}
+                        height={72}
+                        style={{ borderRadius: "50%", objectFit: "cover", border: "2px solid #0B6B44", cursor: "pointer" }}
+                      />
+                    </Link>
                     <div>
                       <h3 style={{ fontSize: "1.2rem", fontWeight: 800, margin: 0, color: "#141210" }}>
-                        {m.name}
+                        <Link href={`/mentors/${m.id}`} style={{ textDecoration: "none", color: "#141210" }}>
+                          {m.name}
+                        </Link>
                       </h3>
                       <span style={{ fontSize: "0.85rem", color: "#D6206A", fontWeight: 700, display: "block", marginTop: "2px" }}>
                         ♛ {m.headline}
@@ -199,7 +203,7 @@ export default function DashboardPage() {
                     display: "block",
                   }}
                 >
-                  ⚡ Request Mentorship (10 Jools Tokens)
+                  ⚡ Request Mentorship (10 Jools)
                 </Link>
               </article>
             ))}
