@@ -12,5 +12,11 @@ export function publicAsset(bucket: string, path: string | null | undefined) {
   if (trimmed.startsWith("http://") || trimmed.startsWith("https://") || trimmed.startsWith("/")) {
     return trimmed;
   }
+  if (trimmed.startsWith("assets/")) {
+    return `/${trimmed}`;
+  }
+  if (trimmed.includes(":") || trimmed.includes(" ") || trimmed.length < 3) {
+    return null;
+  }
   return createClient().storage.from(bucket).getPublicUrl(trimmed).data.publicUrl;
 }

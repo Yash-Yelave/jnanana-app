@@ -35,6 +35,7 @@ const nextConfig: NextConfig = {
     ...(process.env.DEV_LAN_HOST ? [process.env.DEV_LAN_HOST] : []),
   ],
   images: {
+    unoptimized: process.env.NODE_ENV === "development",
     remotePatterns: [
       { protocol: "https", hostname: "**" },
       { protocol: "http", hostname: "**" },
