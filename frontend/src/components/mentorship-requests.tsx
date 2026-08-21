@@ -9,6 +9,7 @@ import {
   actionMentorshipRequest,
   type MentorshipRequestItem, friendlyError } from "@/lib/api";
 import { AppShell } from "@/components/app-shell";
+import { BackButton } from "@/components/student-pages";
 import { useApi } from "@/lib/use-api";
 import { publicAsset } from "@/lib/supabase/client";
 import type { Profile } from "@/lib/types";
@@ -80,7 +81,10 @@ export function MentorshipRequestsPage() {
       <div className={styles.page}>
         <header className="app-head">
           <p className="eyebrow">{isMentor ? "Your inbox" : "Your activity"}</p>
-          <h1>{isMentor ? "Mentorship requests" : "My requests"}</h1>
+          <h1 style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+            <BackButton backHref="/dashboard" />
+            {isMentor ? "Mentorship requests" : "My requests"}
+          </h1>
           <p>
             {isMentor
               ? "Mentees who have spent their Jools Tokens to reach you. Accepting lets the Jnanana team coordinate the connection."

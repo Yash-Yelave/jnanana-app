@@ -37,7 +37,7 @@ export function StarRating({ rating = 5 }: { rating?: number }) {
   );
 }
 
-export function PageTitle({ children, backHref }: { children: React.ReactNode; backHref?: string }) {
+export function BackButton({ backHref }: { backHref?: string }) {
   const router = useRouter();
 
   const handleBack = () => {
@@ -59,15 +59,21 @@ export function PageTitle({ children, backHref }: { children: React.ReactNode; b
   };
 
   return (
+    <button
+      type="button"
+      className={styles.backBtn}
+      onClick={handleBack}
+      aria-label="Go back to previous page"
+    >
+      <ArrowLeft size={20} />
+    </button>
+  );
+}
+
+export function PageTitle({ children, backHref }: { children: React.ReactNode; backHref?: string }) {
+  return (
     <h1 className={styles.pageTitle}>
-      <button
-        type="button"
-        className={styles.backBtn}
-        onClick={handleBack}
-        aria-label="Go back to previous page"
-      >
-        <ArrowLeft size={20} />
-      </button>
+      <BackButton backHref={backHref} />
       {children}
     </h1>
   );

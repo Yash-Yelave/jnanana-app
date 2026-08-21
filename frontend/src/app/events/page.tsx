@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Calendar, MapPin, ArrowRight } from "lucide-react";
 import { getEvents, type EventItem, friendlyError } from "@/lib/api";
 import { AppShell } from "@/components/app-shell";
+import { BackButton } from "@/components/student-pages";
 import styles from "./page.module.css";
 
 /**
@@ -83,7 +84,10 @@ export default function EventsPage() {
       <div className={styles.page}>
         <header className="app-head">
           <p className="eyebrow">J-Spotlight &amp; Junicorn Conclaves</p>
-          <h1>Events</h1>
+          <h1 style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+            <BackButton backHref="/dashboard" />
+            Events
+          </h1>
           <p>Check in at a Jnanana event to receive your Jools Tokens and start requesting mentorship.</p>
         </header>
 
