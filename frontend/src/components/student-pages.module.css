@@ -646,15 +646,21 @@
   appearance: none;
   width: 52px;
   height: 28px;
-  border-radius:0;
-  border:1.5px solid #141210;
-  background: #FBF3E7;
+  border-radius: 999px;
+  border: 1.5px solid #141210;
+  background: radial-gradient(circle at 28% 50%, #fff 0 7px, #6A675F 8px, transparent 9px), #F6EBDB;
+  box-shadow: 2px 2px 0 #141210;
   cursor: pointer;
-  transition: background-color 160ms ease;
+  transition: background 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+}
+
+.settings input:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 #141210;
 }
 
 .settings input:checked {
-  background: radial-gradient(circle at 72% 50%, #fff 0 9px, transparent 10px), #0B6B44;
+  background: radial-gradient(circle at 72% 50%, #fff 0 8px, transparent 9px), #0B6B44;
 }
 
 .settings details summary {
