@@ -56,10 +56,14 @@ def setup_admin() -> None:
                 client.put(
                     f"{url}/{user_id}",
                     headers=headers,
-                    json={"app_metadata": {"role": "admin"}},
+                    json={
+                        "password": password,
+                        "email_confirm": True,
+                        "app_metadata": {"role": "admin"},
+                    },
                     timeout=30,
                 ).raise_for_status()
-                print(f"Promoted existing user {email} to admin")
+                print(f"Rotated password and promoted admin user: {email}")
         else:
             response.raise_for_status()
 
