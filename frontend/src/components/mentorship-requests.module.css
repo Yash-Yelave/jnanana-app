@@ -1,4 +1,4 @@
-.page{display:grid;max-width:900px;margin:0 auto;padding:24px;gap:22px}
+.page{display:grid;max-width:1200px;margin:0 auto;padding:16px 0;gap:24px}
 
 .head h1{margin:0;font:800 32px var(--font-display)}
 .head p{margin:8px 0 0;max-width:62ch;color:#6A675F;font-size:15px;line-height:1.55}
