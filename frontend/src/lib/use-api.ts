@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { apiFetch, friendlyError } from "@/lib/api";
 
-const apiCache = new Map<string, any>();
+const apiCache = new Map<string, unknown>();
 
 export function clearApiCache(path?: string) {
   if (path) {
@@ -36,7 +36,9 @@ export function useApi<T>(path: string) {
   useEffect(() => {
     let active = true;
     if (!apiCache.has(path)) {
-      setLoading(true);
+      queueMicrotask(() => {
+        if (active) setLoading(true);
+      });
     }
     void apiFetch<T>(path)
       .then((result) => {

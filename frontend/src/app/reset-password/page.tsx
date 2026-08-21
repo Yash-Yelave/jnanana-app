@@ -93,8 +93,8 @@ export default function ResetPasswordPage() {
       setTimeout(() => {
         router.replace("/login?reset=success");
       }, 2000);
-    } catch (err: any) {
-      setError(err.message || "An unexpected error occurred. Please try again.");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "An unexpected error occurred. Please try again.");
     } finally {
       setPending(false);
     }

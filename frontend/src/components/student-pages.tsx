@@ -212,7 +212,9 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
     if (typeof window !== "undefined") {
       const searchParams = new URLSearchParams(window.location.search);
       if (searchParams.get("request") === "true") {
-        setShowJuleModal(true);
+        queueMicrotask(() => {
+          setShowJuleModal(true);
+        });
       }
     }
   }, []);
@@ -222,7 +224,7 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
     setRequestError("");
     setRequestMsg("");
     try {
-      const targetId = mentorId || (data && "id" in data ? (data as any).id : undefined);
+      const targetId = mentorId || (data && typeof data === "object" && "id" in data ? (data as Record<string, unknown>).id as string : undefined);
       if (!targetId) {
         setRequestError("We couldn't identify this mentor. Please reopen their profile and try again.");
         setSubmittingRequest(false);
@@ -239,8 +241,8 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
       clearApiCache();
       setRequestMsg("Request sent. 10 Jule Tokens deducted — track it under My Requests.");
       setTimeout(() => setShowJuleModal(false), 2000);
-    } catch (err: any) {
-      setRequestError(err.message || "Failed to submit mentorship request");
+    } catch (err: unknown) {
+      setRequestError(err instanceof Error ? err.message : "Failed to submit mentorship request");
     } finally {
       setSubmittingRequest(false);
     }
@@ -473,18 +475,18 @@ function formatLabel(item: unknown): string {
 }
 
 function About({ profile, mentor }: { profile?: Profile | Mentor; mentor?: MentorProfile | Mentor | null }) {
-  const m = mentor ?? (profile && "mentor" in profile ? (profile as any).mentor : null);
+  const m = mentor ?? (profile && "mentor" in profile ? (profile as Record<string, unknown>).mentor as MentorProfile : null);
   const rawLanguages: unknown[] = m?.languages ?? [];
-  const rawProfessions: unknown[] = m?.professions ?? (profile && "skills" in profile ? (profile as any).skills : []) ?? [];
+  const rawProfessions: unknown[] = m?.professions ?? (profile && "skills" in profile ? (profile as Record<string, unknown>).skills as unknown[] : []) ?? [];
   const rawCompanies: unknown[] = m?.companies ?? [];
 
   const languages = rawLanguages.map(formatLabel).filter(Boolean);
   const professions = rawProfessions.map(formatLabel).filter(Boolean);
   const companies = rawCompanies.map(formatLabel).filter(Boolean);
 
-  const headline = m?.headline ?? (profile && "headline" in profile ? (profile as any).headline : null);
-  const bio = m?.bio ?? (profile && "bio" in profile ? (profile as any).bio : null);
-  const location = profile && "location" in profile ? (profile as any).location : null;
+  const headline = m?.headline ?? (profile && "headline" in profile ? (profile as Record<string, unknown>).headline as string : null);
+  const bio = m?.bio ?? (profile && "bio" in profile ? (profile as Record<string, unknown>).bio as string : null);
+  const location = profile && "location" in profile ? (profile as Record<string, unknown>).location as string : null;
 
   return (
     <section className={styles.profileGrid}>
@@ -617,7 +619,7 @@ function Lessons({ mentorId }: { mentorId?: string }) {
                           <div key={off.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px", borderRadius: "0", background: "#fff", border: "1px solid #F6EBDB" }}>
                             <div>
                               <p style={{ margin: 0, fontWeight: 800, fontSize: "15px" }}>Rate: {off.currency} {(off.amount_minor / 100).toLocaleString()}</p>
-                              {off.note && <small style={{ color: "#6A675F" }}>"{off.note}"</small>}
+                              {off.note && <small style={{ color: "#6A675F" }}>&quot;{off.note}&quot;</small>}
                             </div>
                             <button
                               type="button"

@@ -63,9 +63,10 @@ export async function apiFetch<T>(path: string, init: RequestInit = {}): Promise
       throw new ApiError(body?.detail ?? "Request failed", response.status);
     }
     return (response.status === 204 ? undefined : await response.json()) as T;
-  } catch (err: any) {
+  } catch (err: unknown) {
     if (err instanceof ApiError) throw err;
-    throw new ApiError(err?.message || "Network error - Failed to fetch", 500);
+    const message = err instanceof Error ? err.message : "Network error - Failed to fetch";
+    throw new ApiError(message, 500);
   }
 }
 

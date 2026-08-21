@@ -4,7 +4,6 @@ import { useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { Brand } from "@/components/brand";
 import {
-  apiFetch,
   getAdminMetrics,
   createAdminEvent,
   adjustUserTokens,
@@ -71,8 +70,8 @@ export function AdminDashboard() {
       await mentorsApi.reload();
       const m = await getAdminMetrics();
       setMetrics(m);
-    } catch (err: any) {
-      setMessage(err.message || "Failed to approve mentor profile");
+    } catch (err: unknown) {
+      setMessage(err instanceof Error ? err.message : "Failed to approve mentor profile");
     } finally {
       setProcessingId(null);
     }
@@ -89,8 +88,8 @@ export function AdminDashboard() {
       await mentorsApi.reload();
       const m = await getAdminMetrics();
       setMetrics(m);
-    } catch (err: any) {
-      setMessage(err.message || "Failed to reject mentor profile");
+    } catch (err: unknown) {
+      setMessage(err instanceof Error ? err.message : "Failed to reject mentor profile");
     } finally {
       setProcessingId(null);
     }
@@ -116,8 +115,8 @@ export function AdminDashboard() {
       setEventLoc("");
       const m = await getAdminMetrics();
       setMetrics(m);
-    } catch (err: any) {
-      setMessage(err.message || "Failed to create event");
+    } catch (err: unknown) {
+      setMessage(err instanceof Error ? err.message : "Failed to create event");
     } finally {
       setCreatingEvent(false);
     }
@@ -140,8 +139,8 @@ export function AdminDashboard() {
       setMessage(`Tokens adjusted successfully! New balance: ${res.new_balance} Jule Tokens`);
       const m = await getAdminMetrics();
       setMetrics(m);
-    } catch (err: any) {
-      setMessage(err.message || "Failed to adjust tokens");
+    } catch (err: unknown) {
+      setMessage(err instanceof Error ? err.message : "Failed to adjust tokens");
     } finally {
       setAdjustingTokens(false);
     }
