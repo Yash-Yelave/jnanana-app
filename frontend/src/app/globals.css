@@ -152,6 +152,51 @@
 /* ---------------------------------------------------------- */
 
 @layer components {
+  .button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 10px 22px;
+    border: 1.5px solid var(--color-edge, #141210);
+    border-radius: 9999px;
+    font-family: var(--font-display, sans-serif);
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1;
+    text-decoration: none;
+    cursor: pointer;
+    box-shadow: 3px 3px 0 var(--color-edge, #141210);
+    transition: transform 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
+    white-space: nowrap;
+    width: fit-content;
+  }
+
+  .button:hover:not(:disabled) {
+    transform: translate(-1px, -1px);
+    box-shadow: 4px 4px 0 var(--color-edge, #141210);
+  }
+
+  .button:active:not(:disabled) {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 var(--color-edge, #141210);
+  }
+
+  .button:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+  }
+
+  .button-primary {
+    background-color: var(--color-amber, #F5B921);
+    color: var(--color-ink, #141210);
+  }
+
+  .button-secondary {
+    background-color: var(--color-paper, #FBF3E7);
+    color: var(--color-ink, #141210);
+  }
   .grain {
     position: fixed;
     inset: 0;
