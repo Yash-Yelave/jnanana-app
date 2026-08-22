@@ -68,7 +68,7 @@ export function BackToLoginButton({ children = "Back to login →", className }:
 }
 
 export function ApprovalStatus() {
-  const { data } = useApi<Profile>("/me");
+  const { data, loading } = useApi<Profile>("/me");
 
   // Auto-redirect if the onboarding is already complete (e.g. after role switch by admin)
   useEffect(() => {
@@ -76,6 +76,10 @@ export function ApprovalStatus() {
       window.location.href = "/dashboard";
     }
   }, [data]);
+
+  if (loading && !data) {
+    return <p className="data-state">Checking application status…</p>;
+  }
 
   if (data?.role === "mentor" && data?.mentor?.approval_status === "rejected")
     return (
