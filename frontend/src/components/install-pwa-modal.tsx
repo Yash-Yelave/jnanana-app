@@ -28,7 +28,7 @@ function checkShouldShow(): boolean {
     window.matchMedia("(display-mode: standalone)").matches ||
     (navigator as unknown as { standalone?: boolean }).standalone === true;
   if (isStandalone) return false;
-  const alreadyDone = localStorage.getItem("jnanana_pwa_installed_v1");
+  const alreadyDone = localStorage.getItem("jnanana_pwa_installed_v2");
   if (alreadyDone) return false;
   return checkIsMobile();
 }
@@ -87,7 +87,7 @@ export function InstallPwaModal() {
   };
 
   const handleComplete = () => {
-    localStorage.setItem("jnanana_pwa_installed_v1", "true");
+    localStorage.setItem("jnanana_pwa_installed_v2", "true");
     setShow(false);
   };
 
