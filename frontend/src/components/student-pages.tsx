@@ -816,22 +816,8 @@ export function SettingsPage() {
         )}
 
         <section className={styles.settings}>
-          {[
-            ["Notify on updates and activity", "you’ll be notified when anyone accepts your request", "notify_activity"],
-            ["Send weekly digest", "a weekly update on changes and more", "weekly_digest"],
-            ["Collaborations", "Receive notifications about what’s happening", "notify_collaborations"],
-          ].map(([title, copy, key]) => (
-            <label key={title}>
-              <span>
-                <b>{title}</b>
-                <small>{copy}</small>
-              </span>
-              <input type="checkbox" checked={settings?.[key as keyof Pick<Settings, "notify_activity" | "weekly_digest" | "notify_collaborations">] ?? true} onChange={(event) => void save({ [key]: event.target.checked })} />
-            </label>
-          ))}
-
-          {/* Install Mobile App Section */}
-          <div style={{ width: "100%", background: "#F6EBDB", border: "1.5px solid #141210", boxShadow: "4px 4px 0 #141210", padding: "18px 20px", marginTop: "12px", boxSizing: "border-box" }}>
+          {/* Install Mobile App Section (Top Option) */}
+          <div className={styles.pwaCard}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "12px" }}>
               <div>
                 <b style={{ display: "inline-flex", alignItems: "center", gap: "8px", fontSize: "0.95rem", color: "#141210" }}>
@@ -854,6 +840,20 @@ export function SettingsPage() {
               </button>
             </div>
           </div>
+
+          {[
+            ["Notify on updates and activity", "you’ll be notified when anyone accepts your request", "notify_activity"],
+            ["Send weekly digest", "a weekly update on changes and more", "weekly_digest"],
+            ["Collaborations", "Receive notifications about what’s happening", "notify_collaborations"],
+          ].map(([title, copy, key]) => (
+            <label key={title}>
+              <span>
+                <b>{title}</b>
+                <small>{copy}</small>
+              </span>
+              <input type="checkbox" checked={settings?.[key as keyof Pick<Settings, "notify_activity" | "weekly_digest" | "notify_collaborations">] ?? true} onChange={(event) => void save({ [key]: event.target.checked })} />
+            </label>
+          ))}
 
           {/* Simple Bug Reporting Section */}
           <details style={{ width: "100%" }}>

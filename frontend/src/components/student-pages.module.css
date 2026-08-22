@@ -613,6 +613,16 @@
   margin-bottom: 24px;
 }
 
+.pwaCard {
+  width: 100%;
+  background: #F6EBDB;
+  border: 1.5px solid #141210;
+  box-shadow: 4px 4px 0 #141210;
+  padding: 18px 20px;
+  margin-bottom: 20px;
+  box-sizing: border-box;
+}
+
 .settings > label,
 .settings > a,
 .settings summary {
@@ -850,5 +860,8 @@
   }
   .settings {
     padding: 20px;
+  }
+  .pwaCard {
+    margin-bottom: 24px;
   }
 }
