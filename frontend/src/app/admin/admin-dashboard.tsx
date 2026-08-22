@@ -136,7 +136,7 @@ export function AdminDashboard() {
         amount: Number(tokenAmount),
         notes: tokenNotes,
       });
-      setMessage(`Tokens adjusted successfully! New balance: ${res.new_balance} Jools Tokens`);
+      setMessage(`Tokens adjusted successfully! New balance: ${res.new_balance} Jools`);
       const m = await getAdminMetrics();
       setMetrics(m);
     } catch (err: unknown) {
@@ -255,8 +255,8 @@ export function AdminDashboard() {
               { label: "Active events", val: metrics?.active_events ?? 0 },
               { label: "Event participants", val: metrics?.event_participants ?? 0 },
               { label: "Pending requests", val: metrics?.pending_requests ?? 0 },
-              { label: "Jools Tokens issued", val: metrics?.jule_tokens_issued ?? 0 },
-              { label: "Jools Tokens spent", val: metrics?.jule_tokens_spent ?? 0 },
+              { label: "Jools issued", val: metrics?.jule_tokens_issued ?? 0 },
+              { label: "Jools spent", val: metrics?.jule_tokens_spent ?? 0 },
             ].map((m) => (
               <div
                 key={m.label}

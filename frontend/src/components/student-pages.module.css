@@ -644,23 +644,49 @@
 
 .settings input {
   appearance: none;
+  position: relative;
   width: 52px;
   height: 28px;
   border-radius: 999px;
   border: 1.5px solid #141210;
-  background: radial-gradient(circle at 28% 50%, #fff 0 7px, #6A675F 8px, transparent 9px), #F6EBDB;
-  box-shadow: 2px 2px 0 #141210;
+  background-color: #F6EBDB;
+  box-shadow: none;
   cursor: pointer;
-  transition: background 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+  transition: background-color 260ms cubic-bezier(0.4, 0, 0.2, 1);
+  outline: none;
+  flex-shrink: 0;
+}
+
+.settings input::before {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background-color: #FFFFFF;
+  border: 1.5px solid #141210;
+  transition: transform 260ms cubic-bezier(0.4, 0, 0.2, 1), width 200ms ease;
 }
 
 .settings input:hover {
-  transform: translate(-1px, -1px);
-  box-shadow: 3px 3px 0 #141210;
+  transform: none;
+  box-shadow: none;
+  opacity: 0.95;
+}
+
+.settings input:active::before {
+  width: 22px;
 }
 
 .settings input:checked {
-  background: radial-gradient(circle at 72% 50%, #fff 0 8px, transparent 9px), #0B6B44;
+  background-color: #0B6B44;
+  box-shadow: none;
+}
+
+.settings input:checked::before {
+  transform: translateX(24px);
 }
 
 .settings details summary {
