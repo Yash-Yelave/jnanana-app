@@ -90,6 +90,12 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
       data-scroll-behavior="smooth"
       className={`${bricolage.variable} ${instrumentSerif.variable} ${jetbrainsMono.variable} ${manrope.variable} ${notoDevanagari.variable} ${notoTelugu.variable}`}
     >
+      <head>
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+      </head>
       <body>{children}</body>
     </html>
   );

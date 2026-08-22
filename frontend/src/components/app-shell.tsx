@@ -18,6 +18,7 @@ import type { Profile } from "@/lib/types";
 import { useApi } from "@/lib/use-api";
 import { publicAsset } from "@/lib/supabase/client";
 import { NotificationBell } from "@/components/notification-bell";
+import { InstallPwaModal } from "@/components/install-pwa-modal";
 import styles from "./app-shell.module.css";
 
 /* `short` is what the mobile bottom bar shows. Five labels have to share a
@@ -123,6 +124,7 @@ export function AppShell({
 
   return (
     <div className={`${styles.shell} ${rightRail ? "" : styles.withoutRail}`}>
+      <InstallPwaModal />
       {/* Sidebar for Desktop */}
       <aside className={styles.sidebar}>
         <Brand inverse href={brandHref} />
