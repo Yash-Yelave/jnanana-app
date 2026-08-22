@@ -27,7 +27,11 @@ export function supabaseEnv() {
 }
 
 export function apiUrl() {
-  return required("NEXT_PUBLIC_API_URL", publicEnv.apiUrl, "http://127.0.0.1:8000");
+  const url = required("NEXT_PUBLIC_API_URL", publicEnv.apiUrl, "http://127.0.0.1:8000");
+  if (typeof window !== "undefined" && window.location.hostname) {
+    return url.replace(/:\/\/(127\.0\.0\.1|localhost)(:|\/|$)/, `://${window.location.hostname}$2`);
+  }
+  return url;
 }
 
 export function siteUrl() {

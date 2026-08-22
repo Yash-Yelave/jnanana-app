@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { ApiError, apiFetch, friendlyError } from "@/lib/api";
 import { createClient } from "@/lib/supabase/client";
@@ -10,7 +9,6 @@ import styles from "./page.module.css";
 type Profile = { role: "student" | "mentor"; onboarding_status: "incomplete" | "pending" | "complete" };
 
 export function LoginForm() {
-  const router = useRouter();
   const [error, setError] = useState("");
   const [pending, setPending] = useState(false);
 
@@ -32,17 +30,19 @@ export function LoginForm() {
 
       const isAdmin = authData.user?.app_metadata?.role === "admin";
       if (isAdmin) {
-        router.replace("/admin");
-        router.refresh();
+        window.location.href = "/admin";
         return;
       }
 
+      const token = authData.session?.access_token;
       let profile: Profile;
       try {
-        profile = await apiFetch<Profile>("/me");
+        profile = await apiFetch<Profile>("/me", {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        });
       } catch (apiError) {
         if (apiError instanceof ApiError && apiError.status === 404) {
-          router.replace("/onboarding/student");
+          window.location.href = "/onboarding/student";
           return;
         }
         throw apiError;
@@ -54,10 +54,9 @@ export function LoginForm() {
           : profile.role === "mentor"
             ? "/mentor/home"
             : "/dashboard";
-      router.replace(destination);
-      router.refresh();
+      window.location.href = destination;
     } catch (loginError) {
-      setError(friendlyError(loginError, "Unable to sign in. Please check your credentials."));
+      setError(friendlyError(loginError, "Wrong email or password"));
     } finally {
       setPending(false);
     }

@@ -22,11 +22,27 @@ export class ApiError extends Error {
  */
 export function friendlyError(reason: unknown, fallback: string): string {
   // Server-authored messages are written for people; keep them.
-  if (reason instanceof ApiError) return reason.message;
+  if (reason instanceof ApiError) {
+    if (
+      reason.message.includes("Invalid login credentials") ||
+      reason.message.toLowerCase().includes("invalid credentials")
+    ) {
+      return "Wrong email or password";
+    }
+    return reason.message;
+  }
   if (reason instanceof TypeError) {
     return "We couldn't reach Jnanana. Check your connection and try again.";
   }
-  if (reason instanceof Error && reason.message.trim()) return reason.message;
+  if (reason instanceof Error && reason.message.trim()) {
+    if (
+      reason.message.includes("Invalid login credentials") ||
+      reason.message.toLowerCase().includes("invalid credentials")
+    ) {
+      return "Wrong email or password";
+    }
+    return reason.message;
+  }
   return fallback;
 }
 
@@ -38,7 +54,10 @@ export async function apiFetch<T>(path: string, init: RequestInit = {}): Promise
     (p) => currentPath === p || currentPath.startsWith("/events/") || currentPath.startsWith("/mentors/")
   );
 
-  if (!data.session?.access_token) {
+  const customAuth = (init.headers as Record<string, string> | undefined)?.Authorization;
+  const token = customAuth ? customAuth.replace(/^Bearer\s+/i, "") : data.session?.access_token;
+
+  if (!token) {
     if (!isPublicPage && typeof window !== "undefined") {
       window.location.href = "/login";
     }
@@ -50,7 +69,7 @@ export async function apiFetch<T>(path: string, init: RequestInit = {}): Promise
       ...init,
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${data.session.access_token}`,
+        Authorization: `Bearer ${token}`,
         ...init.headers,
       },
     });
