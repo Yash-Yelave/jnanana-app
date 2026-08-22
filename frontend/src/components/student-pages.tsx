@@ -21,6 +21,7 @@ import {
   Sparkles,
   Bug,
   CheckCircle,
+  Smartphone,
 } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { apiFetch, actionMentorshipRequest, submitBugReport, friendlyError, type MentorshipRequestItem } from "@/lib/api";
@@ -828,6 +829,31 @@ export function SettingsPage() {
               <input type="checkbox" checked={settings?.[key as keyof Pick<Settings, "notify_activity" | "weekly_digest" | "notify_collaborations">] ?? true} onChange={(event) => void save({ [key]: event.target.checked })} />
             </label>
           ))}
+
+          {/* Install Mobile App Section */}
+          <div style={{ width: "100%", background: "#F6EBDB", border: "1.5px solid #141210", boxShadow: "4px 4px 0 #141210", padding: "18px 20px", marginTop: "12px", boxSizing: "border-box" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "12px" }}>
+              <div>
+                <b style={{ display: "inline-flex", alignItems: "center", gap: "8px", fontSize: "0.95rem", color: "#141210" }}>
+                  <Smartphone size={18} color="#0B6B44" /> Install Jnanana Mobile App
+                </b>
+                <small style={{ display: "block", color: "#6A675F", marginTop: "2px", fontSize: "0.825rem" }}>
+                  Add Jnanana as a 1-tap shortcut app on your home screen.
+                </small>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  sessionStorage.removeItem("jnanana_pwa_dismissed");
+                  window.dispatchEvent(new Event("trigger_install_pwa"));
+                }}
+                className="button button-primary"
+                style={{ padding: "8px 16px", fontSize: "0.85rem", whiteSpace: "nowrap" }}
+              >
+                📱 Add to Home Screen
+              </button>
+            </div>
+          </div>
 
           {/* Simple Bug Reporting Section */}
           <details style={{ width: "100%" }}>

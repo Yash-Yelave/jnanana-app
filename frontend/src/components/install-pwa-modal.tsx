@@ -8,14 +8,6 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 }
 
-function checkIsMobile(): boolean {
-  if (typeof window === "undefined") return false;
-  const isMobileUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-  const isMobileWidth = window.innerWidth <= 1024;
-  const isPwaQuery = window.location.search.includes("pwa=1");
-  return isMobileUA || isMobileWidth || isPwaQuery;
-}
-
 function checkIsIos(): boolean {
   if (typeof window === "undefined") return false;
   const userAgent = navigator.userAgent;
@@ -54,19 +46,21 @@ export function InstallPwaModal() {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    // Double check on resize or load
-    if (!show && checkShouldShow()) {
-      setShow(true);
-    }
-
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
     };
 
+    const handleTriggerInstall = () => {
+      setShow(true);
+    };
+
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+    window.addEventListener("trigger_install_pwa", handleTriggerInstall);
+
     return () => {
       window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+      window.removeEventListener("trigger_install_pwa", handleTriggerInstall);
     };
   }, [show]);
 
