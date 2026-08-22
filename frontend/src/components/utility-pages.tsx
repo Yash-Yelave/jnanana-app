@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState, type ChangeEvent, type FormEvent } from "react";
+import { useRouter } from "next/navigation";
 import { AppShell } from "@/components/app-shell";
 import { PageTitle } from "@/components/student-pages";
 import { apiFetch, friendlyError } from "@/lib/api";
@@ -12,11 +13,16 @@ import { useApi } from "@/lib/use-api";
 import styles from "./utility-pages.module.css";
 
 export function EditProfilePage() {
+  const router = useRouter();
   const { data: profile, error, reload } = useApi<Profile>("/me");
   const [message, setMessage] = useState("");
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   async function saveProfile(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    setSaving(true);
+    setMessage("");
     const raw = Object.fromEntries(
       Array.from(new FormData(event.currentTarget), ([key, value]) => [key, String(value).trim()]),
     );
@@ -54,10 +60,15 @@ export function EditProfilePage() {
           }),
         });
       }
-      setMessage("✓ Profile saved successfully!");
       await reload();
+      setShowSuccessModal(true);
+      setTimeout(() => {
+        router.push(profile?.role === "mentor" ? "/mentor/profile" : "/profile");
+      }, 1200);
     } catch (reason) {
       setMessage(friendlyError(reason, "Unable to save profile"));
+    } finally {
+      setSaving(false);
     }
   }
 
@@ -73,12 +84,59 @@ export function EditProfilePage() {
 
   return (
     <AppShell active={profile?.role === "mentor" ? "/mentor/profile" : "/profile"} mentor={profile?.role === "mentor"}>
+      {showSuccessModal && (
+        <div style={{
+          position: "fixed",
+          inset: 0,
+          background: "rgba(20, 18, 16, 0.6)",
+          backdropFilter: "blur(4px)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          zIndex: 9999,
+          padding: "20px"
+        }}>
+          <div style={{
+            background: "#FFFFFF",
+            border: "1.5px solid #141210",
+            boxShadow: "6px 6px 0 #141210",
+            padding: "28px 32px",
+            maxWidth: "420px",
+            width: "100%",
+            textAlign: "center"
+          }}>
+            <div style={{ fontSize: "2.5rem", marginBottom: "8px", color: "#0B6B44", fontWeight: 800 }}>✓</div>
+            <h3 style={{ fontSize: "1.25rem", fontWeight: 800, color: "#141210", marginBottom: "8px" }}>
+              Profile saved successfully!
+            </h3>
+            <p style={{ color: "#6A675F", fontSize: "0.95rem", marginBottom: "24px" }}>
+              Redirecting to your profile page...
+            </p>
+            <button
+              type="button"
+              onClick={() => {
+                router.push(profile?.role === "mentor" ? "/mentor/profile" : "/profile");
+              }}
+              className="button button-primary"
+              style={{ width: "100%" }}
+            >
+              View Profile
+            </button>
+          </div>
+        </div>
+      )}
       <main className={styles.main}>
         <PageTitle>Edit Profile</PageTitle>
         {error && <p className="data-state" role="alert">{error}</p>}
         <form className={styles.edit} key={profile?.id} onSubmit={saveProfile}>
           <div className={styles.photo}>
-            <Image src={publicAsset("avatars", profile?.avatar_path) ?? "/assets/app/mentor-1.png"} alt="Profile" width={130} height={130} />
+            <Image
+              src={publicAsset("avatars", profile?.avatar_path) ?? "/assets/app/mentor-1.png"}
+              alt="Profile"
+              width={130}
+              height={130}
+              style={{ borderRadius: "50%", objectFit: "cover", aspectRatio: "1 / 1", flexShrink: 0 }}
+            />
             <label className="button button-secondary">Change photo<input type="file" accept="image/png,image/jpeg,image/webp" onChange={uploadAvatar} hidden /></label>
           </div>
           <div className={styles.formGrid}>
@@ -133,12 +191,14 @@ export function EditProfilePage() {
               </label>
             )}
           </div>
-          {message && <p className="data-state" role="status" style={{ color: message.startsWith("✓") ? "#0B6B44" : "#B42318", fontWeight: "700" }}>{message}</p>}
+          {message && <p className="data-state" role="status" style={{ color: "#B42318", fontWeight: "700" }}>{message}</p>}
           <div className={styles.actions}>
             <Link className="button button-secondary" href={profile?.role === "mentor" ? "/mentor/profile" : "/profile"}>
               Cancel
             </Link>
-            <button className="button button-primary">Save changes</button>
+            <button className="button button-primary" disabled={saving}>
+              {saving ? "Saving..." : "Save changes"}
+            </button>
           </div>
         </form>
       </main>

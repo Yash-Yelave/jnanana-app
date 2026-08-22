@@ -142,7 +142,7 @@ export default function DashboardPage() {
                         alt={m.name}
                         width={72}
                         height={72}
-                        style={{ borderRadius: "50%", objectFit: "cover", border: "2px solid #0B6B44", cursor: "pointer" }}
+                        style={{ borderRadius: "50%", objectFit: "cover", border: "2px solid #0B6B44", cursor: "pointer", aspectRatio: "1 / 1", flexShrink: 0 }}
                       />
                     </Link>
                     <div>

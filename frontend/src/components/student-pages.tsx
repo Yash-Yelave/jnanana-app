@@ -1,4 +1,4 @@
-"use client";
+x"use client";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -138,7 +138,7 @@ export function MentorDirectory() {
               <article className={styles.mentorCard} key={mentor.id}>
                 <div className={styles.mentorBio}>
                   <Link href={`/mentors/${mentor.id}`} style={{ display: "block", flexShrink: 0 }}>
-                    <Image src={avatar} alt={name} width={76} height={76} style={{ borderRadius: "50%", objectFit: "cover", cursor: "pointer" }} />
+                    <Image src={avatar} alt={name} width={76} height={76} style={{ borderRadius: "50%", objectFit: "cover", cursor: "pointer", aspectRatio: "1 / 1", flexShrink: 0 }} />
                   </Link>
                   <div>
                     <h2>
@@ -327,8 +327,8 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
                       padding: "10px",
                       borderRadius: "0",
                       background: "#fff",
-                border: "1.5px solid #141210",
-                color: "#141210"
+                      border: "1.5px solid #141210",
+                      color: "#141210"
                     }}
                   />
                 </div>
@@ -368,7 +368,7 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
         {(data || !loading) && (
           <>
             <section className={styles.profileName}>
-              <Image src={avatar} alt={formattedName || "Profile Avatar"} width={100} height={100} />
+              <Image src={avatar} alt={formattedName || "Profile Avatar"} width={100} height={100} style={{ borderRadius: "50%", objectFit: "cover", aspectRatio: "1 / 1", flexShrink: 0 }} />
               <div>
                 <h2>
                   {formattedName || "Member Profile"} <CheckCircle2 size={24} className={styles.checkIcon} />
@@ -409,7 +409,7 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
               ))}
             </nav>
             {mode === "about" ? <About profile={data} mentor={mentor} /> : mode === "lessons" ? <Lessons mentorId={mentorId} /> : <Feedback mentorId={mentorId} />}
-            
+
             {/* Logout Button */}
             {!mentorDetail && (
               <div style={{ marginTop: "40px", paddingTop: "24px", borderTop: "1px solid #141210", textAlign: "center" }}>

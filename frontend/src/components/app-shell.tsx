@@ -137,7 +137,7 @@ export function AppShell({
         </button>
         <NotificationBell />
         <Link href={profileTarget} aria-label="Open profile">
-          <Image src={avatar} alt={name} width={40} height={40} style={{ borderRadius: "50%", border: "1.5px solid #141210" }} />
+          <Image src={avatar} alt={name} width={40} height={40} style={{ borderRadius: "50%", border: "1.5px solid #141210", objectFit: "cover", aspectRatio: "1 / 1", flexShrink: 0 }} />
         </Link>
       </header>
 
@@ -184,7 +184,7 @@ export function AppShell({
           </button>
           <NotificationBell />
           <Link className={styles.profileBtn} href={profileTarget} aria-label="Open profile">
-            <Image src={avatar} alt={name} width={46} height={46} priority />
+            <Image src={avatar} alt={name} width={46} height={46} priority style={{ borderRadius: "50%", objectFit: "cover", aspectRatio: "1 / 1", flexShrink: 0 }} />
           </Link>
         </div>
       </header>
