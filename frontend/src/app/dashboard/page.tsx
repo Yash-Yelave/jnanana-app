@@ -144,7 +144,7 @@ export default function DashboardPage() {
             </div>
 
             {/* Action CTA Button */}
-            <div style={{ display: "flex", alignItems: "center", alignSelf: "center" }}>
+            <div style={{ display: "flex", alignItems: "center", alignSelf: "flex-end" }}>
               <a
                 href="https://forms.gle/y5R1jv5FbQuu6VrNA"
                 target="_blank"
