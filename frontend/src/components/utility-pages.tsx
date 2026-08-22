@@ -186,7 +186,7 @@ export function EditProfilePage() {
             </label>
             {profile?.role === "mentor" && (
               <label>
-                Hourly Rate (INR)
+                Hourly Rate (Jools)
                 <input name="hourly_rate" type="number" min="0" defaultValue={(profile.mentor?.hourly_rate_minor ?? 0) / 100} />
               </label>
             )}
