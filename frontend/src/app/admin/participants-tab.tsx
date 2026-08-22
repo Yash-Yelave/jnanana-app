@@ -11,7 +11,7 @@ import {
 
 /**
  * SRS §11 / §36 — the admin's primary job on event day: see who is present and
- * check them in, which is what releases their 50 Jule Tokens.
+ * check them in, which is what releases their 50 Jools.
  */
 export function ParticipantsTab() {
   const [events, setEvents] = useState<EventItem[]>([]);

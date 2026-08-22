@@ -53,7 +53,7 @@ export function RequestsTab() {
     <section>
       <h2 style={{ fontSize: "1.25rem", marginBottom: "16px" }}>Mentorship Requests</h2>
       <p style={{ color: "#6A675F", marginBottom: "20px", fontSize: "0.9rem" }}>
-        Moving a request to rejected or cancelled refunds the mentee&apos;s Jule Tokens automatically.
+        Moving a request to rejected or cancelled refunds the mentee&apos;s Jools automatically.
       </p>
 
       {note && <p style={{ color: "#0B6B44", fontWeight: 600, marginBottom: "12px" }}>{note}</p>}
@@ -74,7 +74,7 @@ export function RequestsTab() {
                 <th style={{ padding: "10px" }}>Mentee</th>
                 <th style={{ padding: "10px" }}>Mentor</th>
                 <th style={{ padding: "10px" }}>Event</th>
-                <th style={{ padding: "10px" }}>Jule</th>
+                <th style={{ padding: "10px" }}>Jools</th>
                 <th style={{ padding: "10px" }}>Date</th>
                 <th style={{ padding: "10px" }}>Status</th>
               </tr>

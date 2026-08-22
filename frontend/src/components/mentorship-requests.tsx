@@ -28,7 +28,13 @@ export function MentorshipRequestsPage() {
   const { data: profile } = useApi<Profile>("/me");
   const isMentor = profile?.role === "mentor";
 
-  const [requests, setRequests] = useState<MentorshipRequestItem[] | null>(getCachedRequests());
+  const [requests, setRequests] = useState<MentorshipRequestItem[] | null>(() => {
+    try {
+      return typeof getCachedRequests === "function" ? getCachedRequests() : null;
+    } catch {
+      return null;
+    }
+  });
   const [error, setError] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
@@ -41,7 +47,7 @@ export function MentorshipRequestsPage() {
       getMyMentorshipRequests(force)
         .then(setRequests)
         .catch((err: unknown) => {
-          if (!getCachedRequests()) {
+          if (typeof getCachedRequests !== "function" || !getCachedRequests()) {
             setError(friendlyError(err, "Unable to load your mentorship requests"));
           }
         }),

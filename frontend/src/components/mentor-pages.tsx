@@ -364,7 +364,7 @@ export function MentorHomePage() {
                   {request.mentee_name ?? "A mentee"}
                   <small>{new Date(request.created_at).toLocaleString()}</small>
                 </b>
-                <strong>{request.tokens_used} Jule</strong>
+                <strong>{request.tokens_used} Jools</strong>
               </Link>
             ))}
           </article>

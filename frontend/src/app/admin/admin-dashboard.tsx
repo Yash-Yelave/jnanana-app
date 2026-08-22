@@ -541,7 +541,7 @@ export function AdminDashboard() {
       {/* TAB 4: TOKEN ALLOCATION CONTROLS */}
       {activeTab === "tokens" && (
         <section style={{ maxWidth: "600px", background: "#F6EBDB", padding: "24px", borderRadius: "0" }}>
-          <h2 style={{ fontSize: "1.25rem", marginBottom: "16px" }}>Grant / Deduct Jule Tokens</h2>
+          <h2 style={{ fontSize: "1.25rem", marginBottom: "16px" }}>Grant / Deduct Jools</h2>
           <form onSubmit={handleAdjustTokens} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
             <div>
               <label style={{ display: "block", marginBottom: "6px", fontSize: "0.875rem" }}>Select User</label>
