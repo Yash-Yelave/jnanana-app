@@ -95,6 +95,16 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.addEventListener('beforeinstallprompt', function(e) {
+                e.preventDefault();
+                window.deferredPwaPrompt = e;
+              });
+            `,
+          }}
+        />
       </head>
       <body>{children}</body>
     </html>

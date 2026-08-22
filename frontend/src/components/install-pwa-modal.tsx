@@ -55,14 +55,34 @@ export function InstallPwaModal() {
 
   if (!show) return null;
 
+  const getPromptEvent = (): BeforeInstallPromptEvent | null => {
+    if (deferredPrompt) return deferredPrompt;
+    if (typeof window !== "undefined") {
+      const globalEv = (window as unknown as { deferredPwaPrompt?: BeforeInstallPromptEvent }).deferredPwaPrompt;
+      if (globalEv) return globalEv;
+    }
+    return null;
+  };
+
   const handleInstallClick = async () => {
-    if (deferredPrompt) {
-      await deferredPrompt.prompt();
-      const choice = await deferredPrompt.userChoice;
-      if (choice.outcome === "accepted") {
-        setInstalled(true);
+    const promptEv = getPromptEvent();
+    if (promptEv) {
+      try {
+        await promptEv.prompt();
+        const choice = await promptEv.userChoice;
+        if (choice.outcome === "accepted") {
+          setInstalled(true);
+        }
+      } catch (err) {
+        console.warn("Install prompt error:", err);
       }
       setDeferredPrompt(null);
+      if (typeof window !== "undefined") {
+        delete (window as unknown as { deferredPwaPrompt?: BeforeInstallPromptEvent }).deferredPwaPrompt;
+      }
+    } else {
+      // If prompt event not available directly (e.g. iOS or manual browser requirement), mark installed state
+      setInstalled(true);
     }
   };
 
