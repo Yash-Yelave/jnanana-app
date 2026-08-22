@@ -3,18 +3,60 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Star, X, Sparkles, Calendar, MapPin, ArrowRight } from "lucide-react";
+import { Star, X, Sparkles, Calendar, MapPin, ArrowRight, Check, Circle } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
-import type { Mentor } from "@/lib/types";
-import { useApi } from "@/lib/use-api";
+import type { Mentor, Profile } from "@/lib/types";
+import { useApi, clearApiCache } from "@/lib/use-api";
 import { publicAsset } from "@/lib/supabase/client";
+import { apiFetch } from "@/lib/api";
+
+type UserSettings = {
+  notify_activity: boolean;
+  weekly_digest: boolean;
+  notify_collaborations: boolean;
+  theme: "light" | "dark" | "system";
+  tour_completed: boolean;
+};
 
 export default function DashboardPage() {
   const { data: mentorData, loading } = useApi<{ items: Mentor[] }>("/mentors");
+  const { data: profile } = useApi<Profile>("/me");
+  const { data: settings, reload: reloadSettings } = useApi<UserSettings>("/me/settings");
+  const { data: wallet } = useApi<{ balance: number }>("/jule/wallet");
+  const { data: requests } = useApi<unknown[]>("/mentorship-requests/my");
 
+  const [dismissed, setDismissed] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [minRating, setMinRating] = useState<number>(0);
+
+  const hasBio = Boolean(profile?.bio && profile.bio.trim().length > 0);
+  const hasSkills = Boolean(profile?.skills && profile.skills.length > 0);
+  const profileStepCompleted = hasBio && hasSkills;
+
+  const eventStepCompleted = Boolean(wallet && wallet.balance > 0);
+  const requestStepCompleted = Boolean(requests && requests.length > 0);
+
+  const completedCount = (profileStepCompleted ? 1 : 0) + (eventStepCompleted ? 1 : 0) + (requestStepCompleted ? 1 : 0);
+
+  const showTour = settings && !settings.tour_completed && !dismissed;
+
+  const handleDismissTour = async () => {
+    setDismissed(true);
+    try {
+      await apiFetch("/me/settings", {
+        method: "PUT",
+        body: JSON.stringify({
+          ...settings,
+          tour_completed: true,
+        }),
+      });
+      clearApiCache("/me/settings");
+      if (reloadSettings) reloadSettings();
+    } catch {
+      // ignore
+    }
+  };
 
   const mentorsList = (mentorData?.items || []).map((m, index) => ({
     id: m.id,
@@ -62,6 +104,224 @@ export default function DashboardPage() {
   return (
     <AppShell active="/dashboard" domain={selectedCategory} onDomainChange={setSelectedCategory}>
       <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "16px 0", color: "#141210" }}>
+        {showTour && (
+          <div
+            style={{
+              background: "#F6EBDB",
+              border: "1.5px solid #141210",
+              boxShadow: "4px 4px 0 #141210",
+              padding: "24px",
+              marginBottom: "28px",
+              color: "#141210",
+            }}
+          >
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "16px" }}>
+              <div>
+                <span
+                  style={{
+                    background: "#0B6B44",
+                    color: "#FFFFFF",
+                    fontSize: "0.75rem",
+                    fontWeight: 800,
+                    padding: "3px 8px",
+                    border: "1.5px solid #141210",
+                    boxShadow: "2px 2px 0 #141210",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.5px",
+                    display: "inline-block",
+                    marginBottom: "8px",
+                  }}
+                >
+                  🚀 New User Guide
+                </span>
+                <h2 style={{ fontSize: "1.3rem", fontWeight: 800, margin: "0 0 4px" }}>
+                  Welcome to Jnanana, {profile?.first_name || "Innovator"}!
+                </h2>
+                <p style={{ fontSize: "0.9rem", color: "#6A675F", margin: 0 }}>
+                  Complete these essential steps to set up your account and start your mentorship journey.
+                </p>
+              </div>
+              <button
+                onClick={handleDismissTour}
+                aria-label="Dismiss tour guide"
+                style={{
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  padding: "4px",
+                  color: "#6A675F",
+                }}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Checklist Items */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "14px", margin: "20px 0" }}>
+              {/* Step 1 */}
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px", flexWrap: "wrap" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                  <div
+                    style={{
+                      width: "24px",
+                      height: "24px",
+                      borderRadius: "50%",
+                      border: "1.5px solid #141210",
+                      background: profileStepCompleted ? "#0B6B44" : "#FFFFFF",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      color: profileStepCompleted ? "#FFFFFF" : "#141210",
+                    }}
+                  >
+                    {profileStepCompleted ? <Check size={14} strokeWidth={3} /> : <Circle size={8} fill="#141210" />}
+                  </div>
+                  <div>
+                    <strong style={{ fontSize: "0.95rem", textDecoration: profileStepCompleted ? "line-through" : "none" }}>
+                      Complete your profile details
+                    </strong>
+                    <span style={{ display: "block", fontSize: "0.825rem", color: "#6A675F" }}>
+                      Add a bio and select at least one learning skill.
+                    </span>
+                  </div>
+                </div>
+                {!profileStepCompleted && (
+                  <Link
+                    href="/profile/edit"
+                    style={{
+                      fontSize: "0.85rem",
+                      fontWeight: 700,
+                      color: "#141210",
+                      textDecoration: "underline",
+                    }}
+                  >
+                    Update Profile →
+                  </Link>
+                )}
+              </div>
+
+              {/* Step 2 */}
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px", flexWrap: "wrap" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                  <div
+                    style={{
+                      width: "24px",
+                      height: "24px",
+                      borderRadius: "50%",
+                      border: "1.5px solid #141210",
+                      background: eventStepCompleted ? "#0B6B44" : "#FFFFFF",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      color: eventStepCompleted ? "#FFFFFF" : "#141210",
+                    }}
+                  >
+                    {eventStepCompleted ? <Check size={14} strokeWidth={3} /> : <Circle size={8} fill="#141210" />}
+                  </div>
+                  <div>
+                    <strong style={{ fontSize: "0.95rem", textDecoration: eventStepCompleted ? "line-through" : "none" }}>
+                      Check in to your first event to claim Jools
+                    </strong>
+                    <span style={{ display: "block", fontSize: "0.825rem", color: "#6A675F" }}>
+                      Check in at a Jnanana event or conclave to fill your wallet.
+                    </span>
+                  </div>
+                </div>
+                {!eventStepCompleted && (
+                  <Link
+                    href="/events"
+                    style={{
+                      fontSize: "0.85rem",
+                      fontWeight: 700,
+                      color: "#141210",
+                      textDecoration: "underline",
+                    }}
+                  >
+                    View Events →
+                  </Link>
+                )}
+              </div>
+
+              {/* Step 3 */}
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px", flexWrap: "wrap" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                  <div
+                    style={{
+                      width: "24px",
+                      height: "24px",
+                      borderRadius: "50%",
+                      border: "1.5px solid #141210",
+                      background: requestStepCompleted ? "#0B6B44" : "#FFFFFF",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      color: requestStepCompleted ? "#FFFFFF" : "#141210",
+                    }}
+                  >
+                    {requestStepCompleted ? <Check size={14} strokeWidth={3} /> : <Circle size={8} fill="#141210" />}
+                  </div>
+                  <div>
+                    <strong style={{ fontSize: "0.95rem", textDecoration: requestStepCompleted ? "line-through" : "none" }}>
+                      Send your first mentorship request
+                    </strong>
+                    <span style={{ display: "block", fontSize: "0.825rem", color: "#6A675F" }}>
+                      Connect with any verified mentor on Jnanana.
+                    </span>
+                  </div>
+                </div>
+                {!requestStepCompleted && (
+                  <Link
+                    href="/mentors"
+                    style={{
+                      fontSize: "0.85rem",
+                      fontWeight: 700,
+                      color: "#141210",
+                      textDecoration: "underline",
+                    }}
+                  >
+                    Find a Mentor →
+                  </Link>
+                )}
+              </div>
+            </div>
+
+            {/* Progress Bar */}
+            <div style={{ display: "flex", alignItems: "center", gap: "12px", marginTop: "20px", paddingTop: "16px", borderTop: "1px dashed rgba(20,18,16,0.15)" }}>
+              <div style={{ flex: 1, height: "10px", background: "#FFFFFF", border: "1px solid #141210", overflow: "hidden" }}>
+                <div
+                  style={{
+                    height: "100%",
+                    width: `${(completedCount / 3) * 100}%`,
+                    background: completedCount === 3 ? "#0B6B44" : "#F5B921",
+                    transition: "width 0.4s ease-in-out",
+                  }}
+                />
+              </div>
+              <span style={{ fontSize: "0.85rem", fontWeight: 800, color: "#141210" }}>
+                {completedCount}/3 Steps Completed
+              </span>
+              {completedCount === 3 && (
+                <button
+                  onClick={handleDismissTour}
+                  style={{
+                    marginLeft: "auto",
+                    padding: "6px 14px",
+                    background: "#0B6B44",
+                    color: "#FFFFFF",
+                    fontWeight: 800,
+                    fontSize: "0.8rem",
+                    border: "1.5px solid #141210",
+                    boxShadow: "2px 2px 0 #141210",
+                    cursor: "pointer",
+                  }}
+                >
+                  Complete Tour 🚀
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* Featured Event Highlight Banner */}
         <div
           style={{

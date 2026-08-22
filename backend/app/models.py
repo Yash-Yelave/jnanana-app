@@ -35,6 +35,7 @@ class UserSettings(Base):
     weekly_digest: Mapped[bool] = mapped_column(Boolean, default=True)
     notify_collaborations: Mapped[bool] = mapped_column(Boolean, default=True)
     theme: Mapped[str] = mapped_column(default="system")
+    tour_completed: Mapped[bool] = mapped_column(Boolean, default=False)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
 

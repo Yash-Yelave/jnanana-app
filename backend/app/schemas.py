@@ -93,6 +93,7 @@ class SettingsInput(BaseModel):
     weekly_digest: bool = True
     notify_collaborations: bool = True
     theme: Literal["light", "dark", "system"] = "system"
+    tour_completed: bool = False
 
 
 class SettingsRead(SettingsInput):
