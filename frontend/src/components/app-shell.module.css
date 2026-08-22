@@ -193,7 +193,7 @@
   .shell,
   .withoutRail {
     display: block;
-    padding: 0 0 84px;
+    padding: 0 0 calc(84px + env(safe-area-inset-bottom, 0px));
     background-size: 26px 26px;
   }
 
@@ -229,8 +229,12 @@
     display: flex;
     align-items: center;
     justify-content: space-around;
-    height: 66px;
-    padding: 4px 8px calc(8px + env(safe-area-inset-bottom));
+    height: auto;
+    min-height: 66px;
+    padding-top: 6px;
+    padding-bottom: calc(6px + env(safe-area-inset-bottom, 0px));
+    padding-left: 8px;
+    padding-right: 8px;
     background: #064730;
     /* §4: hard edge, never a blurred lift. */
     border-top: 1.5px solid #141210;
