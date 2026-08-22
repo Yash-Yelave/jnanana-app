@@ -37,7 +37,7 @@ const conclaves: Conclave[] = [
     title: "J-Spotlight Edition 01: Finding the Next Junicorn",
     date: "Saturday, 29 August 2026",
     time: "4:00 PM – 6:00 PM IST",
-    location: "Draper U India, Bangalore",
+    location: "Draper U India, Hyderabad",
     description:
       "Empowering India's next generation of high-impact founders. An exclusive monthly pitch and mentorship conclave connecting curated student innovators with industry chairs, venture capital leads, and global incubation pathways.",
     audience: ["Student Founders", "Deep-Tech Builders", "Patent Innovators", "Startup Researchers"],

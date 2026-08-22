@@ -138,15 +138,17 @@ export default function DashboardPage() {
                   <Calendar size={15} color="#F5B921" /> Sat, 29 Aug 2026 • 4:00 PM IST
                 </span>
                 <span style={{ display: "flex", alignItems: "center", gap: "6px", color: "#FFFFFF" }}>
-                  <MapPin size={15} color="#F5B921" /> Draper U India, Bangalore
+                  <MapPin size={15} color="#F5B921" /> Draper U India, Hyderabad
                 </span>
               </div>
             </div>
 
             {/* Action CTA Button */}
             <div style={{ display: "flex", alignItems: "center", alignSelf: "center" }}>
-              <Link
-                href="/events/j-spotlight-edition-1"
+              <a
+                href="https://forms.gle/y5R1jv5FbQuu6VrNA"
+                target="_blank"
+                rel="noopener noreferrer"
                 style={{
                   padding: "12px 22px",
                   background: "#F5B921",
@@ -162,8 +164,8 @@ export default function DashboardPage() {
                   whiteSpace: "nowrap",
                 }}
               >
-                View Event Details <ArrowRight size={16} />
-              </Link>
+                Request delegate seat <ArrowRight size={16} />
+              </a>
             </div>
           </div>
         </div>
