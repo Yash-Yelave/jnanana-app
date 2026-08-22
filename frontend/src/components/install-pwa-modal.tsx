@@ -10,10 +10,10 @@ interface BeforeInstallPromptEvent extends Event {
 
 function checkIsMobile(): boolean {
   if (typeof window === "undefined") return false;
-  return (
-    window.innerWidth <= 767 ||
-    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
-  );
+  const isMobileUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  const isMobileWidth = window.innerWidth <= 1024;
+  const isPwaQuery = window.location.search.includes("pwa=1");
+  return isMobileUA || isMobileWidth || isPwaQuery;
 }
 
 function checkIsIos(): boolean {
@@ -28,8 +28,20 @@ function checkShouldShow(): boolean {
     window.matchMedia("(display-mode: standalone)").matches ||
     (navigator as unknown as { standalone?: boolean }).standalone === true;
   if (isStandalone) return false;
-  const alreadyDone = localStorage.getItem("jnanana_pwa_installed_v2");
-  if (alreadyDone) return false;
+  
+  // Clear any legacy localStorage keys to ensure popup is never blocked
+  try {
+    localStorage.removeItem("jnanana_pwa_installed_v1");
+    localStorage.removeItem("jnanana_pwa_installed_v2");
+    localStorage.removeItem("jnanana_pwa_installed_v3");
+  } catch {
+    // Ignore storage errors
+  }
+
+  // Check if dismissed in current tab session
+  const dismissedInSession = sessionStorage.getItem("jnanana_pwa_dismissed");
+  if (dismissedInSession === "true") return false;
+
   return checkIsMobile();
 }
 
@@ -40,7 +52,12 @@ export function InstallPwaModal() {
   const [installed, setInstalled] = useState(false);
 
   useEffect(() => {
-    if (typeof window === "undefined" || !show) return;
+    if (typeof window === "undefined") return;
+
+    // Double check on resize or load
+    if (!show && checkShouldShow()) {
+      setShow(true);
+    }
 
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
@@ -87,7 +104,7 @@ export function InstallPwaModal() {
   };
 
   const handleComplete = () => {
-    localStorage.setItem("jnanana_pwa_installed_v2", "true");
+    sessionStorage.setItem("jnanana_pwa_dismissed", "true");
     setShow(false);
   };
 
