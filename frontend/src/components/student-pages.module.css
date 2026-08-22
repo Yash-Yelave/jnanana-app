@@ -299,6 +299,12 @@
   border:1.5px solid #141210;
 }
 
+.profileHeaderContent {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
 .profileName img {
   border-radius: 50%;
   border: 3px solid #141210;
@@ -773,28 +779,40 @@
     grid-template-columns: 1fr;
   }
   .profileName {
-    min-height: 140px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    min-height: auto;
     margin: 0 10px 20px;
     padding: 20px 16px;
+    gap: 16px;
     border-radius:0;
+  }
+  .profileHeaderContent {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
   }
   .profileName img {
     width: 64px;
     height: 64px;
+    flex-shrink: 0;
   }
   .profileName h2 {
-    font-size: 24px;
+    font-size: 22px;
+    margin-bottom: 4px;
   }
   .profileName > a {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     width: 100%;
-    margin-top: 14px;
+    margin-top: 4px;
     margin-left: 0 !important;
-    padding: 10px 16px;
-    font-size: 13px;
-    font-weight: 700;
+    padding: 12px 16px;
+    font-size: 14px;
+    font-weight: 800;
     text-align: center;
     box-sizing: border-box;
   }

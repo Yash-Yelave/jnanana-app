@@ -369,17 +369,19 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
         {(data || !loading) && (
           <>
             <section className={styles.profileName}>
-              <Image src={avatar} alt={formattedName || "Profile Avatar"} width={100} height={100} style={{ borderRadius: "50%", objectFit: "cover", aspectRatio: "1 / 1", flexShrink: 0 }} />
-              <div>
-                <h2>
-                  {formattedName || "Member Profile"} <CheckCircle2 size={24} className={styles.checkIcon} />
-                </h2>
-                <p>
-                  <span className={styles.mentorBadge}>
-                    <Crown size={14} /> {mentor ? "Verified mentor" : "Learner"}
-                  </span>
-                  {mentor?.headline && <span style={{ color: "#6A675F", fontWeight: "600" }}>• {mentor.headline}</span>}
-                </p>
+              <div className={styles.profileHeaderContent}>
+                <Image src={avatar} alt={formattedName || "Profile Avatar"} width={100} height={100} style={{ borderRadius: "50%", objectFit: "cover", aspectRatio: "1 / 1", flexShrink: 0 }} />
+                <div>
+                  <h2>
+                    {formattedName || "Member Profile"} <CheckCircle2 size={24} className={styles.checkIcon} />
+                  </h2>
+                  <p>
+                    <span className={styles.mentorBadge}>
+                      <Crown size={14} /> {mentor ? "Verified mentor" : "Learner"}
+                    </span>
+                    {mentor?.headline && <span style={{ color: "#6A675F", fontWeight: "600" }}>• {mentor.headline}</span>}
+                  </p>
+                </div>
               </div>
               {mentorDetail && (
                 <div style={{ marginLeft: "auto", display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
@@ -393,7 +395,7 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
                 </div>
               )}
               {!mentorDetail && (
-                <Link className={styles.primary} href="/profile/edit" style={{ marginLeft: "auto" }}>
+                <Link className={styles.primary} href="/profile/edit">
                   Edit Profile
                 </Link>
               )}
