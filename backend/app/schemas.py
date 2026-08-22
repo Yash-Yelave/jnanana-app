@@ -454,3 +454,28 @@ class CreateMentorInput(BaseModel):
     professions: list[str] = Field(default_factory=list)
     companies: list[str] = Field(default_factory=list)
 
+
+class BugReportCreate(BaseModel):
+    title: str = Field(min_length=3, max_length=200)
+    description: str = Field(min_length=5, max_length=5000)
+
+
+class BugReportRead(ORMModel):
+    id: UUID
+    reporter_id: UUID
+    reporter_name: str | None = None
+    reporter_email: str | None = None
+    reporter_role: str | None = None
+    title: str
+    description: str
+    status: str
+    admin_notes: str | None = None
+    created_at: datetime
+    updated_at: datetime
+
+
+class BugReportStatusUpdate(BaseModel):
+    status: Literal["open", "in_progress", "resolved", "closed"]
+    admin_notes: str | None = Field(default=None, max_length=2000)
+
+

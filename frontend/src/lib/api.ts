@@ -306,3 +306,37 @@ export function markNotificationRead(id: string) {
 export function markAllNotificationsRead() {
   return apiFetch<void>("/notifications/read-all", { method: "POST" });
 }
+
+// Bug Reporting API
+export interface BugReportItem {
+  id: string;
+  reporter_id: string;
+  reporter_name?: string;
+  reporter_email?: string;
+  reporter_role?: string;
+  title: string;
+  description: string;
+  status: "open" | "in_progress" | "resolved" | "closed";
+  admin_notes?: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export function submitBugReport(title: string, description: string) {
+  return apiFetch<{ message: string }>("/me/bug-reports", {
+    method: "POST",
+    body: JSON.stringify({ title, description }),
+  });
+}
+
+export function getAdminBugReports() {
+  return apiFetch<BugReportItem[]>("/admin/bug-reports");
+}
+
+export function updateAdminBugReport(id: string, status: string, adminNotes?: string) {
+  return apiFetch<{ message: string }>(`/admin/bug-reports/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify({ status, admin_notes: adminNotes }),
+  });
+}
+

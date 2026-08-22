@@ -10,6 +10,7 @@ from sqlalchemy.orm import aliased
 from app.auth import CurrentUser, require_admin
 from app.db import get_db_session
 from app.models import (
+    BugReport,
     Event,
     EventParticipant,
     JuleTransaction,
@@ -21,6 +22,8 @@ from app.models import (
 from app.routers.events import check_in_participant
 from app.schemas import (
     AdminRequestRead,
+    BugReportRead,
+    BugReportStatusUpdate,
     EventCreate,
     EventRead,
     EventUpdate,
@@ -49,6 +52,12 @@ async def get_admin_metrics(db: Db, _: Admin) -> dict[str, int]:
         )
     ).scalar() or 0
 
+    bugs_cnt = (
+        await db.execute(
+            select(func.count(BugReport.id)).where(BugReport.status == "open")
+        )
+    ).scalar() or 0
+
     issued = (
         await db.execute(
             select(func.coalesce(func.sum(JuleTransaction.amount), 0)).where(JuleTransaction.amount > 0)
@@ -66,6 +75,7 @@ async def get_admin_metrics(db: Db, _: Admin) -> dict[str, int]:
         "active_events": e_cnt,
         "event_participants": p_cnt,
         "pending_requests": req_cnt,
+        "open_bug_reports": bugs_cnt,
         "jule_tokens_issued": issued,
         "jule_tokens_spent": abs(spent),
     }
@@ -352,3 +362,41 @@ async def override_request_status(
     req.updated_at = datetime.now(UTC)
     await db.commit()
     return {"status": payload.status, "message": f"Request moved from {previous} to {payload.status}"}
+
+
+@router.get("/bug-reports")
+async def list_admin_bug_reports(db: Db, _: Admin) -> list[BugReportRead]:
+    """Retrieve all reported bugs across the platform with reporter profile information."""
+    stmt = (
+        select(BugReport, Profile)
+        .join(Profile, BugReport.reporter_id == Profile.id)
+        .order_by(BugReport.created_at.desc())
+    )
+    result = await db.execute(stmt)
+    rows = result.all()
+
+    out: list[BugReportRead] = []
+    for report, profile in rows:
+        item = BugReportRead.model_validate(report)
+        item.reporter_name = f"{profile.first_name} {profile.last_name}"
+        item.reporter_role = profile.role
+        out.append(item)
+    return out
+
+
+@router.patch("/bug-reports/{report_id}")
+async def update_admin_bug_report(
+    report_id: UUID, payload: BugReportStatusUpdate, db: Db, _: Admin
+) -> dict[str, str]:
+    """Update status or add resolution notes to a reported bug."""
+    report = await db.get(BugReport, report_id)
+    if report is None:
+        raise HTTPException(status_code=404, detail="Bug report not found")
+
+    report.status = payload.status
+    if payload.admin_notes is not None:
+        report.admin_notes = payload.admin_notes.strip() or None
+    report.updated_at = datetime.now(UTC)
+    await db.commit()
+    return {"message": f"Bug report status updated to {payload.status}"}
+

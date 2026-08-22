@@ -15,6 +15,7 @@ import type { Profile } from "@/lib/types";
 import { useApi } from "@/lib/use-api";
 import { ParticipantsTab } from "./participants-tab";
 import { RequestsTab } from "./requests-tab";
+import { BugsTab } from "./bugs-tab";
 import styles from "./page.module.css";
 
 type AdminMentor = {
@@ -36,7 +37,7 @@ export function AdminDashboard() {
   const [metrics, setMetrics] = useState<Record<string, number> | null>(null);
   const [message, setMessage] = useState("");
   const [activeTab, setActiveTab] = useState<
-    "overview" | "mentors" | "events" | "participants" | "requests" | "tokens" | "users"
+    "overview" | "bugs" | "mentors" | "events" | "participants" | "requests" | "tokens" | "users"
   >("overview");
   const [mentorFilter, setMentorFilter] = useState<"all" | "pending" | "approved" | "rejected">("pending");
   const [processingId, setProcessingId] = useState<string | null>(null);
@@ -211,7 +212,7 @@ export function AdminDashboard() {
 
       {/* Admin Tab Navigation */}
       <div style={{ display: "flex", flexWrap: "wrap", gap: "12px", marginBottom: "24px" }}>
-        {(["overview", "mentors", "events", "participants", "requests", "tokens", "users"] as const).map((tab) => (
+        {(["overview", "bugs", "mentors", "events", "participants", "requests", "tokens", "users"] as const).map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
@@ -235,10 +236,16 @@ export function AdminDashboard() {
               gap: "8px",
             }}
           >
-            {tab === "mentors" ? `Mentor Approvals ${pendingCount > 0 ? `(${pendingCount})` : ""}` : tab}
+            {tab === "bugs"
+              ? `Bug Reports ${metrics?.open_bug_reports ? `(${metrics.open_bug_reports})` : ""}`
+              : tab === "mentors"
+              ? `Mentor Approvals ${pendingCount > 0 ? `(${pendingCount})` : ""}`
+              : tab}
           </button>
         ))}
       </div>
+
+      {activeTab === "bugs" && <BugsTab />}
 
       {activeTab === "participants" && <ParticipantsTab />}
 
@@ -255,6 +262,7 @@ export function AdminDashboard() {
               { label: "Active events", val: metrics?.active_events ?? 0 },
               { label: "Event participants", val: metrics?.event_participants ?? 0 },
               { label: "Pending requests", val: metrics?.pending_requests ?? 0 },
+              { label: "Open bug reports", val: metrics?.open_bug_reports ?? 0 },
               { label: "Jools issued", val: metrics?.jule_tokens_issued ?? 0 },
               { label: "Jools spent", val: metrics?.jule_tokens_spent ?? 0 },
             ].map((m) => (

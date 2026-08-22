@@ -14,6 +14,7 @@ from app.db import SessionFactory, engine
 from app.routers import (
     accounts,
     admin,
+    bug_reports,
     events,
     jule,
     mentors,
@@ -34,6 +35,7 @@ REQUIRED_TABLES = (
     "jule_transactions",
     "mentorship_requests",
     "notifications",
+    "bug_reports",
 )
 
 # Columns added by a later migration than the one that created their table.
@@ -132,6 +134,7 @@ def create_app() -> FastAPI:
     for router in (
         accounts.router,
         admin.router,
+        bug_reports.router,
         events.router,
         jule.router,
         jule.jools_router,

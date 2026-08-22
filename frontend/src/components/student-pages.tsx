@@ -17,12 +17,13 @@ import {
   Sun,
   Moon,
   Monitor,
-  Banknote,
   LogOut,
   Sparkles,
+  Bug,
+  CheckCircle,
 } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
-import { apiFetch, actionMentorshipRequest, friendlyError, type MentorshipRequestItem } from "@/lib/api";
+import { apiFetch, actionMentorshipRequest, submitBugReport, friendlyError, type MentorshipRequestItem } from "@/lib/api";
 import { createClient, publicAsset } from "@/lib/supabase/client";
 import type { Booking, LessonRequest, Mentor, MentorProfile, Offer, Profile, Review } from "@/lib/types";
 import { useApi, clearApiCache } from "@/lib/use-api";
@@ -710,6 +711,12 @@ export function SettingsPage() {
   const { data: settings, error, reload } = useApi<Settings>("/me/settings");
   const { data: profile } = useApi<Profile>("/me");
 
+  const [bugTitle, setBugTitle] = useState("");
+  const [bugDescription, setBugDescription] = useState("");
+  const [submittingBug, setSubmittingBug] = useState(false);
+  const [bugErrorMsg, setBugErrorMsg] = useState("");
+  const [showBugSuccessModal, setShowBugSuccessModal] = useState(false);
+
   async function save(values: Partial<Settings>) {
     const current = settings ?? { notify_activity: true, weekly_digest: true, notify_collaborations: true, theme: "system" as const };
     await apiFetch("/me/settings", { method: "PUT", body: JSON.stringify({ ...current, ...values }) });
@@ -722,11 +729,89 @@ export function SettingsPage() {
     router.refresh();
   }
 
+  async function handleReportBug(e: React.FormEvent) {
+    e.preventDefault();
+    if (!bugTitle.trim() || !bugDescription.trim()) return;
+    setSubmittingBug(true);
+    setBugErrorMsg("");
+    try {
+      await submitBugReport(bugTitle, bugDescription);
+      setBugTitle("");
+      setBugDescription("");
+      setShowBugSuccessModal(true);
+    } catch (err: unknown) {
+      setBugErrorMsg(friendlyError(err, "Failed to submit bug report"));
+    } finally {
+      setSubmittingBug(false);
+    }
+  }
+
   return (
     <AppShell active="/settings" mentor={profile?.role === "mentor"}>
       <main className={styles.main}>
         <PageTitle>Setting</PageTitle>
         {error && <p className="data-state" role="alert">{error}</p>}
+
+        {/* Bug Report Success Modal */}
+        {showBugSuccessModal && (
+          <div
+            style={{
+              position: "fixed",
+              inset: 0,
+              zIndex: 99999,
+              background: "rgba(20, 18, 16, 0.6)",
+              backdropFilter: "blur(3px)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "20px",
+            }}
+          >
+            <div
+              style={{
+                background: "#F6EBDB",
+                border: "2px solid #141210",
+                boxShadow: "6px 6px 0 #141210",
+                padding: "28px 32px",
+                maxWidth: "420px",
+                width: "100%",
+                textAlign: "center",
+              }}
+            >
+              <div
+                style={{
+                  width: "52px",
+                  height: "52px",
+                  borderRadius: "50%",
+                  background: "#DCFCE7",
+                  border: "1.5px solid #141210",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  margin: "0 auto 16px",
+                  color: "#0B6B44",
+                }}
+              >
+                <CheckCircle size={28} />
+              </div>
+              <h3 style={{ fontSize: "1.3rem", fontWeight: 800, margin: "0 0 8px", color: "#141210" }}>
+                ✓ Bug Reported Successfully!
+              </h3>
+              <p style={{ fontSize: "0.95rem", color: "#6A675F", margin: "0 0 24px", lineHeight: 1.5 }}>
+                Thank you for bringing this to our attention. Our technical team has received your report and will look into it.
+              </p>
+              <button
+                type="button"
+                className="button button-primary"
+                onClick={() => setShowBugSuccessModal(false)}
+                style={{ width: "100%", justifyContent: "center" }}
+              >
+                Got It
+              </button>
+            </div>
+          </div>
+        )}
+
         <section className={styles.settings}>
           {[
             ["Notify on updates and activity", "you’ll be notified when anyone accepts your request", "notify_activity"],
@@ -741,6 +826,84 @@ export function SettingsPage() {
               <input type="checkbox" checked={settings?.[key as keyof Pick<Settings, "notify_activity" | "weekly_digest" | "notify_collaborations">] ?? true} onChange={(event) => void save({ [key]: event.target.checked })} />
             </label>
           ))}
+
+          {/* Simple Bug Reporting Section */}
+          <details style={{ width: "100%" }}>
+            <summary style={{ cursor: "pointer" }}>
+              <span style={{ display: "flex", flexDirection: "column" }}>
+                <b style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}>
+                  <Bug size={18} color="#D6206A" /> Report a Bug
+                </b>
+                <small>Encountered an issue? Describe it simply so our technical team can resolve it.</small>
+              </span>
+              <ChevronRight size={18} />
+            </summary>
+            <div style={{ padding: "20px", background: "#F6EBDB", border: "1.5px solid #141210", marginTop: "12px", width: "100%" }}>
+              {bugErrorMsg && (
+                <div style={{ padding: "10px 14px", background: "#FEE2E2", color: "#B42318", border: "1.5px solid #141210", marginBottom: "14px", fontWeight: 700, fontSize: "0.875rem" }}>
+                  {bugErrorMsg}
+                </div>
+              )}
+              <form onSubmit={handleReportBug}>
+                <div style={{ marginBottom: "14px" }}>
+                  <label style={{ display: "block", fontSize: "0.85rem", fontWeight: 700, marginBottom: "4px", color: "#141210" }}>
+                    Issue Title *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Page error, button not working..."
+                    value={bugTitle}
+                    onChange={(e) => setBugTitle(e.target.value)}
+                    style={{
+                      width: "100%",
+                      padding: "10px 14px",
+                      border: "1.5px solid #141210",
+                      background: "#FFFFFF",
+                      borderRadius: "0",
+                      fontSize: "0.95rem",
+                      fontWeight: 600,
+                      color: "#141210",
+                      boxShadow: "2px 2px 0 #141210",
+                    }}
+                  />
+                </div>
+                <div style={{ marginBottom: "16px" }}>
+                  <label style={{ display: "block", fontSize: "0.85rem", fontWeight: 700, marginBottom: "4px", color: "#141210" }}>
+                    Describe the Issue *
+                  </label>
+                  <textarea
+                    required
+                    rows={4}
+                    placeholder="Briefly describe what happened or what you were trying to do..."
+                    value={bugDescription}
+                    onChange={(e) => setBugDescription(e.target.value)}
+                    style={{
+                      width: "100%",
+                      padding: "10px 14px",
+                      border: "1.5px solid #141210",
+                      background: "#FFFFFF",
+                      borderRadius: "0",
+                      fontSize: "0.95rem",
+                      fontWeight: 500,
+                      color: "#141210",
+                      boxShadow: "2px 2px 0 #141210",
+                      resize: "vertical",
+                    }}
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={submittingBug}
+                  className="button button-primary"
+                  style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}
+                >
+                  <Bug size={16} /> {submittingBug ? "Submitting..." : "Submit Bug Report"}
+                </button>
+              </form>
+            </div>
+          </details>
+
           <details>
             <summary>
               <b>Logout</b>
