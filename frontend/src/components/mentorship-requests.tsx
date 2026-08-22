@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Check, X, Clock, Sparkles } from "lucide-react";
 import {
   getMyMentorshipRequests,
+  getCachedRequests,
   actionMentorshipRequest,
   type MentorshipRequestItem, friendlyError } from "@/lib/api";
 import { AppShell } from "@/components/app-shell";
@@ -27,7 +28,7 @@ export function MentorshipRequestsPage() {
   const { data: profile } = useApi<Profile>("/me");
   const isMentor = profile?.role === "mentor";
 
-  const [requests, setRequests] = useState<MentorshipRequestItem[] | null>(null);
+  const [requests, setRequests] = useState<MentorshipRequestItem[] | null>(getCachedRequests());
   const [error, setError] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
@@ -36,12 +37,14 @@ export function MentorshipRequestsPage() {
   const [minutes, setMinutes] = useState("");
 
   const load = useCallback(
-    () =>
-      getMyMentorshipRequests()
+    (force = false) =>
+      getMyMentorshipRequests(force)
         .then(setRequests)
-        .catch((err: unknown) =>
-          setError(friendlyError(err, "Unable to load your mentorship requests")),
-        ),
+        .catch((err: unknown) => {
+          if (!getCachedRequests()) {
+            setError(friendlyError(err, "Unable to load your mentorship requests"));
+          }
+        }),
     [],
   );
 
@@ -59,7 +62,7 @@ export function MentorshipRequestsPage() {
     try {
       await actionMentorshipRequest(id, action, durationMinutes);
       setLoggingId(null);
-      await load();
+      await load(true);
     } catch (err) {
       setActionError(friendlyError(err, "That action didn't go through. Please try again."));
     } finally {
@@ -92,7 +95,26 @@ export function MentorshipRequestsPage() {
           </p>
         </header>
 
-        {!requests && !error && <p className="data-state">Loading requests…</p>}
+        {!requests && !error && (
+          <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginBottom: "20px" }}>
+            <div
+              style={{
+                background: "#F6EBDB",
+                padding: "16px 20px",
+                border: "1.5px solid #141210",
+                boxShadow: "2px 2px 0 #141210",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                opacity: 0.8,
+              }}
+            >
+              <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                <span style={{ fontSize: "0.85rem", color: "#6A675F", fontWeight: 600 }}>Loading requests...</span>
+              </div>
+            </div>
+          </div>
+        )}
 
         {error && (
           <p className="data-state" role="alert">

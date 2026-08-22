@@ -206,8 +206,31 @@ export function createMentorshipRequest(data: { mentor_id: string; event_id?: st
   });
 }
 
-export function getMyMentorshipRequests() {
-  return apiFetch<MentorshipRequestItem[]>("/mentorship-requests/my");
+let cachedRequestsData: MentorshipRequestItem[] | null = null;
+let cachedRequestsPromise: Promise<MentorshipRequestItem[]> | null = null;
+
+export function getCachedRequests(): MentorshipRequestItem[] | null {
+  return cachedRequestsData;
+}
+
+export function getMyMentorshipRequests(forceRefresh = false) {
+  if (!forceRefresh && cachedRequestsData !== null) {
+    return Promise.resolve(cachedRequestsData);
+  }
+  if (!forceRefresh && cachedRequestsPromise !== null) {
+    return cachedRequestsPromise;
+  }
+  cachedRequestsPromise = apiFetch<MentorshipRequestItem[]>("/mentorship-requests/my")
+    .then((data) => {
+      cachedRequestsData = data ?? [];
+      cachedRequestsPromise = null;
+      return cachedRequestsData;
+    })
+    .catch((err: unknown) => {
+      cachedRequestsPromise = null;
+      throw err;
+    });
+  return cachedRequestsPromise;
 }
 
 export function actionMentorshipRequest(
