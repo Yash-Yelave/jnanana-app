@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Star, X, Sparkles, Calendar, MapPin, ArrowRight, Check, Circle } from "lucide-react";
@@ -39,7 +39,24 @@ export default function DashboardPage() {
 
   const completedCount = (profileStepCompleted ? 1 : 0) + (eventStepCompleted ? 1 : 0) + (requestStepCompleted ? 1 : 0);
 
-  const showTour = settings && !settings.tour_completed && !dismissed;
+  const showTour = settings && !settings.tour_completed && !dismissed && completedCount < 3;
+
+  useEffect(() => {
+    if (completedCount === 3 && settings && !settings.tour_completed) {
+      void apiFetch("/me/settings", {
+        method: "PUT",
+        body: JSON.stringify({
+          ...settings,
+          tour_completed: true,
+        }),
+      })
+        .then(() => {
+          clearApiCache("/me/settings");
+          if (reloadSettings) reloadSettings();
+        })
+        .catch(() => {});
+    }
+  }, [completedCount, settings, reloadSettings]);
 
   const handleDismissTour = async () => {
     setDismissed(true);
@@ -300,24 +317,6 @@ export default function DashboardPage() {
               <span style={{ fontSize: "0.85rem", fontWeight: 800, color: "#141210" }}>
                 {completedCount}/3 Steps Completed
               </span>
-              {completedCount === 3 && (
-                <button
-                  onClick={handleDismissTour}
-                  style={{
-                    marginLeft: "auto",
-                    padding: "6px 14px",
-                    background: "#0B6B44",
-                    color: "#FFFFFF",
-                    fontWeight: 800,
-                    fontSize: "0.8rem",
-                    border: "1.5px solid #141210",
-                    boxShadow: "2px 2px 0 #141210",
-                    cursor: "pointer",
-                  }}
-                >
-                  Complete Tour 🚀
-                </button>
-              )}
             </div>
           </div>
         )}
