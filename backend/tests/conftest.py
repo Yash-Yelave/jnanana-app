@@ -47,6 +47,7 @@ TEST_TABLES = [
     "jule_transactions",
     "mentorship_requests",
     "notifications",
+    "bug_reports",
     # joined by the mentor discovery projection for the rating aggregate
     "reviews",
 ]

@@ -19,7 +19,7 @@ Db = Annotated[AsyncSession, Depends(get_db_session)]
 async def submit_bug_report(input_data: BugReportCreate, db: Db, user: User) -> dict[str, str]:
     """Submit a simple bug report for the currently logged in user (student or mentor)."""
     report = BugReport(
-        reporter_id=user.profile_id,
+        reporter_id=user.id,
         title=input_data.title.strip(),
         description=input_data.description.strip(),
         status="open",
@@ -34,13 +34,13 @@ async def list_my_bug_reports(db: Db, user: User) -> list[BugReportRead]:
     """List all bug reports submitted by the logged in user."""
     stmt = (
         select(BugReport)
-        .where(BugReport.reporter_id == user.profile_id)
+        .where(BugReport.reporter_id == user.id)
         .order_by(BugReport.created_at.desc())
     )
     result = await db.execute(stmt)
     reports = result.scalars().all()
 
-    profile = (await db.execute(select(Profile).where(Profile.id == user.profile_id))).scalar_one_or_none()
+    profile = (await db.execute(select(Profile).where(Profile.id == user.id))).scalar_one_or_none()
     reporter_name = f"{profile.first_name} {profile.last_name}" if profile else "User"
     reporter_role = profile.role if profile else "user"
 
@@ -48,7 +48,7 @@ async def list_my_bug_reports(db: Db, user: User) -> list[BugReportRead]:
     for r in reports:
         item = BugReportRead.model_validate(r)
         item.reporter_name = reporter_name
-        item.reporter_email = user.email
+        item.reporter_email = None
         item.reporter_role = reporter_role
         out.append(item)
     return out
