@@ -673,6 +673,15 @@
 @media (max-width: 767px) {
   .main {
     padding: 0;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  .summary,
+  .dashboard {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
   }
   .marketing {
     padding-bottom: 30px;

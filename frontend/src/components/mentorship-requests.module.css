@@ -41,7 +41,7 @@
 .empty p{margin:0;max-width:44ch;color:#6A675F;font-size:15px;line-height:1.5}
 
 @media(max-width:767px){
-  .page{padding:14px;gap:14px}
+  .page{padding:0;gap:14px;width:100%;max-width:100%;box-sizing:border-box}
   .head h1{font-size:24px}
   .head p{font-size:14px}
   .card{padding:16px;flex-wrap:wrap;gap:12px;border-radius:0}
