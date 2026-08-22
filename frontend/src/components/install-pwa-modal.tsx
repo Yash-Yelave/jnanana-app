@@ -21,11 +21,10 @@ function checkShouldShow(): boolean {
     (navigator as unknown as { standalone?: boolean }).standalone === true;
   if (isStandalone) return false;
 
-  // Clear any legacy localStorage keys to ensure popup is never blocked for any user
+  // Check if permanent lifespan flag exists
   try {
-    localStorage.removeItem("jnanana_pwa_installed_v1");
-    localStorage.removeItem("jnanana_pwa_installed_v2");
-    localStorage.removeItem("jnanana_pwa_installed_v3");
+    const permanentDone = localStorage.getItem("jnanana_pwa_installed_permanent");
+    if (permanentDone === "true") return false;
   } catch {
     // Ignore storage errors
   }
@@ -98,6 +97,11 @@ export function InstallPwaModal() {
   };
 
   const handleComplete = () => {
+    try {
+      localStorage.setItem("jnanana_pwa_installed_permanent", "true");
+    } catch {
+      // Ignore storage errors
+    }
     sessionStorage.setItem("jnanana_pwa_dismissed", "true");
     setShow(false);
   };
