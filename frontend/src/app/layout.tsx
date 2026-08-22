@@ -9,6 +9,7 @@ import {
 } from "next/font/google";
 import type { ReactNode } from "react";
 import { siteUrl } from "@/lib/env";
+import { InstallPwaModal } from "@/components/install-pwa-modal";
 import "./globals.css";
 
 // The four faces from the Jṉanana design system (§3). Each has exactly one job:
@@ -113,7 +114,10 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
           }}
         />
       </head>
-      <body>{children}</body>
+      <body>
+        <InstallPwaModal />
+        {children}
+      </body>
     </html>
   );
 }

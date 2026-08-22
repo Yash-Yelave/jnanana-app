@@ -28,8 +28,8 @@ function checkShouldShow(): boolean {
     window.matchMedia("(display-mode: standalone)").matches ||
     (navigator as unknown as { standalone?: boolean }).standalone === true;
   if (isStandalone) return false;
-  
-  // Clear any legacy localStorage keys to ensure popup is never blocked
+
+  // Clear any legacy localStorage keys to ensure popup is never blocked for any user
   try {
     localStorage.removeItem("jnanana_pwa_installed_v1");
     localStorage.removeItem("jnanana_pwa_installed_v2");
@@ -42,7 +42,7 @@ function checkShouldShow(): boolean {
   const dismissedInSession = sessionStorage.getItem("jnanana_pwa_dismissed");
   if (dismissedInSession === "true") return false;
 
-  return checkIsMobile();
+  return true;
 }
 
 export function InstallPwaModal() {
