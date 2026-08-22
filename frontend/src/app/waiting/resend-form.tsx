@@ -8,7 +8,6 @@ import styles from "./page.module.css";
 import type { Profile } from "@/lib/types";
 import { useApi, clearApiCache } from "@/lib/use-api";
 import { switchToStudent, friendlyError } from "@/lib/api";
-import { useRouter } from "next/navigation";
 
 export function ResendForm() {
   const [message, setMessage] = useState("");
