@@ -196,7 +196,7 @@ async def reject_mentor(mentor_id: UUID, db: Db, _: Admin, payload: dict | None 
 
     profile = await db.get(Profile, mentor_id)
     if profile is not None:
-        profile.onboarding_status = "pending"
+        profile.onboarding_status = "pending" if profile.role == "mentor" else "complete"
 
     await db.commit()
     return {"message": "Mentor profile rejected"}

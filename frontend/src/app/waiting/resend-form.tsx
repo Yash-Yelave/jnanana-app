@@ -1,12 +1,14 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useState, useEffect, type FormEvent } from "react";
 import Link from "next/link";
 import { siteUrl } from "@/lib/env";
 import { createClient } from "@/lib/supabase/client";
 import styles from "./page.module.css";
 import type { Profile } from "@/lib/types";
-import { useApi } from "@/lib/use-api";
+import { useApi, clearApiCache } from "@/lib/use-api";
+import { switchToStudent, friendlyError } from "@/lib/api";
+import { useRouter } from "next/navigation";
 
 export function ResendForm() {
   const [message, setMessage] = useState("");
@@ -68,13 +70,54 @@ export function BackToLoginButton({ children = "Back to login →", className }:
 }
 
 export function ApprovalStatus() {
+  const router = useRouter();
   const { data } = useApi<Profile>("/me");
-  if (data?.mentor?.approval_status === "rejected")
+  const [switching, setSwitching] = useState(false);
+  const [switchError, setSwitchError] = useState("");
+
+  // Auto-redirect if the onboarding is already complete (e.g. after role switch by admin)
+  useEffect(() => {
+    if (data && data.onboarding_status === "complete") {
+      window.location.href = "/dashboard";
+    }
+  }, [data]);
+
+  async function handleSwitchToStudent() {
+    setSwitching(true);
+    setSwitchError("");
+    try {
+      await switchToStudent();
+      // Clear all cache then do a full-page navigation so the middleware
+      // re-reads the updated onboarding_status from the database.
+      clearApiCache();
+      window.location.href = "/dashboard";
+    } catch (err: unknown) {
+      setSwitchError(friendlyError(err, "Failed to switch account type."));
+    } finally {
+      setSwitching(false);
+    }
+  }
+
+  if (data?.role === "mentor" && data?.mentor?.approval_status === "rejected")
     return (
       <>
         <h1>Application needs attention</h1>
         <p>{data.mentor.rejection_reason ?? "Your mentor application was not approved."}</p>
-        <Link href="/mentor/profile">Update mentor profile →</Link>
+        <div style={{ display: "flex", flexDirection: "column", gap: "12px", width: "100%", marginTop: "16px" }}>
+          <Link href="/mentor/profile" className="button button-primary" style={{ justifyContent: "center" }}>
+            Update mentor profile →
+          </Link>
+          <button
+            type="button"
+            className="button button-secondary"
+            disabled={switching}
+            onClick={handleSwitchToStudent}
+            style={{ justifyContent: "center", textDecoration: "none" }}
+          >
+            {switching ? "Switching..." : "Continue as Student instead →"}
+          </button>
+        </div>
+        {switchError && <p style={{ color: "#B42318", fontSize: "0.85rem", marginTop: "8px", fontWeight: 700 }}>{switchError}</p>}
       </>
     );
   return (

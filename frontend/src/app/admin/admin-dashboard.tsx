@@ -9,6 +9,7 @@ import {
   adjustUserTokens,
   approveMentor,
   rejectMentor,
+  changeUserRole,
 } from "@/lib/api";
 import { createClient } from "@/lib/supabase/client";
 import type { Profile } from "@/lib/types";
@@ -618,23 +619,50 @@ export function AdminDashboard() {
                     Role: <strong>{profile.role}</strong> | ID: {profile.id}
                   </span>
                 </div>
-                <button
-                  onClick={() => {
-                    setTokenUserId(profile.id);
-                    setActiveTab("tokens");
-                  }}
-                  style={{
-                    padding: "6px 12px",
-                    borderRadius: "0",
-                    background: "rgba(255,184,0,0.15)",
-                    color: "#F5B921",
-                    border: "1px solid #F5B921",
-                    fontWeight: 600,
-                    cursor: "pointer",
-                  }}
-                >
-                  Manage Tokens
-                </button>
+                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                  <select
+                    value={profile.role}
+                    onChange={async (e) => {
+                      const targetRole = e.target.value as "student" | "mentor";
+                      try {
+                        await changeUserRole(profile.id, targetRole, "Admin manually changed user role");
+                        setMessage("✓ User role updated successfully!");
+                        await users.reload();
+                      } catch {
+                        setMessage("Failed to update user role");
+                      }
+                    }}
+                    style={{
+                      padding: "6px 12px",
+                      border: "1.5px solid #141210",
+                      background: "#FFFFFF",
+                      fontWeight: 700,
+                      fontSize: "0.85rem",
+                      color: "#141210",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <option value="student">Student</option>
+                    <option value="mentor">Mentor</option>
+                  </select>
+                  <button
+                    onClick={() => {
+                      setTokenUserId(profile.id);
+                      setActiveTab("tokens");
+                    }}
+                    style={{
+                      padding: "6px 12px",
+                      borderRadius: "0",
+                      background: "rgba(255,184,0,0.15)",
+                      color: "#F5B921",
+                      border: "1px solid #F5B921",
+                      fontWeight: 600,
+                      cursor: "pointer",
+                    }}
+                  >
+                    Manage Tokens
+                  </button>
+                </div>
               </div>
             ))}
           </div>

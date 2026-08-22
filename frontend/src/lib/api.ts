@@ -340,3 +340,17 @@ export function updateAdminBugReport(id: string, status: string, adminNotes?: st
   });
 }
 
+export function changeUserRole(profileId: string, role: "student" | "mentor", reason?: string) {
+  return apiFetch<unknown>(`/admin/users/${profileId}/role`, {
+    method: "POST",
+    body: JSON.stringify({ role, reason }),
+  });
+}
+
+export function switchToStudent() {
+  return apiFetch<{ message: string }>("/me/switch-to-student", {
+    method: "POST",
+  });
+}
+
+

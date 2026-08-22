@@ -249,3 +249,55 @@ async def change_role(profile_id: UUID, payload: RoleChangeInput, db: Db, admin:
     await db.commit()
     await db.refresh(profile)
     return profile
+
+
+@router.post("/me/switch-to-student")
+async def switch_to_student(db: Db, user: User) -> dict[str, str]:
+    """Downgrade/switch currently logged-in user profile from mentor to student role."""
+    profile = await db.get(Profile, user.id, with_for_update=True)
+    if profile is None:
+        raise HTTPException(status_code=404, detail="Profile not found")
+
+    if profile.role == "student" and profile.onboarding_status == "complete":
+        return {"message": "Already a student"}
+
+    # Resolve active bookings check
+    active = await db.scalar(
+        select(func.count())
+        .select_from(Booking)
+        .where(
+            ((Booking.student_id == user.id) | (Booking.mentor_id == user.id)),
+            Booking.status.in_(ACTIVE_BOOKING_STATUSES),
+        )
+    )
+    if active:
+        raise HTTPException(status_code=409, detail="Resolve active bookings before switching role")
+
+    previous_role = profile.role
+    profile.role = "student"
+    profile.onboarding_status = "complete"
+    profile.updated_at = datetime.now(UTC)
+
+    mentor = await db.get(MentorProfile, user.id)
+    if mentor is not None:
+        mentor.approval_status = "rejected"
+        mentor.rejection_reason = "User switched account type to Student"
+        mentor.approved_at = None
+
+    await db.execute(
+        update(ProfileSkill)
+        .where(ProfileSkill.profile_id == user.id)
+        .values(kind="learning")
+    )
+    db.add(
+        AuditEvent(
+            actor_id=user.id,
+            action="profile.role_changed",
+            entity_type="profile",
+            entity_id=user.id,
+            data={"from": previous_role, "to": "student", "reason": "Self-initiated downgrade to Student"},
+        )
+    )
+    await db.commit()
+    return {"message": "Successfully switched account type to Student"}
+
