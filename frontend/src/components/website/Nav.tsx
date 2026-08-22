@@ -126,13 +126,14 @@ export function Nav() {
                 <Button href={target} variant="magenta" size="sm" className="transition-transform duration-200 hover:scale-105">
                   Dashboard
                 </Button>
-                <Link href={target} aria-label="Go to profile">
+                <Link href={target} aria-label="Go to profile" className="shrink-0 inline-flex items-center justify-center">
                   <Image
                     src={avatar}
                     alt="Profile"
                     width={38}
                     height={38}
-                    className="rounded-full border-2 border-magenta object-cover"
+                    className="rounded-full border-2 border-magenta object-cover shrink-0 aspect-square"
+                    style={{ aspectRatio: "1 / 1", flexShrink: 0 }}
                   />
                 </Link>
               </div>
