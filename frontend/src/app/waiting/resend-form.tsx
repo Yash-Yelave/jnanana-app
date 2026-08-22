@@ -70,7 +70,6 @@ export function BackToLoginButton({ children = "Back to login →", className }:
 }
 
 export function ApprovalStatus() {
-  const router = useRouter();
   const { data } = useApi<Profile>("/me");
   const [switching, setSwitching] = useState(false);
   const [switchError, setSwitchError] = useState("");

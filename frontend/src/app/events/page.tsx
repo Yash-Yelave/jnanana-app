@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Calendar, MapPin, ArrowRight } from "lucide-react";
-import { getEvents, type EventItem, friendlyError } from "@/lib/api";
+import { getEvents, getCachedEvents, type EventItem, friendlyError } from "@/lib/api";
 import { AppShell } from "@/components/app-shell";
 import { BackButton } from "@/components/student-pages";
 import styles from "./page.module.css";
@@ -12,7 +12,7 @@ import styles from "./page.module.css";
  * The conclaves are editorial content rather than platform records: they are
  * announced and take registrations before anyone creates the matching event
  * row, and they link out to their own forms. Platform events — the ones you
- * check in at for Jule Tokens — come from the API above them.
+ * check in at for Jools — come from the API above them.
  */
 type Conclave = {
   id: string;
@@ -70,13 +70,17 @@ const conclaves: Conclave[] = [
 ];
 
 export default function EventsPage() {
-  const [events, setEvents] = useState<EventItem[] | null>(null);
+  const [events, setEvents] = useState<EventItem[] | null>(getCachedEvents());
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     getEvents()
       .then((data) => setEvents(data ?? []))
-      .catch((err) => setError(friendlyError(err, "Unable to load events")));
+      .catch((err) => {
+        if (!getCachedEvents()) {
+          setError(friendlyError(err, "Unable to load events"));
+        }
+      });
   }, []);
 
   return (
@@ -91,7 +95,26 @@ export default function EventsPage() {
           <p>Check in at a Jnanana event to receive your Jools and start requesting mentorship.</p>
         </header>
 
-        {!events && !error && <p className="data-state">Loading events…</p>}
+        {!events && !error && (
+          <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginBottom: "20px" }}>
+            <div
+              style={{
+                background: "#F6EBDB",
+                padding: "16px 20px",
+                border: "1.5px solid #141210",
+                boxShadow: "2px 2px 0 #141210",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                opacity: 0.8,
+              }}
+            >
+              <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                <span style={{ fontSize: "0.85rem", color: "#6A675F", fontWeight: 600 }}>Loading events...</span>
+              </div>
+            </div>
+          </div>
+        )}
 
         {error && (
           <p className="data-state" role="alert">

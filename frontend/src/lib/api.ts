@@ -144,8 +144,31 @@ export interface MentorshipRequestItem {
 }
 
 // Events API
-export function getEvents() {
-  return publicFetch<EventItem[]>("/events");
+let cachedEventsData: EventItem[] | null = null;
+let cachedEventsPromise: Promise<EventItem[]> | null = null;
+
+export function getCachedEvents(): EventItem[] | null {
+  return cachedEventsData;
+}
+
+export function getEvents(forceRefresh = false): Promise<EventItem[]> {
+  if (!forceRefresh && cachedEventsData !== null) {
+    return Promise.resolve(cachedEventsData);
+  }
+  if (!forceRefresh && cachedEventsPromise !== null) {
+    return cachedEventsPromise;
+  }
+  cachedEventsPromise = publicFetch<EventItem[]>("/events")
+    .then((data) => {
+      cachedEventsData = data ?? [];
+      cachedEventsPromise = null;
+      return cachedEventsData;
+    })
+    .catch((err: unknown) => {
+      cachedEventsPromise = null;
+      throw err;
+    });
+  return cachedEventsPromise;
 }
 
 export function getEvent(id: string) {
