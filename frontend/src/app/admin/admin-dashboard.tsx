@@ -344,17 +344,18 @@ export function AdminDashboard() {
                       background: "#fff",
                       padding: "20px",
                       borderRadius: "0",
-                      border: "1px solid rgba(255,255,255,0.08)",
+                      border: "1.5px solid #141210",
                       display: "flex",
                       flexWrap: "wrap",
                       justifyContent: "space-between",
                       alignItems: "center",
                       gap: "16px",
+                      boxShadow: "2px 2px 0 #141210",
                     }}
                   >
                     <div>
                       <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                        <strong style={{ fontSize: "1.1rem", color: "#FBF3E7" }}>
+                        <strong style={{ fontSize: "1.1rem", color: "#141210" }}>
                           {m.first_name} {m.last_name}
                         </strong>
                         <span
