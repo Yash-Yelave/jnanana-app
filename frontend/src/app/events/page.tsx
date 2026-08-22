@@ -88,7 +88,7 @@ export default function EventsPage() {
             <BackButton backHref="/dashboard" />
             Events
           </h1>
-          <p>Check in at a Jnanana event to receive your Jools Tokens and start requesting mentorship.</p>
+          <p>Check in at a Jnanana event to receive your Jools and start requesting mentorship.</p>
         </header>
 
         {!events && !error && <p className="data-state">Loading events…</p>}

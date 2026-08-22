@@ -51,7 +51,7 @@ export function ParticipantsTab() {
       const res = await adminCheckinParticipant(eventId, userId);
       setNote(
         res.tokens_granted > 0
-          ? `${name} checked in — ${res.tokens_granted} Jools Tokens granted.`
+          ? `${name} checked in — ${res.tokens_granted} Jools granted.`
           : `${name} was already checked in. No further tokens granted.`,
       );
       await loadParticipants();

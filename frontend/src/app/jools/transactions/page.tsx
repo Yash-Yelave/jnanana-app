@@ -27,9 +27,9 @@ export default function JoolsTransactionsPage() {
     <AppShell active="/jools/transactions">
       <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "16px 0", color: "#141210" }}>
         {/* Page Header */}
-        <PageTitle backHref="/dashboard">Jools Token Ledger</PageTitle>
+        <PageTitle backHref="/dashboard">Jools Ledger</PageTitle>
         <p style={{ color: "#6A675F", margin: "-16px 0 24px", fontSize: "1rem", maxWidth: "60ch" }}>
-          Complete history of your Jools Token allocations, mentorship requests, and refunds.
+          Complete history of your Jools allocations, mentorship requests, and refunds.
         </p>
 
         {/* Balance Overview Card */}
@@ -55,14 +55,14 @@ export default function JoolsTransactionsPage() {
             <div style={{ display: "flex", alignItems: "center", gap: "10px", marginTop: "4px" }}>
               <Sparkles size={28} color="#F5B921" />
               <strong style={{ fontSize: "2.5rem", fontWeight: 800, color: "#0B6B44" }}>
-                {wallet?.balance ?? 0} Jools Tokens
+                {wallet?.balance ?? 0} Jools
               </strong>
             </div>
           </div>
 
           <div style={{ display: "flex", gap: "12px" }}>
             <Link href="/events" className="button button-primary">
-              <Sparkles size={16} /> Check in to Event (+50 Jools Tokens)
+              <Sparkles size={16} /> Check in to Event (+50 Jools)
             </Link>
           </div>
         </div>
@@ -90,8 +90,8 @@ export default function JoolsTransactionsPage() {
             }}
           >
             <Clock size={36} color="#6A675F" style={{ marginBottom: "12px" }} />
-            <p style={{ margin: 0, fontSize: "1rem", fontWeight: 700 }}>No Jools Token transactions recorded yet.</p>
-            <small style={{ color: "#6A675F" }}>Check in to live events to claim 50 Jools Tokens!</small>
+            <p style={{ margin: 0, fontSize: "1rem", fontWeight: 700 }}>No Jools transactions recorded yet.</p>
+            <small style={{ color: "#6A675F" }}>Check in to live events to claim 50 Jools!</small>
           </div>
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
@@ -134,7 +134,7 @@ export default function JoolsTransactionsPage() {
                     </div>
                     <div>
                       <strong style={{ fontSize: "1rem", display: "block", color: "#141210" }}>
-                        {tx.notes || (isPositive ? "Jools Token Allocation" : "Mentorship Request")}
+                        {tx.notes || (isPositive ? "Jools Allocation" : "Mentorship Request")}
                       </strong>
                       <span style={{ fontSize: "0.85rem", color: "#6A675F" }}>
                         Type: <span style={{ textTransform: "capitalize", color: "#141210", fontWeight: 600 }}>{tx.transaction_type.replace(/_/g, " ")}</span> • {formattedDate}
@@ -150,7 +150,7 @@ export default function JoolsTransactionsPage() {
                         color: isPositive ? "#0B6B44" : "#B42318",
                       }}
                     >
-                      {isPositive ? `+${tx.amount}` : tx.amount} Jools Tokens
+                      {isPositive ? `+${tx.amount}` : tx.amount} Jools
                     </span>
                     <span style={{ display: "block", fontSize: "0.75rem", color: "#6A675F" }}>
                       ID: {tx.id.slice(0, 8)}...

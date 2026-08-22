@@ -33,7 +33,7 @@ export function Events() {
             <span className="text-magenta">actually happens.</span>
           </h2>
           <p className="lead">
-            Come to an event, check in, and receive the Jools Tokens you spend on mentorship.
+            Come to an event, check in, and receive the Jools you spend on mentorship.
           </p>
         </Reveal>
 
@@ -86,7 +86,7 @@ export function AppCta() {
             <ul className="mb-8 grid gap-2.5 text-muted sm:grid-cols-2">
               <li>Manage your profile</li>
               <li>Discover mentors</li>
-              <li>Track your Jools Tokens</li>
+              <li>Track your Jools</li>
               <li>Request mentorship</li>
               <li>Participate in events</li>
               <li>Follow your request status</li>

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Star, X } from "lucide-react";
+import { Star, X, Sparkles, Calendar, MapPin, ArrowRight } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import type { Mentor } from "@/lib/types";
 import { useApi } from "@/lib/use-api";
@@ -62,13 +62,119 @@ export default function DashboardPage() {
   return (
     <AppShell active="/dashboard" domain={selectedCategory} onDomainChange={setSelectedCategory}>
       <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "16px 0", color: "#141210" }}>
+        {/* Featured Event Highlight Banner */}
+        <div
+          style={{
+            background: "linear-gradient(135deg, #0B6B44 0%, #141210 100%)",
+            border: "1.5px solid #141210",
+            boxShadow: "4px 4px 0 #141210",
+            padding: "24px 28px",
+            marginBottom: "28px",
+            display: "flex",
+            flexDirection: "column",
+            gap: "16px",
+            color: "#FFFFFF",
+          }}
+        >
+          {/* Top Badges Row */}
+          <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "10px" }}>
+            <span
+              style={{
+                background: "#D6206A",
+                color: "#FFFFFF",
+                fontSize: "0.75rem",
+                fontWeight: 800,
+                padding: "4px 10px",
+                border: "1px solid #141210",
+                boxShadow: "2px 2px 0 #141210",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "6px",
+                textTransform: "uppercase",
+                letterSpacing: "0.5px",
+              }}
+            >
+              <Sparkles size={13} /> Featured Conclave
+            </span>
+            <span
+              style={{
+                background: "#F5B921",
+                color: "#141210",
+                fontSize: "0.75rem",
+                fontWeight: 800,
+                padding: "4px 10px",
+                border: "1px solid #141210",
+                boxShadow: "2px 2px 0 #141210",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "4px",
+              }}
+            >
+              ⚡ Claim +50 Jools on check-in
+            </span>
+          </div>
+
+          {/* Title & Description Row */}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "flex-start",
+              flexWrap: "wrap",
+              gap: "20px",
+            }}
+          >
+            <div style={{ flex: 1, minWidth: "280px" }}>
+              <h2 style={{ fontSize: "1.4rem", fontWeight: 800, margin: "0 0 8px", color: "#FFFFFF", lineHeight: 1.3 }}>
+                J-Spotlight Edition 01: Finding the Next Junicorn
+              </h2>
+              <p style={{ fontSize: "0.925rem", color: "#F6EBDB", margin: "0 0 14px", lineHeight: 1.55 }}>
+                Empowering India&apos;s next generation of high-impact founders. An exclusive pitch and mentorship conclave connecting student innovators with venture leads and global incubation pathways.
+              </p>
+
+              {/* Meta Info */}
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "18px", fontSize: "0.85rem", fontWeight: 700, color: "#FFFFFF" }}>
+                <span style={{ display: "flex", alignItems: "center", gap: "6px", color: "#F5B921" }}>
+                  <Calendar size={15} color="#F5B921" /> Sat, 29 Aug 2026 • 4:00 PM IST
+                </span>
+                <span style={{ display: "flex", alignItems: "center", gap: "6px", color: "#FFFFFF" }}>
+                  <MapPin size={15} color="#F5B921" /> Draper U India, Bangalore
+                </span>
+              </div>
+            </div>
+
+            {/* Action CTA Button */}
+            <div style={{ display: "flex", alignItems: "center", alignSelf: "center" }}>
+              <Link
+                href="/events/j-spotlight-edition-1"
+                style={{
+                  padding: "12px 22px",
+                  background: "#F5B921",
+                  color: "#141210",
+                  fontWeight: 800,
+                  fontSize: "0.95rem",
+                  textDecoration: "none",
+                  border: "1.5px solid #141210",
+                  boxShadow: "3px 3px 0 #141210",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                View Event Details <ArrowRight size={16} />
+              </Link>
+            </div>
+          </div>
+        </div>
+
         {/* Page Header */}
         <div style={{ marginBottom: "24px" }}>
           <h1 style={{ fontSize: "2rem", fontWeight: 800, margin: 0, color: "#141210" }}>
             Explore Verified Mentors
           </h1>
           <p style={{ color: "#6A675F", margin: "6px 0 0", fontSize: "1rem" }}>
-            Connect 1-on-1 with industry leaders to accelerate your skills using your Jools Tokens.
+            Connect 1-on-1 with industry leaders to accelerate your skills using your Jools.
           </p>
         </div>
 

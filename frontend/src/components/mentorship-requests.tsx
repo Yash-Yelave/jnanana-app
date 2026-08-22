@@ -87,7 +87,7 @@ export function MentorshipRequestsPage() {
           </h1>
           <p>
             {isMentor
-              ? "Mentees who have spent their Jools Tokens to reach you. Accepting lets the Jnanana team coordinate the connection."
+              ? "Mentees who have spent their Jools to reach you. Accepting lets the Jnanana team coordinate the connection."
               : "Every mentorship request you've made, and where it stands."}
           </p>
         </header>
@@ -113,7 +113,7 @@ export function MentorshipRequestsPage() {
             <p>
               {isMentor
                 ? "When a mentee requests mentorship with you, it will appear here."
-                : "Check in at an event to receive Jools Tokens, then request mentorship from any mentor."}
+                : "Check in at an event to receive Jools, then request mentorship from any mentor."}
             </p>
             {!isMentor && (
               <Link className="button button-primary" href="/mentors">
@@ -146,7 +146,7 @@ export function MentorshipRequestsPage() {
                       <Clock size={14} aria-hidden /> {new Date(request.created_at).toLocaleDateString("en-IN", { dateStyle: "medium" })}
                     </span>
                     <span>
-                      <Sparkles size={14} aria-hidden /> {request.tokens_used} Jools Tokens
+                      <Sparkles size={14} aria-hidden /> {request.tokens_used} Jools
                     </span>
                   </div>
                 </div>
@@ -237,7 +237,7 @@ export function MentorshipRequestsPage() {
                   ) : null}
 
                   {request.status === "rejected" && (
-                    <small className={styles.refund}>{request.tokens_used} Jools Tokens refunded</small>
+                    <small className={styles.refund}>{request.tokens_used} Jools refunded</small>
                   )}
                 </div>
               </article>

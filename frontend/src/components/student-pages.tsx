@@ -251,7 +251,7 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
         }),
       });
       clearApiCache();
-      setRequestMsg("Request sent. 10 Jools Tokens deducted — track it under My Requests.");
+      setRequestMsg("Request sent. 10 Jools deducted — track it under My Requests.");
       setTimeout(() => setShowJoolsModal(false), 2000);
     } catch (err: unknown) {
       setRequestError(err instanceof Error ? err.message : "Failed to submit mentorship request");
@@ -263,7 +263,7 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
   return (
     <AppShell active={active} mentor={mentorApp}>
       <main className={styles.main}>
-        {/* JOOLS TOKEN REQUEST MODAL */}
+        {/* JOOLS REQUEST MODAL */}
         {showJoolsModal && (
           <div style={{
             position: "fixed",
@@ -291,7 +291,7 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
                 ⚡ Request Mentorship
               </h2>
               <p style={{ color: "#6A675F", marginBottom: "20px", lineHeight: 1.5 }}>
-                Use <strong>10 Jools Tokens</strong> to request a mentorship connection with <strong>{formattedName || "Mentor"}</strong>?
+                Use <strong>10 Jools</strong> to request a mentorship connection with <strong>{formattedName || "Mentor"}</strong>?
               </p>
 
               <div style={{
@@ -304,13 +304,13 @@ export function ProfileView({ mode = "about", mentorDetail = false, mentorApp = 
                 justifyContent: "space-between",
                 alignItems: "center"
               }}>
-                <span style={{ fontSize: "0.9rem", color: "#141210" }}>Your Jools Token balance:</span>
-                <strong style={{ fontSize: "1.2rem", color: "#F5B921" }}>⚡ {currentBalance} Jools Tokens</strong>
+                <span style={{ fontSize: "0.9rem", color: "#141210" }}>Your Jools balance:</span>
+                <strong style={{ fontSize: "1.2rem", color: "#F5B921" }}>⚡ {currentBalance} Jools</strong>
               </div>
 
               {currentBalance < 10 ? (
                 <div style={{ padding: "12px", borderRadius: "0", background: "rgba(239, 68, 68, 0.2)", border: "1px solid #B42318", color: "#B42318", marginBottom: "20px" }}>
-                  Insufficient Jools Tokens. You have {currentBalance}, but 10 are required. Check in at an event to claim 50.
+                  Insufficient Jools. You have {currentBalance}, but 10 are required. Check in at an event to claim 50.
                 </div>
               ) : (
                 <div style={{ marginBottom: "20px" }}>

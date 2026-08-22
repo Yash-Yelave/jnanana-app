@@ -67,7 +67,7 @@ export const steps = [
   {
     n: "03 / Connect",
     title: "Connect",
-    body: "Spend Jools Tokens to request mentorship. The mentor accepts, and Jnanana coordinates the connection.",
+    body: "Spend Jools to request mentorship. The mentor accepts, and Jnanana coordinates the connection.",
   },
   {
     n: "04 / Grow",
